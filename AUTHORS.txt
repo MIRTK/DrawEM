@@ -1,0 +1,19 @@
+.. This file is formatted using reStructuredText (reST) and included by Documentation/people.rst !
+
+Software Development
+--------------------
+
+- `Antonios Makropoulos`_
+- `Christian Ledig`_
+- `Andreas Schuh`_
+
+.. _Antonios Makropoulos: http://www.doc.ic.ac.uk/~am411/
+.. _Christian Ledig: http://www.doc.ic.ac.uk/~cl6311/
+.. _Andreas Schuh:   http://www.andreasschuh.com/
+
+Advisors
+--------
+
+- `Daniel Rueckert`_
+
+.. _Daniel Rueckert: http://www.imperial.ac.uk/people/d.rueckert
