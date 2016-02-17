@@ -58,8 +58,8 @@ run mirtk calculate $addem -out $sdir/posteriors/temp/$subj-gmwm.nii.gz
 for ((n=0;n<$numcorts;n++));do 
 r=${corts[$n]};
 val=${wmcorts[$n]};
-run mirtk calculate $sdir/labels/seg$r-extended/$subj.nii.gz -div $sdir/posteriors/temp/$subj-gmwm.nii.gz -mul $sdir/posteriors/gm/$subj.nii.gz -out $rdir/seg$r/$subj.nii.gz   
-run mirtk calculate $sdir/labels/seg$r-extended/$subj.nii.gz -div $sdir/posteriors/temp/$subj-gmwm.nii.gz -mul $sdir/posteriors/wm/$subj.nii.gz -out $rdir/seg$val/$subj.nii.gz 
+run mirtk calculate $sdir/labels/seg$r-extended/$subj.nii.gz -div-with-zero $sdir/posteriors/temp/$subj-gmwm.nii.gz -mul $sdir/posteriors/gm/$subj.nii.gz -out $rdir/seg$r/$subj.nii.gz   
+run mirtk calculate $sdir/labels/seg$r-extended/$subj.nii.gz -div-with-zero $sdir/posteriors/temp/$subj-gmwm.nii.gz -mul $sdir/posteriors/wm/$subj.nii.gz -out $rdir/seg$val/$subj.nii.gz 
 done 
 rm $sdir/posteriors/temp/$subj-gmwm.nii.gz
 
