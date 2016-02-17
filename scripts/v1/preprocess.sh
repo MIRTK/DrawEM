@@ -48,8 +48,10 @@ if [ ! -f N4/$subj.nii.gz ];then
   #convert image and rescale
   run mirtk convert-image T2/$subj.nii.gz $sdir/brain/$subj.nii.gz -rescale 0 1000 -double 
 
+  if [ ! -f $sdir/brain/${subj}_brain_mask.nii.gz ];then
   #brain extract
   run bet $sdir/brain/$subj.nii.gz $sdir/brain/${subj}_brain.nii.gz -R -f 0.1 -m 
+  fi
 
   #bias correct
   run $DRAWEMDIR/ThirdParty/ITK/N4 3 -i $sdir/brain/$subj.nii.gz -x $sdir/brain/${subj}_brain_mask.nii.gz -o "[N4/$subj.nii.gz,bias/$subj.nii.gz]" -c "[50x50x50,0.001]" -s 2 -b "[100,3]" -t "[0.15,0.01,200]"

@@ -575,7 +575,7 @@ void mirtkDrawEM::EStepMRF()
     for (i=0; i< _number_of_voxels; i++) {
         if (i*10.0/_number_of_voxels > per) {
             per++;
-            cerr<<per<<"0%...";
+            cout<<per<<"0%...";
         }
         denominator = 0;
         temp = 0;

@@ -29,6 +29,7 @@ run(){
   "$@" || exit 1
 }
 
+if [ ! -f $outf ];then
 
 sdir=segmentations-data
 mkdir -p $sdir/corrections || exit 1
@@ -54,4 +55,4 @@ numretain=`echo $retain|wc -w`
 run mirtk padding $f $sdir/corrections/$base-lccs.nii.gz $outf $numretain $retain 0 -invert
 
 rm $sdir/corrections/$base-lccs.nii.gz $sdir/corrections/$base-lccs-comps
-
+fi

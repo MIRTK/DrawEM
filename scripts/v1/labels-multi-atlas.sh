@@ -36,6 +36,7 @@ run(){
   "$@" || exit 1
 }
 
+if [ ! -f $sdir/MADs/$subj-subspace.nii.gz ];then
 
 mkdir -p $sdir/MADs $sdir/cortical $sdir/transformations $sdir/atlas-weights  || exit 1 
 for r in ${all};do mkdir -p $sdir/labels/seg$r || exit 1; done
@@ -149,3 +150,4 @@ str=""; for i in ${subcorts};do str="$str-add $sdir/labels/seg$i/$subj.nii.gz ";
 str=`echo $str| sed -e 's:^\-add ::g'`
 run mirtk calculate $str -div-with-zero 100 -mul $sdir/MADs/$subj.nii.gz -out $sdir/MADs/$subj-subspace.nii.gz 
 
+fi

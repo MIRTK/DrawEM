@@ -37,7 +37,7 @@ run(){
   "$@" || exit 1
 }
 
-
+if [ ! -f segmentations/"$subj"_all_labels$suffix.nii.gz ];then
 # creating the all labels file (initial segmentation + cortical division)
 $scriptdir/postprocess-cortical.sh $subj
 run mirtk padding $sdir/cortical/$subj.nii.gz $f segmentations/$subj-cortical-wm.nii.gz 2000 0 -invert 
@@ -50,13 +50,19 @@ for ((r=0;r<${#corts[*]};r++));do
 gmtowmnumbers="$gmtowmnumbers 1 ${corts[$r]} ${wmcorts[$r]}"
 done
 run mirtk padding segmentations/$subj-cortical-wm.nii.gz segmentations/$subj-cortical-wm.nii.gz segmentations/$subj-cortical-wm.nii.gz $gmtowmnumbers 
-run mirtk padding $f $f segmentations/"$subj"_all_labels$suffix.nii.gz 2 1000 2000 0 
-run mirtk calculate segmentations/"$subj"_all_labels$suffix.nii.gz -add segmentations/$subj-cortical-gm.nii.gz -add segmentations/$subj-cortical-wm.nii.gz -out segmentations/"$subj"_all_labels$suffix.nii.gz 
+run mirtk padding $f $f segmentations/"$subj"_all_labels_ini$suffix.nii.gz 2 1000 2000 0
+run mirtk calculate segmentations/"$subj"_all_labels_ini$suffix.nii.gz -add segmentations/$subj-cortical-gm.nii.gz -add segmentations/$subj-cortical-wm.nii.gz -out segmentations/"$subj"_all_labels$suffix.nii.gz
+# cleanup
+rm segmentations/$subj-cortical-gm.nii.gz segmentations/$subj-cortical-wm.nii.gz segmentations/"$subj"_all_labels_ini$suffix.nii.gz
+fi
 
+if [ ! -f segmentations/"$subj"_labels$suffix.nii.gz ];then
 # creating the labels file
 run mirtk padding segmentations/"$subj"_all_labels$suffix.nii.gz segmentations/"$subj"_all_labels$suffix.nii.gz segmentations/"$subj"_labels$suffix.nii.gz $DRAWEMDIR/parameters/all-labels-to-labels.csv  
+fi
+
+if [ ! -f segmentations/"$subj"_tissue_labels$suffix.nii.gz ];then
 # creating the tissue labels labels
 run mirtk padding segmentations/"$subj"_all_labels$suffix.nii.gz segmentations/"$subj"_all_labels$suffix.nii.gz segmentations/"$subj"_tissue_labels$suffix.nii.gz $DRAWEMDIR/parameters/all-labels-to-tissue-labels.csv  
+fi
 
-# cleanup
-rm segmentations/$subj-cortical-gm.nii.gz segmentations/$subj-cortical-wm.nii.gz
