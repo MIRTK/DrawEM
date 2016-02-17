@@ -125,7 +125,7 @@ run tissue-priors.sh     $subj $age $atlasname $threads
 # registration using gm posterior + image
 run register-multi-atlas-using-gm-posteriors.sh $subj $age $threads
 # structural segmentation
-run labels-multi-atlas.sh   $subj $age #$atlasname
+run labels-multi-atlas.sh   $subj
 run segmentation.sh      $subj
 # post-processing
 run separate-hemispheres.sh  $subj
