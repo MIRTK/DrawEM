@@ -823,7 +823,7 @@ double mirtkEMBase::LogLikelihood()
 				temp += gv[k] * _output.GetValue(k);
 			}
 
-			if ((temp >= 0) && (temp <= 1)) {
+			if ((temp > 0) && (temp <= 1)) {
 				f += log(temp);
 			}
 		}
@@ -874,7 +874,7 @@ double mirtkEMBase::LogLikelihoodGMM()
 				temp += gv[k] * _c[k];
 			}
 
-			if ((temp >= 0) && (temp <= 1)) {
+			if ((temp > 0) && (temp <= 1)) {
 				f += log(temp);
 			}
 		}

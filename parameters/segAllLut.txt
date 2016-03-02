@@ -61,9 +61,9 @@ R_Superior_temporal_gyrus_posterior
 L_Superior_temporal_gyrus_posterior
 31 223 220 60 255
 R_Cingulate_gyrus_anterior
-32 80 20 140 255
+32 125 100 160 255
 L_Cingulate_gyrus_anterior
-33 80 20 140 255
+33 125 100 160 255
 R_Cingulate_gyrus_posterior
 34 220 180 220 255
 L_Cingulate_gyrus_posterior

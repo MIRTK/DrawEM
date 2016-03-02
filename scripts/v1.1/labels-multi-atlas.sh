@@ -29,7 +29,8 @@ corts=`cat $DRAWEMDIR/parameters/cortical.csv`
 wmcorts=`cat $DRAWEMDIR/parameters/cortical-wm.csv`
 subcorts=`cat $DRAWEMDIR/parameters/subcortical-all.csv`
 all=`cat $DRAWEMDIR/parameters/all-labels.csv `
-
+# the order is that in the atlases tissues
+tissues="csf gm wm outlier hwm lwm"
 
 run(){
   echo "$@"
@@ -40,6 +41,8 @@ if [ ! -f $sdir/MADs/$subj-subspace.nii.gz ];then
 
 mkdir -p $sdir/MADs $sdir/cortical $sdir/transformations $sdir/atlas-weights  || exit 1 
 for r in ${all};do mkdir -p $sdir/labels/seg$r || exit 1; done
+for str in ${tissues};do mkdir -p $sdir/labels/$str || exit 1; done
+
 sigma=10000
 run mirtk convert-image N4/$subj.nii.gz $sdir/atlas-weights/$subj-normalized.nii.gz -rescale 0 200 -double 
 
@@ -55,23 +58,27 @@ if [ ! -f dofs/$subj-$atlas-n.dof.gz ];then continue;fi
 #transform atlas labels
 if [ ! -f $sdir/transformations/$subj-$atlas.nii.gz ];then 
 ms=$sdir/template/$str/$subj.nii.gz
-run mirtk transform-image $DRAWEMDIR/atlases/ALBERTs/segmentations-v2.1/$atlas.nii.gz $sdir/transformations/$subj-$atlas.nii.gz -target N4/$subj.nii.gz -dofin dofs/$subj-$atlas-n.dof.gz -interp NN 
+run mirtk transform-image $DRAWEMDIR/atlases/ALBERTs/segmentations-v3/$atlas.nii.gz $sdir/transformations/$subj-$atlas.nii.gz -target N4/$subj.nii.gz -dofin dofs/$subj-$atlas-n.dof.gz -interp NN 
+fi
+if [ ! -f $sdir/transformations/tissues-$subj-$atlas.nii.gz ];then 
+ms=$sdir/template/$str/$subj.nii.gz
+run mirtk transform-image $DRAWEMDIR/atlases/ALBERTs/tissues-v3/$atlas.nii.gz $sdir/transformations/tissues-$subj-$atlas.nii.gz -target N4/$subj.nii.gz -dofin dofs/$subj-$atlas-n.dof.gz -interp NN 
 fi
 
-#transform atlas labels
+#transform atlases
 if [ ! -f $sdir/transformations/T2-$subj-$atlas.nii.gz ];then 
 ms=$sdir/template/$str/$subj.nii.gz
 run mirtk transform-image $DRAWEMDIR/atlases/ALBERTs/T2/$atlas.nii.gz $sdir/transformations/T2-$subj-$atlas.nii.gz -target N4/$subj.nii.gz -dofin dofs/$subj-$atlas-n.dof.gz -interp BSpline 
 fi
 
-#weight atlas labels locally
+#weight atlas locally
 if [ ! -f $sdir/atlas-weights/$subj-$atlas.nii.gz ];then 
 run mirtk normalize N4/$subj.nii.gz $sdir/transformations/T2-$subj-$atlas.nii.gz $sdir/atlas-weights/$subj-$atlas-normalized.nii.gz -piecewise 
 run mirtk convert-image $sdir/atlas-weights/$subj-$atlas-normalized.nii.gz $sdir/atlas-weights/$subj-$atlas-normalized.nii.gz -rescale 0 200 -double 
 # This calculates weights based on a gaussian distance.
 run mirtk calculate $sdir/atlas-weights/$subj-normalized.nii.gz -sub $sdir/atlas-weights/$subj-$atlas-normalized.nii.gz -sq -out $sdir/atlas-weights/$subj-$atlas.nii.gz 
 run mirtk calculate-filtering $sdir/atlas-weights/$subj-$atlas.nii.gz -kernel 3 -mean $sdir/atlas-weights/$subj-$atlas.nii.gz  
-run mirtk calculate $sdir/atlas-weights/$subj-$atlas.nii.gz -mul -27 -div-with-zero $sigma -out $sdir/atlas-weights/$subj-$atlas.nii.gz  
+run mirtk calculate $sdir/atlas-weights/$subj-$atlas.nii.gz -mul -27 -div $sigma -out $sdir/atlas-weights/$subj-$atlas.nii.gz  
 run mirtk calculate $sdir/atlas-weights/$subj-$atlas.nii.gz -exp -out $sdir/atlas-weights/$subj-$atlas.nii.gz  
 # smooth the weights
 run mirtk calculate-filtering $sdir/atlas-weights/$subj-$atlas.nii.gz -kernel 3 -median $sdir/atlas-weights/$subj-$atlas.nii.gz  
@@ -87,49 +94,25 @@ rm -f $sdir/atlas-weights/$subj-normalized.nii.gz
 
 #split labels
 transformed=""
+transformedc=""
 transformedw=""
 for atlas in ${atlases};do 
 transformed="$transformed $sdir/transformations/$subj-$atlas.nii.gz";
+transformedc="$transformedc $sdir/transformations/tissues-$subj-$atlas.nii.gz";
 transformedw="$transformedw $sdir/atlas-weights/$subj-$atlas.nii.gz";
 done
 
-splitnum=87
-splitstr=""; for r in {1..87};do splitstr=$splitstr" $r"; done
-for r in {1..87};do splitstr=$splitstr" $sdir/labels/seg$r/$subj.nii.gz"; done
+splitnum=0
+splitstr=""; 
+for r in ${subcorts} ${corts};do let splitnum=splitnum+1; splitstr=$splitstr" $r"; done
+for r in ${subcorts} ${corts};do splitstr=$splitstr" $sdir/labels/seg$r/$subj.nii.gz"; done
+run mirtk split-labels $num $transformed $transformedw  $splitnum $splitstr 
 
-mirtk split-labels $num $transformed $transformedw  $splitnum $splitstr 
-
-
-
-#tissues
-tissues="csf gm wm outlier hwm lwm"
-for str in ${tissues};do
-mkdir -p $sdir/labels/$str || exit 1
-done
-
-ln $sdir/labels/seg83/$subj.nii.gz $sdir/labels/csf
-ln $sdir/labels/seg84/$subj.nii.gz $sdir/labels/outlier
-
-str=""; for i in ${corts};do str="$str-add $sdir/labels/seg$i/$subj.nii.gz "; done
-str=`echo $str| sed -e 's:^\-add ::g'`
-run mirtk calculate $str -out $sdir/labels/gm/$subj.nii.gz 
-
-str=""; for i in ${wmcorts};do str="$str-add $sdir/labels/seg$i/$subj.nii.gz "; done
-str=`echo $str| sed -e 's:^\-add ::g'`
-run mirtk calculate $str -out $sdir/labels/wm/$subj.nii.gz 
-
-
-if [ -f $sdir/tissue-posteriors/hwm/$subj.nii.gz -a -f $sdir/tissue-posteriors/lwm/$subj.nii.gz ];then
-run mirtk calculate $sdir/tissue-posteriors/wm/$subj.nii.gz -add $sdir/tissue-posteriors/hwm/$subj.nii.gz -add $sdir/tissue-posteriors/lwm/$subj.nii.gz -out $sdir/tissue-posteriors/$subj-wmall.nii.gz 
-# hwm = wm_a * hwm_t/wm_t
-run mirtk calculate $sdir/tissue-posteriors/hwm/$subj.nii.gz -div-with-zero $sdir/tissue-posteriors/$subj-wmall.nii.gz -mul $sdir/labels/wm/$subj.nii.gz -out $sdir/labels/hwm/$subj.nii.gz 
-# lwm = wm_a * lwm_t/wm_t
-run mirtk calculate $sdir/tissue-posteriors/lwm/$subj.nii.gz -div-with-zero $sdir/tissue-posteriors/$subj-wmall.nii.gz -mul $sdir/labels/wm/$subj.nii.gz -out $sdir/labels/lwm/$subj.nii.gz 
-# wm  = wm_a - lwm - hwm
-run mirtk calculate $sdir/labels/wm/$subj.nii.gz -sub $sdir/labels/hwm/$subj.nii.gz -sub $sdir/labels/lwm/$subj.nii.gz -out $sdir/labels/wm/$subj.nii.gz 
-rm -f $sdir/tissue-posteriors/$subj-wmall.nii.gz	
-fi
-
+splitnum=0
+splitstr=""; 
+for str in ${tissues};do let splitnum=splitnum+1; splitstr=$splitstr" $splitnum"; done
+for str in ${tissues};do splitstr=$splitstr" $sdir/labels/$str/$subj.nii.gz"; done
+run mirtk split-labels $num $transformedc $transformedw  $splitnum $splitstr 
 
 
 #create MAD
@@ -139,7 +122,7 @@ run mirtk calculate-gradients N4/$subj.nii.gz $sdir/MADs/$subj-grad.nii.gz 0
 run mirtk calculate-filtering $sdir/MADs/$subj-grad.nii.gz -kernel $nn -median $sdir/MADs/$subj-cur.nii.gz  
 run mirtk calculate $sdir/MADs/$subj-grad.nii.gz -sub $sdir/MADs/$subj-cur.nii.gz -abs -out $sdir/MADs/$subj-cur.nii.gz 
 run mirtk calculate-filtering  $sdir/MADs/$subj-cur.nii.gz -kernel $nn -median $sdir/MADs/$subj-cur.nii.gz  
-run mirtk calculate $sdir/MADs/$subj-grad.nii.gz -div-with-zero $sdir/MADs/$subj-cur.nii.gz -div-with-zero 1.4826 -sq -mul 0.5 -add 1 -log -out $sdir/MADs/$subj-cur.nii.gz 
+run mirtk calculate $sdir/MADs/$subj-grad.nii.gz -div-with-zero $sdir/MADs/$subj-cur.nii.gz -div 1.4826 -sq -mul 0.5 -add 1 -log -out $sdir/MADs/$subj-cur.nii.gz 
 run mirtk calculate N4/$subj.nii.gz -div-with-zero N4/$subj.nii.gz -mul $sdir/MADs/$subj-cur.nii.gz  -add 1 -out $sdir/MADs/$subj-cur.nii.gz 
 run mirtk calculate $sdir/MADs/$subj-cur.nii.gz -mul 0 -add 1 -div-with-zero $sdir/MADs/$subj-cur.nii.gz -out $sdir/MADs/$subj.nii.gz 
 rm -f $sdir/MADs/$subj-cur.nii.gz
@@ -148,6 +131,6 @@ fi
 #create posterior penalty
 str=""; for i in ${subcorts};do str="$str-add $sdir/labels/seg$i/$subj.nii.gz "; done
 str=`echo $str| sed -e 's:^\-add ::g'`
-run mirtk calculate $str -div-with-zero 100 -mul $sdir/MADs/$subj.nii.gz -out $sdir/MADs/$subj-subspace.nii.gz 
+run mirtk calculate $str -div 100 -mul $sdir/MADs/$subj.nii.gz -out $sdir/MADs/$subj-subspace.nii.gz 
 
 fi
