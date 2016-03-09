@@ -1,7 +1,7 @@
 Draw-EM Segmentation Software
 ==========================================
 
-Draw-EM is a package of MIRTK developed by Antonios Makropoulos and the [BioMedIA](https://biomedia.doc.ic.ac.uk/) research group. 
+Draw-EM (Developing brain Region Annotation With Expectation-Maximization) is a package of MIRTK developed by Antonios Makropoulos and the [BioMedIA](https://biomedia.doc.ic.ac.uk/) research group. 
 It provides a collection of command-line tools as well as pipelines for the segmentation of developing brain MR images.
 
 
@@ -33,5 +33,7 @@ Citation and acknowledgements
 -----------------------------
 
 In the event you found Draw-EM useful, please consider giving appropriate credit to the software.
+
 Publication:
+
 A. Makropoulos et al. Automatic whole brain MRI segmentation of the developing neonatal brain, IEEE TMI, 2014
