@@ -10,6 +10,7 @@ Installation
 
 Draw-EM is part of MIRTK. 
 Installation is enabled by setting the CMake flag "MODULE_DrawEM" of MIRTK to "ON"
+
 The atlases required by Draw-EM need to be downloaded from [here](https://www.doc.ic.ac.uk/~am411/atlases-DrawEM.html) and extracted inside the Draw-EM directory.
 
 See the [installation instructions](https://mirtk.github.io/install.html) 
