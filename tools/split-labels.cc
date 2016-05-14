@@ -17,12 +17,12 @@
  * limitations under the License.
  */
 
-#include <mirtkCommon.h>
-#include <mirtkOptions.h>
+#include "mirtk/Common.h"
+#include "mirtk/Options.h"
 
-#include <mirtkImageIOConfig.h>
-#include <mirtkGenericImage.h>
-#include <mirtkHashProbabilisticAtlas.h>
+#include "mirtk/IOConfig.h"
+#include "mirtk/GenericImage.h"
+#include "mirtk/HashProbabilisticAtlas.h"
 #include <string>
 
 using namespace mirtk;
@@ -36,16 +36,16 @@ using namespace std;
 // -----------------------------------------------------------------------------
 void PrintHelp(const char *name)
 {
-	cout << endl;
-	cout << "Usage: " << name << " <N> <labelmap_1> .. <labelmap_N>  <weight_1> .. <weight_N>    <R> <label_1> .. <label_R> <probmap_1> .. <probmap_R>" << endl;
-	cout << endl;
-	cout << "Description:" << endl;
-	cout << "  Measures the probability of the different labels in the N label maps <labelmap_1> .. <labelmap_N> " <<endl;
-	cout << "  according to the weights (maps) <weight_1> .. <weight_N> (based on occurence)." << endl;
-	cout << "  It then outputs the probability of the specified R labels <label_1> .. <label_R> to <probmap_1> .. <probmap_R>  "<<endl;
-	cout << endl;
-	PrintStandardOptions(cout);
-	cout << endl;
+	std::cout << std::endl;
+	std::cout << "Usage: " << name << " <N> <labelmap_1> .. <labelmap_N>  <weight_1> .. <weight_N>    <R> <label_1> .. <label_R> <probmap_1> .. <probmap_R>" << std::endl;
+	std::cout << std::endl;
+	std::cout << "Description:" << std::endl;
+	std::cout << "  Measures the probability of the different labels in the N label maps <labelmap_1> .. <labelmap_N> " <<std::endl;
+	std::cout << "  according to the weights (maps) <weight_1> .. <weight_N> (based on occurence)." << std::endl;
+	std::cout << "  It then outputs the probability of the specified R labels <label_1> .. <label_R> to <probmap_1> .. <probmap_R>  "<<std::endl;
+	std::cout << std::endl;
+	PrintStandardOptions(std::cout);
+	std::cout << std::endl;
 }
 
 // =============================================================================
@@ -57,7 +57,7 @@ void PrintHelp(const char *name)
 int main(int argc, char **argv){
 
 	REQUIRES_POSARGS(6);
-	InitializeImageIOLibrary();
+	InitializeIOLibrary();
 
 	int a = 1;
 	int numAtlases = atoi(POSARG(a)); a++;
@@ -86,7 +86,7 @@ int main(int argc, char **argv){
 	// output
 	GreyImage atlas(atlasNames[0].c_str());
 	RealImage weight(weightNames[0].c_str());
-	mirtkHashProbabilisticAtlas probs;
+	HashProbabilisticAtlas probs;
 	for(int j = 0; j < numStructuresToDo; j++){
 		probs.AddImage( HashRealImage(atlas.Attributes()) );
 	}
@@ -110,7 +110,7 @@ int main(int argc, char **argv){
 			if(*wptr>0){
 				for(int j = 0; j < numStructuresToDo; j++){
 					if(*ptr == values[j]){
-						//if(a==1) cout<<*wptr + probs.GetValue(j)<<"/"<<*swptr+*wptr<<endl;
+						//if(a==1) std::cout<<*wptr + probs.GetValue(j)<<"/"<<*swptr+*wptr<<std::endl;
 						probs.SetValue(j, *wptr + probs.GetValue(j));
 						break;
 					}

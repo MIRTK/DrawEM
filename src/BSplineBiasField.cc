@@ -18,20 +18,20 @@
  */
 
 
-//#include <mirtkBiasField.h>
-#include <mirtkBSplineBiasField.h>
+//#include "mirtk/BiasField.h"
+#include "mirtk/BSplineBiasField.h"
 
-namespace mirtk{
+namespace mirtk {
 
 #define LUTSIZE (double)(BIASLOOKUPTABLESIZE-1)
 
-double mirtkBSplineBiasField::LookupTable   [BIASLOOKUPTABLESIZE][4];
+double BSplineBiasField::LookupTable   [BIASLOOKUPTABLESIZE][4];
 
-double mirtkBSplineBiasField::LookupTable_I [BIASLOOKUPTABLESIZE][4];
+double BSplineBiasField::LookupTable_I [BIASLOOKUPTABLESIZE][4];
 
-double mirtkBSplineBiasField::LookupTable_II[BIASLOOKUPTABLESIZE][4];
+double BSplineBiasField::LookupTable_II[BIASLOOKUPTABLESIZE][4];
 
-mirtkBSplineBiasField::mirtkBSplineBiasField()
+BSplineBiasField::BSplineBiasField()
 {
 	int i;
 
@@ -93,12 +93,12 @@ mirtkBSplineBiasField::mirtkBSplineBiasField()
 	}
 }
 
-mirtkBSplineBiasField::mirtkBSplineBiasField(const GreyImage &image, double dx, double dy, double dz)
+BSplineBiasField::BSplineBiasField(const GreyImage &image, double dx, double dy, double dz)
 {
 	int i;
 	double x1, y1, z1, x2, y2, z2;
 
-	cerr<<"Initialising bias field using control points spacing: "<< dx << " " << dy << " " << dz <<endl;
+	std::cerr<<"Initialising bias field using control points spacing: "<< dx << " " << dy << " " << dz <<std::endl;
 
 	x1 = 0;
 	y1 = 0;
@@ -190,13 +190,13 @@ mirtkBSplineBiasField::mirtkBSplineBiasField(const GreyImage &image, double dx, 
 	}
 }
 
-mirtkBSplineBiasField::mirtkBSplineBiasField(const GreyImage &image, int x, int y, int z, bool bounding_box, int padding )
+BSplineBiasField::BSplineBiasField(const GreyImage &image, int x, int y, int z, bool bounding_box, int padding )
 {
 	//arguments: number of control points
 	int i,j,k;
 	double x1, y1, z1, x2, y2, z2;
 
-	cerr<<"Initialising bias field using number of control points: "<< x << "x" << y << "x" << z <<endl;
+	std::cerr<<"Initialising bias field using number of control points: "<< x << "x" << y << "x" << z <<std::endl;
 
 
 	x1 = 0;
@@ -208,7 +208,7 @@ mirtkBSplineBiasField::mirtkBSplineBiasField(const GreyImage &image, int x, int 
 
 	if (bounding_box) {
 
-		cerr<<"Bounding box: ";
+		std::cerr<<"Bounding box: ";
 		///x1
 		i=0; j=0; k=0;
 		bool found = false;
@@ -223,9 +223,9 @@ mirtkBSplineBiasField::mirtkBSplineBiasField(const GreyImage &image, int x, int 
 			i++;
 		}
 		x1 = i;
-		cerr<<"found=" <<found <<", ";
-		cerr<<"padding=" <<padding <<", ";
-		cerr<<"x1=" <<x1 <<", ";
+		std::cerr<<"found=" <<found <<", ";
+		std::cerr<<"padding=" <<padding <<", ";
+		std::cerr<<"x1=" <<x1 <<", ";
 
 		///x2
 		i=image.GetX()-1; j=0; k=0;
@@ -241,7 +241,7 @@ mirtkBSplineBiasField::mirtkBSplineBiasField(const GreyImage &image, int x, int 
 			i--;
 		}
 		x2 = i;
-		cerr<<"x2=" <<x2 <<", ";
+		std::cerr<<"x2=" <<x2 <<", ";
 
 	}
 
@@ -333,7 +333,7 @@ mirtkBSplineBiasField::mirtkBSplineBiasField(const GreyImage &image, int x, int 
 	}
 }
 
-mirtkBSplineBiasField::mirtkBSplineBiasField(const mirtkBSplineBiasField &bias) : mirtkBiasField(bias)
+BSplineBiasField::BSplineBiasField(const BSplineBiasField &bias) : BiasField(bias)
 {
 	int i, j, k;
 
@@ -399,7 +399,7 @@ mirtkBSplineBiasField::mirtkBSplineBiasField(const mirtkBSplineBiasField &bias) 
 	}
 }
 
-mirtkBSplineBiasField::~mirtkBSplineBiasField()
+BSplineBiasField::~BSplineBiasField()
 {
 	// Free memory for control points if necessary
 	if (_data != NULL) _data = this->Deallocate(_data, _x, _y, _z);
@@ -409,7 +409,7 @@ mirtkBSplineBiasField::~mirtkBSplineBiasField()
 	_z = 0;
 }
 
-double mirtkBSplineBiasField::FFD1(double x, double y, double z) const
+double BSplineBiasField::FFD1(double x, double y, double z) const
 {
 	// Check if there is some work to do
 	if ((x < -2) || (y < -2) || (z < -2) || (x > _x+1) ||
@@ -466,7 +466,7 @@ double mirtkBSplineBiasField::FFD1(double x, double y, double z) const
 	return 1+x;
 }
 
-double mirtkBSplineBiasField::FFD2(double x, double y, double z) const
+double BSplineBiasField::FFD2(double x, double y, double z) const
 {
 	double *data;
 	double s, t, u, B_I, B_J, B_K, xi, xii;
@@ -517,7 +517,7 @@ double mirtkBSplineBiasField::FFD2(double x, double y, double z) const
 	return 1+x;
 }
 
-double mirtkBSplineBiasField::Approximate(double *x1, double *y1, double *z1, double *bias, int no)
+double BSplineBiasField::Approximate(double *x1, double *y1, double *z1, double *bias, int no)
 {
 	int i, j, k, l, m, n, I, J, K, index;
 	double b, s, t, u, x, y, z, error, phi, norm, tmp;
@@ -647,32 +647,32 @@ double mirtkBSplineBiasField::Approximate(double *x1, double *y1, double *z1, do
 	return error;
 }
 
-void mirtkBSplineBiasField::WeightedLeastSquares(double *x1, double *y1, double *z1, double *bias, double *weights, int no)
+void BSplineBiasField::WeightedLeastSquares(double *x1, double *y1, double *z1, double *bias, double *weights, int no)
 {
 	int index, i, j, k, ii, jj, kk, l, m, n, indx, indx1;
 	double b,w, s, t, u, x, y, z;
 	Vector P(_x*_y*_z),T(_x*_y*_z);
 	Matrix M(_x*_y*_z, _x*_y*_z);
 
-	cerr<<_x<<" "<<_y<<" "<< _z<<endl;
+	std::cerr<<_x<<" "<<_y<<" "<< _z<<std::endl;
 
-	cerr<<"Starting weighted least squares...";
+	std::cerr<<"Starting weighted least squares...";
 
 	int per=0;
 
 	for (index = 0; index < no; index++) {
 		if (index*10/no > per) {
 			per++;
-			cerr<<per<<"0%...";
+			std::cerr<<per<<"0%...";
 		}
-		//cerr<<index<<" "<<endl;
+		//std::cerr<<index<<" "<<std::endl;
 		x = x1[index];
 		y = y1[index];
 		z = z1[index];
 		b = bias[index];
 		w = weights[index];
 
-		//cerr<<x<<" "<<y<<" "<<z<<endl;
+		//std::cerr<<x<<" "<<y<<" "<<z<<std::endl;
 
 		this->WorldToLattice(x, y, z);
 
@@ -706,7 +706,7 @@ void mirtkBSplineBiasField::WeightedLeastSquares(double *x1, double *y1, double 
 			u=1;
 		}
 
-		//cerr<<s<<" "<<t<<" "<<u<<" "<<w<<" "<<b<<endl;
+		//std::cerr<<s<<" "<<t<<" "<<u<<" "<<w<<" "<<b<<std::endl;
 
 
 		for (k = 0; k < 4; k++) {
@@ -718,9 +718,9 @@ void mirtkBSplineBiasField::WeightedLeastSquares(double *x1, double *y1, double 
 						//P(indx) += b*B(i, s) * B(j, t) * B(k, u)*w;
 						P(indx) += b*N(i+l-1,x,_x) * N(j+m-1,y,_y) * N(k+n-1,z,_z)*w;
 					} else {
-						//cerr<<"out of range:"<< i+l-1<<" "<<j+m-1<<" "<<k+n-1<<endl;
+						//std::cerr<<"out of range:"<< i+l-1<<" "<<j+m-1<<" "<<k+n-1<<std::endl;
 					}
-					//cerr<<i+l-1<<" "<<j+m-1<<" "<<k+n-1<<endl;
+					//std::cerr<<i+l-1<<" "<<j+m-1<<" "<<k+n-1<<std::endl;
 					for (kk = 0; kk < 4; kk++) {
 						for (jj = 0; jj < 4; jj++) {
 							for (ii = 0; ii < 4; ii++) {
@@ -730,7 +730,7 @@ void mirtkBSplineBiasField::WeightedLeastSquares(double *x1, double *y1, double 
                 		  //+= B(i, s) * B(j, t) * B(k, u) * B(ii, s) * B(jj, t) * B(kk, u)*w;
                 		  += N(i+l-1,x,_x) * N(j+m-1,y,_y) * N(k+n-1,z,_z)*N(ii+l-1,x,_x) * N(jj+m-1,y,_y) * N(kk+n-1,z,_z)*w;
 								} else {
-									//cerr<<"out of range:"<< i+l-1<<" "<<j+m-1<<" "<<k+n-1<< ii+l-1<<" "<<jj+m-1<<" "<<kk+n-1<<endl;
+									//std::cerr<<"out of range:"<< i+l-1<<" "<<j+m-1<<" "<<k+n-1<< ii+l-1<<" "<<jj+m-1<<" "<<kk+n-1<<std::endl;
 								}
 							}
 						}
@@ -753,10 +753,10 @@ void mirtkBSplineBiasField::WeightedLeastSquares(double *x1, double *y1, double 
     }
   //M.Print();
 
-  cerr<<"Right side:"<<endl;
+  std::cerr<<"Right side:"<<std::endl;
   //P.Print();
 
-  cerr<<"Singular value decomposition:"<<endl;
+  std::cerr<<"Singular value decomposition:"<<std::endl;
 
   double **aa, *ww, **vv, *pp, *xx;
   //int *ind;
@@ -777,7 +777,7 @@ void mirtkBSplineBiasField::WeightedLeastSquares(double *x1, double *y1, double 
 
   svdcmp(aa, rows, rows, ww, vv);
 
- // for (j = 1; j <= rows; j++)  cerr <<ww[j]<<endl;
+ // for (j = 1; j <= rows; j++)  std::cerr <<ww[j]<<std::endl;
 
 
   svbksb(aa,ww,vv,rows,rows,pp,xx);
@@ -793,15 +793,15 @@ void mirtkBSplineBiasField::WeightedLeastSquares(double *x1, double *y1, double 
   free_dvector(xx, 1,rows);
   //free_ivector( ind, 1, rows);
 	 */
-	cerr<<"Resulting  control points:"<<endl;
+	std::cerr<<"Resulting  control points:"<<std::endl;
 	for (k = 0; k < _z; k++) {
 		for (j = 0; j < _y; j++) {
 			for (i = 0; i < _x; i++) {
-				cerr<<P(Ind(i,j,k))<<" ";
+				std::cerr<<P(Ind(i,j,k))<<" ";
 			}
-			cerr<<" ";
+			std::cerr<<" ";
 		}
-		cerr<<endl;
+		std::cerr<<std::endl;
 	}
 
 	for (k = 0; k < _z; k++) {
@@ -815,7 +815,7 @@ void mirtkBSplineBiasField::WeightedLeastSquares(double *x1, double *y1, double 
 
 
 
-void mirtkBSplineBiasField::Interpolate(double* dbias)
+void BSplineBiasField::Interpolate(double* dbias)
 {
 	RealImage coeffs;
 
@@ -828,7 +828,7 @@ void mirtkBSplineBiasField::Interpolate(double* dbias)
 			}
 }
 
-void mirtkBSplineBiasField::Subdivide()
+void BSplineBiasField::Subdivide()
 {
 	if (_z == 1) {
 		this->Subdivide2D();
@@ -837,7 +837,7 @@ void mirtkBSplineBiasField::Subdivide()
 	}
 }
 
-void mirtkBSplineBiasField::Subdivide2D()
+void BSplineBiasField::Subdivide2D()
 {
 	int i, j, i1, j1, i2, j2;
 
@@ -889,7 +889,7 @@ void mirtkBSplineBiasField::Subdivide2D()
 	this->UpdateMatrix();
 }
 
-void mirtkBSplineBiasField::Subdivide3D()
+void BSplineBiasField::Subdivide3D()
 {
 	int i, j, k, i1, j1, k1, i2, j2, k2;
 
@@ -948,13 +948,13 @@ void mirtkBSplineBiasField::Subdivide3D()
 	this->UpdateMatrix();
 }
 
-double mirtkBSplineBiasField::InitialAntiCausalCoefficient(double c[], int DataLength, double z)
+double BSplineBiasField::InitialAntiCausalCoefficient(double c[], int DataLength, double z)
 {
 	/* this initialization corresponds to mirror boundaries */
 	return((z / (z * z - 1.0)) * (z * c[DataLength - 2] + c[DataLength - 1]));
 }
 
-double mirtkBSplineBiasField::InitialCausalCoefficient(double c[], int DataLength, double z, double Tolerance)
+double BSplineBiasField::InitialCausalCoefficient(double c[], int DataLength, double z, double Tolerance)
 {
 	double Sum, zn, z2n, iz;
 	int n, Horizon;
@@ -989,7 +989,7 @@ double mirtkBSplineBiasField::InitialCausalCoefficient(double c[], int DataLengt
 	}
 }
 
-void mirtkBSplineBiasField::ConvertToInterpolationCoefficients(double* c, int DataLength, double* z, int NbPoles, double Tolerance)
+void BSplineBiasField::ConvertToInterpolationCoefficients(double* c, int DataLength, double* z, int NbPoles, double Tolerance)
 {
 	double Lambda = 1.0;
 	int n, k;
@@ -1026,7 +1026,7 @@ void mirtkBSplineBiasField::ConvertToInterpolationCoefficients(double* c, int Da
 	}
 }
 
-void mirtkBSplineBiasField::ComputeCoefficients(double* dbias, RealImage& coeffs)
+void BSplineBiasField::ComputeCoefficients(double* dbias, RealImage& coeffs)
 {
 	int x, y, z, NbPoles = 1;
 	double Pole[2];
@@ -1096,7 +1096,7 @@ void mirtkBSplineBiasField::ComputeCoefficients(double* dbias, RealImage& coeffs
 	delete[] data;
 }
 
-void mirtkBSplineBiasField::Read(char *name)
+void BSplineBiasField::Read(char *name)
 {
 	int i, j, k;
 	unsigned int magic_no;
@@ -1113,7 +1113,7 @@ void mirtkBSplineBiasField::Read(char *name)
 	from.ReadAsUInt(&trans_type, 1);
 
 	if ((magic_no != MIRTKBIASFIELD_MAGIC) && (trans_type != MIRTKBIASFIELD_BSPLINE)) {
-		cerr << "mirtkBSplineBiasField::Read: File format not recognized" << endl;
+		std::cerr << "BSplineBiasField::Read: File format not recognized" << std::endl;
 		exit(1);
 	}
 
@@ -1180,7 +1180,7 @@ void mirtkBSplineBiasField::Read(char *name)
 }
 
 
-void mirtkBSplineBiasField::Write(char *name)
+void BSplineBiasField::Write(char *name)
 {
 	int i, j, k;
 
@@ -1247,30 +1247,30 @@ void mirtkBSplineBiasField::Write(char *name)
 	to.Close();
 }
 
-void mirtkBSplineBiasField::Print()
+void BSplineBiasField::Print()
 {
-	cerr<<endl<<"BSplineBiasField info:" << endl;
+	std::cerr<<std::endl<<"BSplineBiasField info:" << std::endl;
 	// Write no. of control points
-	cout << "Control points: " << _x << " x " << _y << " x " << _z << endl;
-	cout << "Spacing: " << _dx << " x " << _dy << " x " << _dz << endl;
-	cout << "Origin: " << _origin._x << " " << _origin._y << " " << _origin._z << " " << endl;
-	cout << "Orientation: " << _xaxis[0] << " " << _xaxis[1] << " "
+	std::cout << "Control points: " << _x << " x " << _y << " x " << _z << std::endl;
+	std::cout << "Spacing: " << _dx << " x " << _dy << " x " << _dz << std::endl;
+	std::cout << "Origin: " << _origin._x << " " << _origin._y << " " << _origin._z << " " << std::endl;
+	std::cout << "Orientation: " << _xaxis[0] << " " << _xaxis[1] << " "
 			<< _xaxis[2] << " " << _yaxis[0] << " " << _yaxis[1] << " "
-			<< _yaxis[2] << " " << _zaxis[0] << " " << _zaxis[1] << " " << _zaxis[2] << endl;
-	cout << "B spline control points:" << endl;
+			<< _yaxis[2] << " " << _zaxis[0] << " " << _zaxis[1] << " " << _zaxis[2] << std::endl;
+	std::cout << "B spline control points:" << std::endl;
 
 	int i,j,k;
 	for (i=0; i<_z; i++) {
 		for (j=0; j<_y; j++) {
-			for (k=01; k<_x; k++) cerr << _data[i][j][k]<<" ";
-			cerr<<"     ";
+			for (k=01; k<_x; k++) std::cerr << _data[i][j][k]<<" ";
+			std::cerr<<"     ";
 		}
-		cerr<<endl;
+		std::cerr<<std::endl;
 	}
-	cerr<<endl;
+	std::cerr<<std::endl;
 }
 
-double mirtkBSplineBiasField::N(int i, double u, int L)
+double BSplineBiasField::N(int i, double u, int L)
 {
 	if((i<0)||(i>L-1)) return 0;
 	if((u<0)||(u>L-1)) return 0;

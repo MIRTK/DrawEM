@@ -18,21 +18,21 @@
  */
 
 
-#include <mirtkMatrix.h>
-#include <mirtkVector.h>
-#include <mirtkCifstream.h>
+#include "mirtk/Matrix.h"
+#include "mirtk/Vector.h"
+#include "mirtk/Cifstream.h"
 
-#include <mirtkPolynomialBiasField.h>
-#include <mirtkBiasField.h>
+#include "mirtk/PolynomialBiasField.h"
+#include "mirtk/BiasField.h"
 
 
-namespace mirtk{
+namespace mirtk {
 
-mirtkPolynomialBiasField::mirtkPolynomialBiasField()
+PolynomialBiasField::PolynomialBiasField()
 {
 }
 
-mirtkPolynomialBiasField::mirtkPolynomialBiasField(const GreyImage &image, int dop)
+PolynomialBiasField::PolynomialBiasField(const GreyImage &image, int dop)
 {
 	_dop = dop;
 	_numOfCoefficients = getNumberOfCoefficients(dop);
@@ -40,12 +40,12 @@ mirtkPolynomialBiasField::mirtkPolynomialBiasField(const GreyImage &image, int d
 	memset( _coeff, 0, sizeof(double) * _numOfCoefficients );
 }
 
-mirtkPolynomialBiasField::~mirtkPolynomialBiasField()
+PolynomialBiasField::~PolynomialBiasField()
 {
 	delete _coeff;
 }
 
-//void mirtkPolynomialBiasField::WeightedLeastSquares(double *x1, double *y1, double *z1, double *bias, double *weights, int no)
+//void PolynomialBiasField::WeightedLeastSquares(double *x1, double *y1, double *z1, double *bias, double *weights, int no)
 //{
 //	// just consider each eachs voxel...
 //	int each = 1;
@@ -54,8 +54,8 @@ mirtkPolynomialBiasField::~mirtkPolynomialBiasField()
 //	Matrix A(no, _numOfCoefficients);
 //	Vector vecB(no);
 //
-//	cout << "numOfCoefficients: " << _numOfCoefficients << endl;
-//	cout << "num of voxels: " << no << endl;
+//	std::cout << "numOfCoefficients: " << _numOfCoefficients << std::endl;
+//	std::cout << "num of voxels: " << no << std::endl;
 //
 //	for( int rr = 0; rr < no; ++rr )
 //	{
@@ -112,7 +112,7 @@ mirtkPolynomialBiasField::~mirtkPolynomialBiasField()
 //}
 
 // ALTERNATIVE IMPLEMENTATION USING symmetry of A'WA, should be by a factor of 2 faster than above implementation
-void mirtkPolynomialBiasField::WeightedLeastSquares(double *x1, double *y1, double *z1, double *bias, double *weights, int no)
+void PolynomialBiasField::WeightedLeastSquares(double *x1, double *y1, double *z1, double *bias, double *weights, int no)
 {
 	// just consider each eachs voxel...
 	int each = 3;
@@ -121,8 +121,8 @@ void mirtkPolynomialBiasField::WeightedLeastSquares(double *x1, double *y1, doub
 	Matrix A(no, _numOfCoefficients);
 	Vector vecB(no);
 
-	cout << "numOfCoefficients: " << _numOfCoefficients << endl;
-	cout << "num of voxels: " << no << endl;
+	std::cout << "numOfCoefficients: " << _numOfCoefficients << std::endl;
+	std::cout << "num of voxels: " << no << std::endl;
 
 	double* AtWA = new double[_numOfCoefficients * _numOfCoefficients];
 	memset(AtWA, 0, sizeof(double) * _numOfCoefficients * _numOfCoefficients );
@@ -208,7 +208,7 @@ void mirtkPolynomialBiasField::WeightedLeastSquares(double *x1, double *y1, doub
     }
 }
 
-double mirtkPolynomialBiasField::evaluatePolynomial(double x, double y, double z)
+double PolynomialBiasField::evaluatePolynomial(double x, double y, double z)
 {
 	double res = 0;
 	int n = 0;
@@ -236,22 +236,22 @@ double mirtkPolynomialBiasField::evaluatePolynomial(double x, double y, double z
 }
 
 
-double mirtkPolynomialBiasField::Bias(double x, double y, double z)
+double PolynomialBiasField::Bias(double x, double y, double z)
 {
 	return evaluatePolynomial(x, y, z);
 }
 
-void mirtkPolynomialBiasField::Interpolate(double* dbias)
+void PolynomialBiasField::Interpolate(double* dbias)
 {
 
 }
 
-void mirtkPolynomialBiasField::Subdivide()
+void PolynomialBiasField::Subdivide()
 {
 
 }
 
-void mirtkPolynomialBiasField::Read(char *name)
+void PolynomialBiasField::Read(char *name)
 {
 	unsigned int magic_no;
 	unsigned int trans_type;
@@ -267,7 +267,7 @@ void mirtkPolynomialBiasField::Read(char *name)
 	from.ReadAsUInt(&trans_type, 1);
 
 	if ((magic_no != MIRTKBIASFIELD_MAGIC) && (trans_type != MIRTKBIASFIELD_POLYNOMIAL)) {
-		cerr << "mirtkPolynomialBiasField::Read: File format not recognized" << endl;
+		std::cerr << "PolynomialBiasField::Read: File format not recognized" << std::endl;
 		exit(1);
 	}
 
@@ -285,7 +285,7 @@ void mirtkPolynomialBiasField::Read(char *name)
 }
 
 
-void mirtkPolynomialBiasField::Write(char *name)
+void PolynomialBiasField::Write(char *name)
 {
 	// Open file
 	Cofstream to;
@@ -308,32 +308,32 @@ void mirtkPolynomialBiasField::Write(char *name)
 	to.Close();
 }
 
-void mirtkPolynomialBiasField::Print()
+void PolynomialBiasField::Print()
 {
-	cerr<<endl<<"Polynomial Bias Field info:" << endl;
+	std::cerr<<std::endl<<"Polynomial Bias Field info:" << std::endl;
 	// Write no. of control points
-	cout << "Control points: " << _x << " x " << _y << " x " << _z << endl;
-	cout << "Spacing: " << _dx << " x " << _dy << " x " << _dz << endl;
-	cout << "Origin: " << _origin._x << " " << _origin._y << " " << _origin._z << " " << endl;
-	cout << "Orientation: " << _xaxis[0] << " " << _xaxis[1] << " "
+	std::cout << "Control points: " << _x << " x " << _y << " x " << _z << std::endl;
+	std::cout << "Spacing: " << _dx << " x " << _dy << " x " << _dz << std::endl;
+	std::cout << "Origin: " << _origin._x << " " << _origin._y << " " << _origin._z << " " << std::endl;
+	std::cout << "Orientation: " << _xaxis[0] << " " << _xaxis[1] << " "
 			<< _xaxis[2] << " " << _yaxis[0] << " " << _yaxis[1] << " "
-			<< _yaxis[2] << " " << _zaxis[0] << " " << _zaxis[1] << " " << _zaxis[2] << endl;
-	cout << _numOfCoefficients << " Coefficients:" << endl;
+			<< _yaxis[2] << " " << _zaxis[0] << " " << _zaxis[1] << " " << _zaxis[2] << std::endl;
+	std::cout << _numOfCoefficients << " Coefficients:" << std::endl;
 
 	int n;
 	for (n=0; n<_numOfCoefficients; n++) {
-		cout << _coeff[n] << " ";
+		std::cout << _coeff[n] << " ";
 	}
-	cout<<endl;
+	std::cout<<std::endl;
 }
 
 
-double mirtkPolynomialBiasField::Approximate(double *x1, double *y1, double *z1, double *bias, int no)
+double PolynomialBiasField::Approximate(double *x1, double *y1, double *z1, double *bias, int no)
 {
 	return .0;
 }
 
-int mirtkPolynomialBiasField::getNumberOfCoefficients(int dop)
+int PolynomialBiasField::getNumberOfCoefficients(int dop)
 {
 	int n = 0;
 	for( int x = dop; x >=0; --x )

@@ -19,16 +19,16 @@
  */
 
 
-#include <mirtkEMBase.h>
+#include "mirtk/EMBase.h"
 
-namespace mirtk{
+namespace mirtk {
 
-mirtkEMBase::mirtkEMBase(){
+EMBase::EMBase(){
 	InitialiseParameters();
 }
 
 template <class ImageType>
-mirtkEMBase::mirtkEMBase(int noTissues, ImageType **atlas, ImageType *background)
+EMBase::EMBase(int noTissues, ImageType **atlas, ImageType *background)
 {
 	InitialiseParameters();
 	_atlas.AddProbabilityMaps(noTissues, atlas);
@@ -37,7 +37,7 @@ mirtkEMBase::mirtkEMBase(int noTissues, ImageType **atlas, ImageType *background
 }
 
 template <class ImageType>
-mirtkEMBase::mirtkEMBase(int noTissues, ImageType **atlas)
+EMBase::EMBase(int noTissues, ImageType **atlas)
 {
 	InitialiseParameters();
 	_atlas.AddProbabilityMaps(noTissues, atlas);
@@ -45,7 +45,7 @@ mirtkEMBase::mirtkEMBase(int noTissues, ImageType **atlas)
 }
 
 template <class ImageType>
-mirtkEMBase::mirtkEMBase(int noTissues, ImageType **atlas, ImageType **initposteriors)
+EMBase::EMBase(int noTissues, ImageType **atlas, ImageType **initposteriors)
 {
 	InitialiseParameters();
 	_atlas.AddProbabilityMaps(noTissues, atlas);
@@ -55,7 +55,7 @@ mirtkEMBase::mirtkEMBase(int noTissues, ImageType **atlas, ImageType **initposte
 }
 
 
-mirtkEMBase::~mirtkEMBase()
+EMBase::~EMBase()
 {
 	if (_G!=NULL) delete []_G;
 	delete []_mi;
@@ -63,7 +63,7 @@ mirtkEMBase::~mirtkEMBase()
 	delete []_c;
 }
 
-void mirtkEMBase::InitialiseParameters(){
+void EMBase::InitialiseParameters(){
 	_padding = MIN_GREY;
 	_number_of_voxels = 0;
 	_number_of_tissues = 0;
@@ -79,7 +79,7 @@ void mirtkEMBase::InitialiseParameters(){
 	_mask_set=false;
 }
 
-void mirtkEMBase::SetInput(const RealImage &image)
+void EMBase::SetInput(const RealImage &image)
 {
 	_input = image;
 	_estimate = image;
@@ -87,7 +87,7 @@ void mirtkEMBase::SetInput(const RealImage &image)
     _number_of_voxels=_input.GetNumberOfVoxels();
 }
 
-void mirtkEMBase::CreateMask()
+void EMBase::CreateMask()
 {
 	_atlas.First();
     if(!_mask_set){
@@ -117,13 +117,13 @@ void mirtkEMBase::CreateMask()
     _mask_set = true;
 }
 
-void mirtkEMBase::SetMask(ByteImage &mask)
+void EMBase::SetMask(ByteImage &mask)
 {
 	_mask=mask;
 	_mask_set = true;
 }
 
-void mirtkEMBase::Initialise()
+void EMBase::Initialise()
 {
 	_number_of_tissues = _atlas.GetNumberOfMaps();
 
@@ -141,7 +141,7 @@ void mirtkEMBase::Initialise()
 	Print();
 }
 
-void mirtkEMBase::InitialiseGMM()
+void EMBase::InitialiseGMM()
 {
 	_atlas.NormalizeAtlas();
 	if(!_posteriors_set) _output = _atlas;
@@ -152,13 +152,13 @@ void mirtkEMBase::InitialiseGMM()
 }
 
 
-void mirtkEMBase::setPostPenalty(RealImage &pp){
+void EMBase::setPostPenalty(RealImage &pp){
     _postpenalty=pp;
     _postpen=true;
 }
 
 
-void mirtkEMBase::UniformPrior()
+void EMBase::UniformPrior()
 {
 	int i, k;
 
@@ -175,10 +175,10 @@ void mirtkEMBase::UniformPrior()
 	}
 }
 
-void mirtkEMBase::InitialiseGMMParameters(int n)
+void EMBase::InitialiseGMMParameters(int n)
 {
 	int i;
-    cout <<"Estimating GMM parameters ... ";
+    std::cout <<"Estimating GMM parameters ... ";
 	RealPixel imin, imax;
     _input.GetMinMaxPad(&imin, &imax,_padding);
 	_number_of_tissues=n;
@@ -194,7 +194,7 @@ void mirtkEMBase::InitialiseGMMParameters(int n)
 }
 
 
-void mirtkEMBase::InitialiseGMMParameters(int n, double *m, double *s, double *c)
+void EMBase::InitialiseGMMParameters(int n, double *m, double *s, double *c)
 {
 	int i;
 
@@ -214,9 +214,9 @@ void mirtkEMBase::InitialiseGMMParameters(int n, double *m, double *s, double *c
 	EStepGMM();
 }
 
-void mirtkEMBase::MStep()
+void EMBase::MStep()
 {
-    cout << "M-step" << endl;
+    std::cout << "M-step" << std::endl;
 	int i, k;
     double mi_num[_number_of_tissues];
     double sigma_num[_number_of_tissues];
@@ -287,7 +287,7 @@ void mirtkEMBase::MStep()
 		if (denom[k] != 0) {
 			_mi[k] = mi_num[k] / denom[k];
 		} else {
-            cerr << "Division by zero while computing tissue mean!" << endl;
+            std::cerr << "Division by zero while computing tissue mean!" << std::endl;
 			exit(1);
 		}
 	}
@@ -338,15 +338,15 @@ void mirtkEMBase::MStep()
 	}
 }
 
-void mirtkEMBase::EStep()
+void EMBase::EStep()
 {
-    cout << "E-step" << endl;
+    std::cout << "E-step" << std::endl;
 	int i, k;
 	double x;
 
 	RealImage segmentation;
 
-	mirtkGaussian* G = new mirtkGaussian[_number_of_tissues];
+	Gaussian* G = new Gaussian[_number_of_tissues];
 
 	for (k = 0; k < _number_of_tissues; k++) {
 		G[k].Initialise( _mi[k], _sigma[k]);
@@ -405,7 +405,7 @@ void mirtkEMBase::EStep()
 					if ((value < 0) || (value > 1)) {
 						int x,y,z;
 						_input.IndexToVoxel(i, x, y, z);
-						cerr << "Probability value = " << value <<" @ Estep at voxel "<< x<<" "<<y<<" "<<z<< ", structure " << k << endl;
+						std::cerr << "Probability value = " << value <<" @ Estep at voxel "<< x<<" "<<y<<" "<<z<< ", structure " << k << std::endl;
 						if (value < 0)value=0;
 						if (value > 1)value=1;
 					}_output.SetValue(k, value);
@@ -417,7 +417,7 @@ void mirtkEMBase::EStep()
             if (denominator == 0) {
                 int x,y,z;
                 _input.IndexToVoxel(i, x, y, z);
-                cerr<<"Division by 0 while computing probabilities at voxel "<<x<<","<<y<<","<<z<<endl;
+                std::cerr<<"Division by 0 while computing probabilities at voxel "<<x<<","<<y<<","<<z<<std::endl;
             }
 		} else {
 			for (k = 0; k < _number_of_tissues ; k++) {
@@ -435,12 +435,12 @@ void mirtkEMBase::EStep()
 }
 
 
-void mirtkEMBase::WStep()
+void EMBase::WStep()
 {
-    cout << "W-step" << endl;
+    std::cout << "W-step" << std::endl;
 	int i,k;
 	double num, den;
-    cout<<"Calculating weights ...";
+    std::cout<<"Calculating weights ...";
 	RealPixel *pi=_input.GetPointerToVoxels();
     RealPixel *pw=_weights.GetPointerToVoxels();
 	RealPixel *pe=_estimate.GetPointerToVoxels();
@@ -475,26 +475,26 @@ void mirtkEMBase::WStep()
 		_output.Next();
 		_atlas.Next();
 	}
-    cout<<"done."<<endl;
+    std::cout<<"done."<<std::endl;
 }
 
-void mirtkEMBase::GetMean(double *mean){
+void EMBase::GetMean(double *mean){
 	int i;
 	for(i=0;i<_number_of_tissues;i++){
 		mean[i] = _mi[i];
 	}
 }
 
-void mirtkEMBase::GetVariance(double *variance){
+void EMBase::GetVariance(double *variance){
 	int i;
 	for(i=0;i<_number_of_tissues;i++){
 		variance[i] = sqrt(_sigma[i]);
 	}
 }
 
-void mirtkEMBase::MStepGMM(bool uniform_prior)
+void EMBase::MStepGMM(bool uniform_prior)
 {
-    cout << "M-step GMM" << endl;
+    std::cout << "M-step GMM" << std::endl;
 	int i, k;
     double mi_num[_number_of_tissues];
     double sigma_num[_number_of_tissues];
@@ -543,7 +543,7 @@ void mirtkEMBase::MStepGMM(bool uniform_prior)
 		if (denom[k] != 0) {
 			_mi[k] = mi_num[k] / denom[k];
 		} else {
-			cerr <<"Tissue "<< k <<": Division by zero while computing tissue mean!" << endl;
+			std::cerr <<"Tissue "<< k <<": Division by zero while computing tissue mean!" << std::endl;
 			exit(1);
 		}
 		if (uniform_prior) _c[k]=1.0/_number_of_tissues;
@@ -582,9 +582,9 @@ void mirtkEMBase::MStepGMM(bool uniform_prior)
 	}
 }
 
-void mirtkEMBase::MStepVarGMM(bool uniform_prior)
+void EMBase::MStepVarGMM(bool uniform_prior)
 {
-    cout << "M-step VarGMM" << endl;
+    std::cout << "M-step VarGMM" << std::endl;
 	int i, k;
     double mi_num[_number_of_tissues];
     double denom[_number_of_tissues];
@@ -631,7 +631,7 @@ void mirtkEMBase::MStepVarGMM(bool uniform_prior)
 		if (denom[k] != 0) {
 			_mi[k] = mi_num[k] / denom[k];
 		} else {
-           		cerr << "Division by zero while computing tissue mean!" << endl;
+           		std::cerr << "Division by zero while computing tissue mean!" << std::endl;
 			exit(1);
 		}
 		if (uniform_prior) _c[k]=1.0/_number_of_tissues;
@@ -674,14 +674,14 @@ void mirtkEMBase::MStepVarGMM(bool uniform_prior)
 
 
 
-void mirtkEMBase::EStepGMM(bool uniform_prior)
+void EMBase::EStepGMM(bool uniform_prior)
 {
-    cout << "E-step GMM" << endl;
+    std::cout << "E-step GMM" << std::endl;
 	int i, k;
 	double x;
 	double *gv = new double[_number_of_tissues];
 	double *numerator = new double[_number_of_tissues];
-	mirtkGaussian *G = new mirtkGaussian[_number_of_tissues];
+	Gaussian *G = new Gaussian[_number_of_tissues];
 
 	for (k = 0; k < _number_of_tissues; k++) {
 		G[k].Initialise( _mi[k], _sigma[k]);
@@ -709,7 +709,7 @@ void mirtkEMBase::EStepGMM(bool uniform_prior)
 					if ((value < 0) || (value > 1)) {
 						int x,y,z;
 						_input.IndexToVoxel(i, x, y, z);
-						cerr << "Probability value = " << value <<" @ Estep gmm at voxel "<< x<<" "<<y<<" "<<z<< ", structure " << k << endl;
+						std::cerr << "Probability value = " << value <<" @ Estep gmm at voxel "<< x<<" "<<y<<" "<<z<< ", structure " << k << std::endl;
 						if (value < 0)value=0;
 						if (value > 1)value=1;
 					}_output.SetValue(k, value);
@@ -721,7 +721,7 @@ void mirtkEMBase::EStepGMM(bool uniform_prior)
             if (denominator <= 0) {
                 int x,y,z;
                 _input.IndexToVoxel(i, x, y, z);
-                 cerr<<"Division by 0 while computing probabilities at voxel "<<x<<","<<y<<","<<z<<endl;
+                 std::cerr<<"Division by 0 while computing probabilities at voxel "<<x<<","<<y<<","<<z<<std::endl;
             }
 
 		} else {
@@ -739,36 +739,36 @@ void mirtkEMBase::EStepGMM(bool uniform_prior)
 	delete[] numerator;
 }
 
-void mirtkEMBase::Print()
+void EMBase::Print()
 {
 	int k;
 
-    cout << "mean:";
+    std::cout << "mean:";
 	for (k = 0;  k <_number_of_tissues; k++) {
-        cout << " " << k << ": " << _mi[k];
+        std::cout << " " << k << ": " << _mi[k];
     }
-    cout << endl;
+    std::cout << std::endl;
 
-    cout << "sigma:";
+    std::cout << "sigma:";
 	for (k = 0; k < _number_of_tissues; k++) {
-        cout << " " << k << ": " << sqrt(_sigma[k]);
+        std::cout << " " << k << ": " << sqrt(_sigma[k]);
 	}
-    cout << endl;
+    std::cout << std::endl;
 }
 
-void mirtkEMBase::PrintGMM()
+void EMBase::PrintGMM()
 {
 	int k;
 	Print();
-    cout << "c:";
+    std::cout << "c:";
 	for (k = 0; k < _number_of_tissues; k++) {
-        cout << " " << k << ": " << _c[k];
+        std::cout << " " << k << ": " << _c[k];
     }
-    cout << endl;
+    std::cout << std::endl;
 
 }
 
-double mirtkEMBase::Iterate(int)
+double EMBase::Iterate(int)
 {
 	this->EStep();
 	this->MStep();
@@ -776,7 +776,7 @@ double mirtkEMBase::Iterate(int)
 	return LogLikelihood();
 }
 
-double mirtkEMBase::IterateGMM(int iteration, bool equal_var, bool uniform_prior)
+double EMBase::IterateGMM(int iteration, bool equal_var, bool uniform_prior)
 {
 	if (iteration > 1) this->EStepGMM();
 	if (equal_var) this->MStepVarGMM(uniform_prior);
@@ -786,12 +786,12 @@ double mirtkEMBase::IterateGMM(int iteration, bool equal_var, bool uniform_prior
 	return LogLikelihoodGMM();
 }
 
-double mirtkEMBase::LogLikelihood()
+double EMBase::LogLikelihood()
 {
 	int i, k;
 	double temp, f;
-    cout<< "Log likelihood: ";
-	mirtkGaussian* G = new mirtkGaussian[_number_of_tissues];
+    std::cout<< "Log likelihood: ";
+	Gaussian* G = new Gaussian[_number_of_tissues];
 	double* gv = new double[_number_of_tissues];
 
 	for (k = 0; k < _number_of_tissues; k++) {
@@ -841,19 +841,19 @@ double mirtkEMBase::LogLikelihood()
 
 	_f=f;
 
-    cout << "f= "<< f << " diff = " << diff << " rel_diff = " << rel_diff <<endl;
+    std::cout << "f= "<< f << " diff = " << diff << " rel_diff = " << rel_diff <<std::endl;
 	delete[] G;
 	delete[] gv;
 
 	return rel_diff;
 }
 
-double mirtkEMBase::LogLikelihoodGMM()
+double EMBase::LogLikelihoodGMM()
 {
 	int i, k;
 	double temp, f;
-    cout<< "Log likelihood GMM: ";
-	mirtkGaussian* G = new mirtkGaussian[_number_of_tissues];
+    std::cout<< "Log likelihood GMM: ";
+	Gaussian* G = new Gaussian[_number_of_tissues];
 	double* gv = new double[_number_of_tissues];
 
 	for (k = 0; k < _number_of_tissues; k++) {
@@ -892,19 +892,19 @@ double mirtkEMBase::LogLikelihoodGMM()
 
 	_f=f;
 
-    cout << "f= "<< f << " diff = " << diff << " rel_diff = " << rel_diff <<endl;
+    std::cout << "f= "<< f << " diff = " << diff << " rel_diff = " << rel_diff <<std::endl;
 	delete[] G;
 	delete[] gv;
 
 	return rel_diff;
 }
 
-void mirtkEMBase::ConstructSegmentation(IntegerImage &segmentation)
+void EMBase::ConstructSegmentation(IntegerImage &segmentation)
 {
     int i, j, m;
     RealPixel max;
 
-    cout<<"Constructing segmentation"<<endl;
+    std::cout<<"Constructing segmentation"<<std::endl;
 
     // Initialize pointers of probability maps
     _output.First();
@@ -933,7 +933,7 @@ void mirtkEMBase::ConstructSegmentation(IntegerImage &segmentation)
                 index -= z * (_input.GetX() * _input.GetY());
                 x = index % _input.GetX();
                 y = index / _input.GetX();
-                cerr<<"voxel at "<<x<<","<<y<<","<<z<<" has 0 prob"<<endl;
+                std::cerr<<"voxel at "<<x<<","<<y<<","<<z<<" has 0 prob"<<std::endl;
             }
         }
         *sptr = m;
@@ -944,40 +944,40 @@ void mirtkEMBase::ConstructSegmentation(IntegerImage &segmentation)
     }
 }
 
-void mirtkEMBase::ConstructSegmentation()
+void EMBase::ConstructSegmentation()
 {
 	ConstructSegmentation(_segmentation);
 }
 
 
-void mirtkEMBase::GetProbMap(int i,RealImage& image){
+void EMBase::GetProbMap(int i,RealImage& image){
 	if  (i < _number_of_tissues) {
 		image= _output.GetImage(i);
 	} else {
-		cerr << "mirtkHashProbabilisticAtlas::Write: No such probability map" << endl;
+		std::cerr << "HashProbabilisticAtlas::Write: No such probability map" << std::endl;
 		exit(1);
 	}
 }
 
-void mirtkEMBase::WriteProbMap(int i, const char *filename)
+void EMBase::WriteProbMap(int i, const char *filename)
 {
 	if  (i < _number_of_tissues) {
 		HashRealImage image= _output.GetImage(i);
 		image.Write(filename);
 	} else {
-		cerr << "mirtkHashProbabilisticAtlas::Write: No such probability map" << endl;
+		std::cerr << "HashProbabilisticAtlas::Write: No such probability map" << std::endl;
 		exit(1);
 	}
 }
 
-void mirtkEMBase::WriteGaussianParameters(const char *file_name, int flag)
+void EMBase::WriteGaussianParameters(const char *file_name, int flag)
 {
-    cout << "Writing GaussianDistributionParameters: " << file_name << endl;
+    std::cout << "Writing GaussianDistributionParameters: " << file_name << std::endl;
 
 	ofstream fileOut(file_name);
 
 	if (!fileOut) {
-		cerr << "Can't open file " << file_name << endl;
+		std::cerr << "Can't open file " << file_name << std::endl;
 		exit(1);
 	}
 
@@ -986,24 +986,24 @@ void mirtkEMBase::WriteGaussianParameters(const char *file_name, int flag)
 	if(flag){
 		// out put without names
 		for (k=0; k<_number_of_tissues; k++) {
-			fileOut << _mi[k] << " " << _sigma[k] << endl;
+			fileOut << _mi[k] << " " << _sigma[k] << std::endl;
 		}
 	}else{
 		// out put with names
-		fileOut << "mi: " <<endl;
+		fileOut << "mi: " <<std::endl;
 		for (k=0; k<_number_of_tissues; k++) {
 			fileOut << "Tissue " << k << ": (";
 			for (l=0; l < 1/*_input.GetNumberOfChannels()*/; l++) {
 				fileOut << _mi[k];//.Get(l);
-				if (l == 0/*_input.GetNumberOfChannels() - 1*/) fileOut << ")" << endl;
+				if (l == 0/*_input.GetNumberOfChannels() - 1*/) fileOut << ")" << std::endl;
 				else fileOut << ", ";
 			}
 		}
 
-		fileOut << "sigma: " << endl;
+		fileOut << "sigma: " << std::endl;
 		for (k=0; k<_number_of_tissues; k++) {
 			fileOut << "Tissue " << k << ": (";
-			//<<endl << "(";
+			//<<std::endl << "(";
 
 			for (l=0; l < 1/*_input.GetNumberOfChannels()*/; l++) {
 				//fileOut << "(";
@@ -1013,13 +1013,13 @@ void mirtkEMBase::WriteGaussianParameters(const char *file_name, int flag)
                     else fileOut << -sqrt(-s);
 				}
 			}
-			//if (l == 0/*_input.GetNumberOfChannels() - 1*/) fileOut << ")" << endl;
-			fileOut <<  ")" << endl;
+			//if (l == 0/*_input.GetNumberOfChannels() - 1*/) fileOut << ")" << std::endl;
+			fileOut <<  ")" << std::endl;
 		}
 	}
 }
 
-void mirtkEMBase::WriteWeights(const char *filename)
+void EMBase::WriteWeights(const char *filename)
 {
 	RealImage w(_weights);
 	RealPixel *pw = w.GetPointerToVoxels();
@@ -1027,7 +1027,7 @@ void mirtkEMBase::WriteWeights(const char *filename)
 	double sigma_min=_sigma[0];
 
 	for (i=1; i<_number_of_tissues; i++) if (sigma_min > _sigma[i]) sigma_min = _sigma[i];
-	cerr<<"sigma min = "<<sigma_min<<endl;
+	std::cerr<<"sigma min = "<<sigma_min<<std::endl;
 
 	for (i=0; i<w.GetNumberOfVoxels(); i++) {
 		if (*pw != _padding) *pw=(*pw) * sigma_min * 100;
@@ -1037,7 +1037,7 @@ void mirtkEMBase::WriteWeights(const char *filename)
 	w.Write(filename);
 }
 
-double mirtkEMBase::PointLogLikelihoodGMM(double x)
+double EMBase::PointLogLikelihoodGMM(double x)
 {
 	int k;
 	double temp=0;
@@ -1046,17 +1046,17 @@ double mirtkEMBase::PointLogLikelihoodGMM(double x)
 	if (-log(temp)> 1000000) exit(1);
 
 	if ((temp > 1) || (temp < 0)) {
-		cerr << "Could not compute likelihood, probability out of range = " << temp << endl;
+		std::cerr << "Could not compute likelihood, probability out of range = " << temp << std::endl;
 		exit(1);
 	}
 	return -log(temp);
 }
 
 
-void mirtkEMBase::GInit()
+void EMBase::GInit()
 {
 	if (_G!=NULL) delete[] _G;
-	_G = new mirtkGaussian[_number_of_tissues];
+	_G = new Gaussian[_number_of_tissues];
 
 	for (int k = 0; k < _number_of_tissues; k++) {
 		_G[k].Initialise( _mi[k], _sigma[k]);
@@ -1065,13 +1065,13 @@ void mirtkEMBase::GInit()
 
 
 
-void mirtkEMBase::setSuperlabels(int *superlabels){
+void EMBase::setSuperlabels(int *superlabels){
 	_super=superlabels;
 	_superlabels=true;
 }
 
 
-void mirtkEMBase::GetProportions(double *proportions){
+void EMBase::GetProportions(double *proportions){
 	int i;
 	for(i=0;i<_number_of_tissues;i++){
 		proportions[i] =  _c[i];
@@ -1081,16 +1081,16 @@ void mirtkEMBase::GetProportions(double *proportions){
 
 
 
-template mirtkEMBase::mirtkEMBase(int, RealImage **, RealImage *);
-template mirtkEMBase::mirtkEMBase(int, HashRealImage **, HashRealImage *);
-template mirtkEMBase::mirtkEMBase(int, RealImage **);
-template mirtkEMBase::mirtkEMBase(int, HashRealImage **);
-template mirtkEMBase::mirtkEMBase(int, RealImage **, RealImage **);
-template mirtkEMBase::mirtkEMBase(int, HashRealImage **, HashRealImage **);
+template EMBase::EMBase(int, RealImage **, RealImage *);
+template EMBase::EMBase(int, HashRealImage **, HashRealImage *);
+template EMBase::EMBase(int, RealImage **);
+template EMBase::EMBase(int, HashRealImage **);
+template EMBase::EMBase(int, RealImage **, RealImage **);
+template EMBase::EMBase(int, HashRealImage **, HashRealImage **);
 
-template void mirtkEMBase::addProbabilityMap(RealImage image);
-template void mirtkEMBase::addProbabilityMap(HashRealImage image);
-template void mirtkEMBase::addBackground(RealImage image);
-template void mirtkEMBase::addBackground(HashRealImage image);
+template void EMBase::addProbabilityMap(RealImage image);
+template void EMBase::addProbabilityMap(HashRealImage image);
+template void EMBase::addBackground(RealImage image);
+template void EMBase::addBackground(HashRealImage image);
 
 }

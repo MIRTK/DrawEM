@@ -18,14 +18,14 @@
  */
 
 
-#ifndef _mirtkHashProbabilisticAtlas_H
+#ifndef _HashProbabilisticAtlas_H
 
-#define _mirtkHashProbabilisticAtlas_H
+#define _HashProbabilisticAtlas_H
 
-#include <mirtkObject.h>
+#include "mirtk/Object.h"
 
-#include <mirtkImage.h>
-#include <mirtkHashImage.h>
+#include "mirtk/Image.h"
+#include "mirtk/HashImage.h"
 
 #include <vector>
 
@@ -36,14 +36,14 @@ Atlas probability mapnr class
 
  */
 using namespace std;
-namespace mirtk{
+namespace mirtk {
 
 
-class mirtkHashProbabilisticAtlas : public Object
+class HashProbabilisticAtlas : public Object
 {
 	typedef HashImage<int> HashIntegerImage;
 
-	mirtkObjectMacro(mirtkHashProbabilisticAtlas);
+	mirtkObjectMacro(HashProbabilisticAtlas);
 
 	// Vector of probability maps
 	vector<HashRealImage*> _images;
@@ -66,13 +66,13 @@ class mirtkHashProbabilisticAtlas : public Object
 public:
 
 	// Constructor
-	mirtkHashProbabilisticAtlas();
+	HashProbabilisticAtlas();
 
 	// Destructor
-	~mirtkHashProbabilisticAtlas();
+	~HashProbabilisticAtlas();
 
 	// Copy operator
-	mirtkHashProbabilisticAtlas& operator=(const mirtkHashProbabilisticAtlas &atlas);
+	HashProbabilisticAtlas& operator=(const HashProbabilisticAtlas &atlas);
 
 	// swap images within atlas
 	void SwapImages(int, int);
@@ -143,85 +143,85 @@ public:
 
 };
 
-inline void mirtkHashProbabilisticAtlas::First(){
+inline void HashProbabilisticAtlas::First(){
 	_position=0;
 }
 
-inline void mirtkHashProbabilisticAtlas::Next(){
+inline void HashProbabilisticAtlas::Next(){
 	_position++;
 }
 
-inline RealPixel mirtkHashProbabilisticAtlas::GetValue(unsigned int mapnr){
+inline RealPixel HashProbabilisticAtlas::GetValue(unsigned int mapnr){
 	if (mapnr < _images.size()) return _images[mapnr]->Get(_position);
 	else {
-		cerr << "map identificator " << mapnr <<" out of range." <<endl;
+		std::cerr << "map identificator " << mapnr <<" out of range." <<std::endl;
 		exit(1);
 	}
 }
 
-inline RealPixel mirtkHashProbabilisticAtlas::GetValue(int x, int y, int z, unsigned int mapnr){
+inline RealPixel HashProbabilisticAtlas::GetValue(int x, int y, int z, unsigned int mapnr){
 	if (mapnr < _images.size()) return _images[mapnr]->Get(x,y,z);
 	else {
-		cerr << "map identificator " << mapnr <<" out of range." <<endl;
+		std::cerr << "map identificator " << mapnr <<" out of range." <<std::endl;
 		exit(1);
 	}
 }
 
-inline void mirtkHashProbabilisticAtlas::SetValue(unsigned int mapnr, RealPixel value){
+inline void HashProbabilisticAtlas::SetValue(unsigned int mapnr, RealPixel value){
 	if (mapnr < _images.size()) _images[mapnr]->Put(_position, value);
 	else {
-		cerr << "map identificator " << mapnr << " out of range." <<endl;
+		std::cerr << "map identificator " << mapnr << " out of range." <<std::endl;
 		exit(1);
 	}
 }
 
-inline void mirtkHashProbabilisticAtlas::SetValue(int x, int y, int z, unsigned int mapnr, RealPixel value){
+inline void HashProbabilisticAtlas::SetValue(int x, int y, int z, unsigned int mapnr, RealPixel value){
 	if (mapnr < _images.size()) _images[mapnr]->Put(x,y,z, value);
 	else {
-		cerr << "map identificator " << mapnr <<" out of range." <<endl;
+		std::cerr << "map identificator " << mapnr <<" out of range." <<std::endl;
 		exit(1);
 	}
 }
 
-inline int mirtkHashProbabilisticAtlas::GetNumberOfVoxels() const{
+inline int HashProbabilisticAtlas::GetNumberOfVoxels() const{
 	return _number_of_voxels;
 }
 
-inline int mirtkHashProbabilisticAtlas::GetNumberOfMaps() const{
+inline int HashProbabilisticAtlas::GetNumberOfMaps() const{
 	return _number_of_maps;
 }
 
-inline bool mirtkHashProbabilisticAtlas::HasBackground() const{
+inline bool HashProbabilisticAtlas::HasBackground() const{
 	return _has_background;
 }
 
 template <class ImageType>
-inline void mirtkHashProbabilisticAtlas::AddBackground(ImageType image){
+inline void HashProbabilisticAtlas::AddBackground(ImageType image){
 	AddImage(image);
 	_has_background=true;
 }
 
-inline HashRealImage mirtkHashProbabilisticAtlas::GetImage(unsigned int mapnr) const{
+inline HashRealImage HashProbabilisticAtlas::GetImage(unsigned int mapnr) const{
     if (mapnr < _images.size()) return *_images[mapnr];
     else {
-        cerr << "map identificator " << mapnr <<" out of range." <<endl;
+        std::cerr << "map identificator " << mapnr <<" out of range." <<std::endl;
         exit(1);
     }
 }
 
-inline HashRealImage::DataIterator mirtkHashProbabilisticAtlas::Begin(unsigned int mapnr) const
+inline HashRealImage::DataIterator HashProbabilisticAtlas::Begin(unsigned int mapnr) const
 {
     if (mapnr < _images.size()) return _images[mapnr]->Begin();
     else {
-        cerr << "map identificator " << mapnr <<" out of range." <<endl;
+        std::cerr << "map identificator " << mapnr <<" out of range." <<std::endl;
         exit(1);
     }
 }
-inline HashRealImage::DataIterator mirtkHashProbabilisticAtlas::End(unsigned int mapnr) const
+inline HashRealImage::DataIterator HashProbabilisticAtlas::End(unsigned int mapnr) const
 {
     if (mapnr < _images.size()) return _images[mapnr]->End();
     else {
-        cerr << "map identificator " << mapnr <<" out of range." <<endl;
+        std::cerr << "map identificator " << mapnr <<" out of range." <<std::endl;
         exit(1);
     }
 }

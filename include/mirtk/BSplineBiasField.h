@@ -22,16 +22,16 @@
 
 #define _MIRTKBSPLINEBIASFIELD_H
 
-//#include <mirtkGeometry.h>
-#include <mirtkBiasField.h>
+//#include "mirtk/Geometry.h"
+#include "mirtk/BiasField.h"
 
 #define BIASLOOKUPTABLESIZE 1000
 
-namespace mirtk{
+namespace mirtk {
 
-class mirtkBSplineBiasField : public mirtkBiasField
+class BSplineBiasField : public BiasField
 {
-	mirtkObjectMacro(mirtkBSplineBiasField);
+	mirtkObjectMacro(BSplineBiasField);
 
 protected:
 
@@ -116,19 +116,19 @@ public:
 	static double B_II(int, double);
 
 	/// Constructor
-	mirtkBSplineBiasField();
+	BSplineBiasField();
 
 	/// Constructor
-	mirtkBSplineBiasField(const GreyImage &image, double dx, double dy, double dz);
+	BSplineBiasField(const GreyImage &image, double dx, double dy, double dz);
 
 	/// Contructor
-	mirtkBSplineBiasField(const GreyImage &image, int x, int y, int z, bool bounding_box = false, int padding = -1);
+	BSplineBiasField(const GreyImage &image, int x, int y, int z, bool bounding_box = false, int padding = -1);
 
 	/// Copy Constructor
-	mirtkBSplineBiasField(const class mirtkBSplineBiasField &);
+	BSplineBiasField(const class BSplineBiasField &);
 
 	/// Destructor
-	virtual ~mirtkBSplineBiasField();
+	virtual ~BSplineBiasField();
 
 	/// Returns the size of the B-spline lookup table
 	virtual int LUTSize() const;
@@ -176,7 +176,7 @@ public:
 	virtual int Ind(int, int, int);
 };
 
-inline int mirtkBSplineBiasField::Ind(int a, int b, int c)
+inline int BSplineBiasField::Ind(int a, int b, int c)
 {
 	if(a<0) return -1;
 	if(b<0) return -1;
@@ -188,7 +188,7 @@ inline int mirtkBSplineBiasField::Ind(int a, int b, int c)
 	return a+b*_x+c*_y*_x;
 }
 
-inline double mirtkBSplineBiasField::B(int i, double t)
+inline double BSplineBiasField::B(int i, double t)
 {
 	switch (i) {
 	case 0:
@@ -203,7 +203,7 @@ inline double mirtkBSplineBiasField::B(int i, double t)
 	return 0;
 }
 
-/*inline double mirtkBSplineBiasField::N(int i, double u, int L)
+/*inline double BSplineBiasField::N(int i, double u, int L)
 {
 	if((i<0)||(i>L-1)) return 0;
 	if((u<0)||(u>L-1)) return 0;
@@ -349,7 +349,7 @@ inline double mirtkBSplineBiasField::B(int i, double t)
   }
  */
 
-inline double mirtkBSplineBiasField::B_I(int i, double t)
+inline double BSplineBiasField::B_I(int i, double t)
 {
 	switch (i) {
 	case 0:
@@ -364,7 +364,7 @@ inline double mirtkBSplineBiasField::B_I(int i, double t)
 	return 0;
 }
 
-inline double mirtkBSplineBiasField::B_II(int i, double t)
+inline double BSplineBiasField::B_II(int i, double t)
 {
 	switch (i) {
 	case 0:
@@ -379,72 +379,72 @@ inline double mirtkBSplineBiasField::B_II(int i, double t)
 	return 0;
 }
 
-inline double mirtkBSplineBiasField::B0(double t)
+inline double BSplineBiasField::B0(double t)
 {
 	return (1-t)*(1-t)*(1-t)/6.0;
 }
 
-inline double mirtkBSplineBiasField::B1(double t)
+inline double BSplineBiasField::B1(double t)
 {
 	return (3*t*t*t - 6*t*t + 4)/6.0;
 }
 
-inline double mirtkBSplineBiasField::B2(double t)
+inline double BSplineBiasField::B2(double t)
 {
 	return (-3*t*t*t + 3*t*t + 3*t + 1)/6.0;
 }
 
-inline double mirtkBSplineBiasField::B3(double t)
+inline double BSplineBiasField::B3(double t)
 {
 	return (t*t*t)/6.0;
 }
 
-inline double mirtkBSplineBiasField::B0_I(double t)
+inline double BSplineBiasField::B0_I(double t)
 {
 	return -(1-t)*(1-t)/2.0;
 }
 
-inline double mirtkBSplineBiasField::B1_I(double t)
+inline double BSplineBiasField::B1_I(double t)
 {
 	return (9*t*t - 12*t)/6.0;
 }
 
-inline double mirtkBSplineBiasField::B2_I(double t)
+inline double BSplineBiasField::B2_I(double t)
 {
 	return (-9*t*t + 6*t + 3)/6.0;
 }
 
-inline double mirtkBSplineBiasField::B3_I(double t)
+inline double BSplineBiasField::B3_I(double t)
 {
 	return (t*t)/2.0;
 }
 
-inline double mirtkBSplineBiasField::B0_II(double t)
+inline double BSplineBiasField::B0_II(double t)
 {
 	return 1 - t;
 }
 
-inline double mirtkBSplineBiasField::B1_II(double t)
+inline double BSplineBiasField::B1_II(double t)
 {
 	return 3*t - 2;
 }
 
-inline double mirtkBSplineBiasField::B2_II(double t)
+inline double BSplineBiasField::B2_II(double t)
 {
 	return -3*t + 1;
 }
 
-inline double mirtkBSplineBiasField::B3_II(double t)
+inline double BSplineBiasField::B3_II(double t)
 {
 	return t;
 }
 
-inline int mirtkBSplineBiasField::LUTSize() const
+inline int BSplineBiasField::LUTSize() const
 {
 	return BIASLOOKUPTABLESIZE;
 }
 
-inline double mirtkBSplineBiasField::Bias(double x, double y, double z)
+inline double BSplineBiasField::Bias(double x, double y, double z)
 {
 	double u, v, w;
 
@@ -475,7 +475,7 @@ inline double mirtkBSplineBiasField::Bias(double x, double y, double z)
 
 }
 
-inline double mirtkBSplineBiasField::Bias2(double x, double y, double z)
+inline double BSplineBiasField::Bias2(double x, double y, double z)
 {
 	double u, v, w;
 

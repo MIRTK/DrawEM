@@ -17,15 +17,32 @@
  */
 
 
-#include <mirtkGaussian.h>
+#ifndef _ImageHistogram1D_H
+
+#define _ImageHistogram1D_H
+
+#include "mirtk/Histogram1D.h"
+#include "mirtk/GenericImage.h"
 
 namespace mirtk {
 
-void mirtkGaussian::Initialise(const double &mi, const double &sigma)
+template <class VoxelType> 
+class ImageHistogram1D : public Histogram1D<VoxelType>
 {
-	_mi = mi;
-	_sigma = sigma;
-	_norm = 1.0 / (sqrt(sigma) * sqrt(M_PI*2.0));
-}
+protected:
+    /// min for equalize
+    VoxelType _emin;
+    /// max for equalize
+    VoxelType _emax;
+
+public:
+	/// Evaluate the histogram from a given image with padding value
+	virtual void Evaluate(GenericImage<VoxelType> *, VoxelType padding = -10000);
+	/// Histogram Equalization
+	virtual void Equalize(VoxelType min,VoxelType max);
+	/// Back project the equalized histogram to image
+	virtual void BackProject(GenericImage<VoxelType> *); 
+};
 
 }
+#endif

@@ -18,10 +18,10 @@
  */
 
 
-#include <mirtkBiasCorrection.h>
-namespace mirtk{
+#include "mirtk/BiasCorrection.h"
+namespace mirtk {
 
-mirtkBiasCorrection::mirtkBiasCorrection()
+BiasCorrection::BiasCorrection()
 {
 	// Set parameters
 	_Padding   = MIN_GREY;
@@ -37,40 +37,40 @@ mirtkBiasCorrection::mirtkBiasCorrection()
 	_mask = NULL;
 }
 
-mirtkBiasCorrection::~mirtkBiasCorrection()
+BiasCorrection::~BiasCorrection()
 {
 }
 
-void mirtkBiasCorrection::Initialize()
+void BiasCorrection::Initialize()
 {
 }
 
-void mirtkBiasCorrection::SetMask( ByteImage* imagePtr)
+void BiasCorrection::SetMask( ByteImage* imagePtr)
 {
 	_mask = imagePtr;
 }
 
-void mirtkBiasCorrection::Finalize()
+void BiasCorrection::Finalize()
 {
 }
 
-void mirtkBiasCorrection::Run()
+void BiasCorrection::Run()
 {
 	int i, j, k, n;
 	RealPixel *ptr2target, *ptr2ref, *ptr2w;
 
 	if (_reference == NULL) {
-		cerr << "BiasCorrection::Run: Filter has no reference input" << endl;
+		std::cerr << "BiasCorrection::Run: Filter has no reference input" << std::endl;
 		exit(1);
 	}
 
 	if (_target == NULL) {
-		cerr << "BiasCorrection::Run: Filter has no target input" << endl;
+		std::cerr << "BiasCorrection::Run: Filter has no target input" << std::endl;
 		exit(1);
 	}
 
 	if (_biasfield == NULL) {
-		cerr << "mirtkBiasCorrection::Run: Filter has no transformation output" << endl;
+		std::cerr << "BiasCorrection::Run: Filter has no transformation output" << std::endl;
 		exit(1);
 	}
 
@@ -119,11 +119,11 @@ void mirtkBiasCorrection::Run()
 		}
 	}
 
-	cout << "Computing bias field ... ";
-	cout.flush();
+	std::cout << "Computing bias field ... ";
+	std::cout.flush();
 	// _biasfield->Approximate(x, y, z, b, n);
 	_biasfield->WeightedLeastSquares(x, y, z, b, w, n);
-	cout << "done" << endl;
+	std::cout << "done" << std::endl;
 
 	delete []x;
 	delete []y;
@@ -134,7 +134,7 @@ void mirtkBiasCorrection::Run()
 	this->Finalize();
 }
 
-void mirtkBiasCorrection::Apply(RealImage &image)
+void BiasCorrection::Apply(RealImage &image)
 {
 	int i, j, k;
 	double x, y, z, bias;
@@ -161,12 +161,12 @@ void mirtkBiasCorrection::Apply(RealImage &image)
 	}
 }
 
-void mirtkBiasCorrection::ApplyToImage(RealImage &image)
+void BiasCorrection::ApplyToImage(RealImage &image)
 {
 	int i, j, k;
 	double x, y, z, bias;
-	cerr<<"Applying bias ...";
-	//cerr<<_biasfield;
+	std::cerr<<"Applying bias ...";
+	//std::cerr<<_biasfield;
 
 	for (k = 0; k < image.GetZ(); k++) {
 		for (j = 0; j < image.GetY(); j++) {
@@ -184,10 +184,10 @@ void mirtkBiasCorrection::ApplyToImage(RealImage &image)
 		}
 	}
 
-	cerr<<"done."<<endl;
+	std::cerr<<"done."<<std::endl;
 }
 
-void mirtkBiasCorrection::ApplyToImage(GreyImage &image)
+void BiasCorrection::ApplyToImage(GreyImage &image)
 {
 	int i, j, k;
 	double x, y, z, bias;

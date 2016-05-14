@@ -20,21 +20,21 @@
 
 #ifndef _MIRTKBIASCORRECTION_H
 
-#define _MIRTKBIASCORRECTIO_H
+#define _MIRTKBIASCORRECTION_H
 
-#include <mirtkImage.h>
+#include "mirtk/Image.h"
 
-#include <mirtkResampling.h>
+#include "mirtk/Resampling.h"
 
-#include <mirtkTransformation.h>
+#include "mirtk/Transformation.h"
 
-#include <mirtkBiasField.h>
+#include "mirtk/BiasField.h"
 
-namespace mirtk{
+namespace mirtk {
 
-class mirtkBiasCorrection : public Object
+class BiasCorrection : public Object
 {
-	mirtkObjectMacro(mirtkBiasCorrection);
+	mirtkObjectMacro(BiasCorrection);
 
 protected:
 
@@ -46,7 +46,7 @@ protected:
 	ByteImage *_mask;
 
 	/// Output
-	mirtkBiasField *_biasfield;
+	BiasField *_biasfield;
 
 	/// Padding value
 	GreyPixel _Padding;
@@ -60,10 +60,10 @@ protected:
 public:
 
 	/// Constructor
-	mirtkBiasCorrection();
+	BiasCorrection();
 
 	/// Destructor
-	virtual ~mirtkBiasCorrection();
+	virtual ~BiasCorrection();
 
 	/// Sets input for the bias correction filter
 	virtual void SetInput (RealImage *, RealImage *);
@@ -72,7 +72,7 @@ public:
 	virtual void SetWeights (RealImage *);
 
 	/// Sets output for the bias correction filter
-	virtual void SetOutput(mirtkBiasField *);
+	virtual void SetOutput(BiasField *);
 
 	virtual void SetMask( ByteImage *);
 
@@ -94,27 +94,27 @@ public:
 
 };
 
-inline void mirtkBiasCorrection::SetInput(RealImage *target, RealImage *reference)
+inline void BiasCorrection::SetInput(RealImage *target, RealImage *reference)
 {
 	_target    = target;
 	_reference = reference;
 }
 
-inline void mirtkBiasCorrection::SetWeights(RealImage *weights)
+inline void BiasCorrection::SetWeights(RealImage *weights)
 {
 	_weights    = weights;
 }
 
-inline void mirtkBiasCorrection::SetOutput(mirtkBiasField *biasfield)
+inline void BiasCorrection::SetOutput(BiasField *biasfield)
 {
 	_biasfield = biasfield;
 }
 
-inline void mirtkBiasCorrection::SetPadding(short Padding)
+inline void BiasCorrection::SetPadding(short Padding)
 {
 	_Padding = Padding;
 }
-inline short mirtkBiasCorrection::GetPadding(){
+inline short BiasCorrection::GetPadding(){
 	return _Padding;
 }
 

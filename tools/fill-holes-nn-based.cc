@@ -20,13 +20,13 @@
 // Source code adapted from FSL fslmaths -fillh
 
 
-#include <mirtkCommon.h>
-#include <mirtkOptions.h>
+#include "mirtk/Common.h"
+#include "mirtk/Options.h"
 
-#include <mirtkImageIOConfig.h>
-#include <mirtkGenericImage.h>
+#include "mirtk/IOConfig.h"
+#include "mirtk/GenericImage.h"
 
-#include <mirtkConnectedComponents.h>
+#include "mirtk/ConnectedComponents.h"
 #include <set>
 
 using namespace mirtk;
@@ -40,19 +40,19 @@ using namespace std;
 // -----------------------------------------------------------------------------
 void PrintHelp(const char *name)
 {
-	cout << endl;
-    cout << "Usage: " << name << " <input> <suspected-holes> <output>" << endl;
-	cout << endl;
-	cout << "Description:" << endl;
-    cout << "  Fills holes in the input."<<endl;
-    cout << "  The surrounding voxels of the suspected-holes are measured and if the majority belongs to the input they are filled." <<endl;
-    cout << endl;
-    cout << "Input options:" << endl;
-    cout << "  -connectivity <number>  connectivity (6/26), default: 6" <<endl;
-    cout << "  -majority <double>      majority factor (0-1), default: 0.9" <<endl;
-    cout << endl;
-	PrintStandardOptions(cout);
-	cout << endl;
+	std::cout << std::endl;
+    std::cout << "Usage: " << name << " <input> <suspected-holes> <output>" << std::endl;
+	std::cout << std::endl;
+	std::cout << "Description:" << std::endl;
+    std::cout << "  Fills holes in the input."<<std::endl;
+    std::cout << "  The surrounding voxels of the suspected-holes are measured and if the majority belongs to the input they are filled." <<std::endl;
+    std::cout << std::endl;
+    std::cout << "Input options:" << std::endl;
+    std::cout << "  -connectivity <number>  connectivity (6/26), default: 6" <<std::endl;
+    std::cout << "  -majority <double>      majority factor (0-1), default: 0.9" <<std::endl;
+    std::cout << std::endl;
+	PrintStandardOptions(std::cout);
+	std::cout << std::endl;
 }
 
 // =============================================================================
@@ -64,7 +64,7 @@ void PrintHelp(const char *name)
 int main(int argc, char **argv){
 
     REQUIRES_POSARGS(3);
-    InitializeImageIOLibrary();
+    InitializeIOLibrary();
 
     int a = 1;
     GreyImage image(POSARG(a++));
@@ -76,7 +76,7 @@ int main(int argc, char **argv){
     for (ALL_OPTIONS) {
         if (OPTION("-connectivity")){
             connectivity = (ConnectivityType) atoi(ARGUMENT);
-	    if(connectivity!=6 && connectivity!=26){ cerr<<"connectivity has to be either 6 or 26!"<<endl; exit(1);}
+	    if(connectivity!=6 && connectivity!=26){ std::cerr<<"connectivity has to be either 6 or 26!"<<std::endl; exit(1);}
         }
         else if (OPTION("-majority")){
             majority=atof(ARGUMENT);

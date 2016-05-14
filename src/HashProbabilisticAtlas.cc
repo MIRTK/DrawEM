@@ -17,11 +17,11 @@
  * limitations under the License.
  */
 
-#include <mirtkHashProbabilisticAtlas.h>
+#include "mirtk/HashProbabilisticAtlas.h"
 
-namespace mirtk{
+namespace mirtk {
 
-mirtkHashProbabilisticAtlas::mirtkHashProbabilisticAtlas(){
+HashProbabilisticAtlas::HashProbabilisticAtlas(){
 	_number_of_voxels = 0;
 	_number_of_maps = 0;
 	_position = 0;
@@ -29,12 +29,12 @@ mirtkHashProbabilisticAtlas::mirtkHashProbabilisticAtlas(){
 	_segmentation = NULL;
 }
 
-mirtkHashProbabilisticAtlas::~mirtkHashProbabilisticAtlas(){
+HashProbabilisticAtlas::~HashProbabilisticAtlas(){
 	if (_segmentation) delete _segmentation;
 	for(int i=0; i<_images.size(); i++) delete _images[i];
 }
 
-mirtkHashProbabilisticAtlas& mirtkHashProbabilisticAtlas::operator=(const mirtkHashProbabilisticAtlas &atlas)
+HashProbabilisticAtlas& HashProbabilisticAtlas::operator=(const HashProbabilisticAtlas &atlas)
 {
   if (this != &atlas) {
 	if (_segmentation) delete _segmentation;
@@ -46,9 +46,9 @@ mirtkHashProbabilisticAtlas& mirtkHashProbabilisticAtlas::operator=(const mirtkH
   return *this;
 }
 
-void mirtkHashProbabilisticAtlas::SwapImages(int a, int b){
+void HashProbabilisticAtlas::SwapImages(int a, int b){
 	if( a >= _number_of_maps || b >= _number_of_maps ){
-		cerr << "cannot swap images, index out of bounds!" << endl;
+		std::cerr << "cannot swap images, index out of bounds!" << std::endl;
 		return;
 	}
 	HashRealImage *tmpimage = _images[a];
@@ -57,12 +57,12 @@ void mirtkHashProbabilisticAtlas::SwapImages(int a, int b){
 }
 
 template <class ImageType>
-void mirtkHashProbabilisticAtlas::AddImage(ImageType image){
+void HashProbabilisticAtlas::AddImage(ImageType image){
 	if (_images.size() == 0) {
 		_number_of_voxels = image.GetNumberOfVoxels();
 	} else {
 		if (_number_of_voxels != image.GetNumberOfVoxels()) {
-			cerr << "Image sizes mismatch" << endl;
+			std::cerr << "Image sizes mismatch" << std::endl;
 			exit(1);
 		}
 	}
@@ -72,12 +72,12 @@ void mirtkHashProbabilisticAtlas::AddImage(ImageType image){
 
 }
 
-void mirtkHashProbabilisticAtlas::NormalizeAtlas(){
+void HashProbabilisticAtlas::NormalizeAtlas(){
 	int i, j;
 
 	// Add extra image
 	if (_number_of_maps == 0) {
-		cerr << "mirtkHashProbabilisticAtlas::NormalizeAtlas: No probability maps found" << endl;
+		std::cerr << "HashProbabilisticAtlas::NormalizeAtlas: No probability maps found" << std::endl;
 		exit(1);
 	} 
 
@@ -107,11 +107,11 @@ void mirtkHashProbabilisticAtlas::NormalizeAtlas(){
 }
 
 
-void mirtkHashProbabilisticAtlas::AddBackground(){
+void HashProbabilisticAtlas::AddBackground(){
 	int i, j;
 	// Add extra image
 	if (_number_of_maps == 0) {
-		cerr << "mirtkHashProbabilisticAtlas::AddBackground: No probability maps found" << endl;
+		std::cerr << "HashProbabilisticAtlas::AddBackground: No probability maps found" << std::endl;
 		exit(1);
 	} 
 	this->AddImage(*(_images[0]));
@@ -147,22 +147,22 @@ void mirtkHashProbabilisticAtlas::AddBackground(){
 }
 
 template <class ImageType>
-void mirtkHashProbabilisticAtlas::AddProbabilityMaps(int n, ImageType **atlas){
+void HashProbabilisticAtlas::AddProbabilityMaps(int n, ImageType **atlas){
 	for (int i = 0; i < n; i++) {
 		this->AddImage(*(atlas[i]));
 	}
 }
 
-void mirtkHashProbabilisticAtlas::Write(int i, const char *filename){
+void HashProbabilisticAtlas::Write(int i, const char *filename){
 	if  (i < _number_of_maps) {
 		_images[i]->Write(filename);
 	} else {
-		cerr << "mirtkHashProbabilisticAtlas::Write: No such probability map" << endl;
+		std::cerr << "HashProbabilisticAtlas::Write: No such probability map" << std::endl;
 		exit(1);
 	}
 }
 
-HashImage<int> mirtkHashProbabilisticAtlas::ComputeHardSegmentation(){
+HashImage<int> HashProbabilisticAtlas::ComputeHardSegmentation(){
 	int i, mapnr, j = 0;
     RealPixel max = 0;
 
@@ -185,7 +185,7 @@ HashImage<int> mirtkHashProbabilisticAtlas::ComputeHardSegmentation(){
 	return *_segmentation;
 }
 
-void mirtkHashProbabilisticAtlas::ExtractLabel(int label, HashByteImage& image){
+void HashProbabilisticAtlas::ExtractLabel(int label, HashByteImage& image){
 	if(!_segmentation) ComputeHardSegmentation();
 	for (int i = 0; i < _number_of_voxels; i++) {
 		if (_segmentation->Get(i) == label) image.Put(i, 1);
@@ -193,16 +193,16 @@ void mirtkHashProbabilisticAtlas::ExtractLabel(int label, HashByteImage& image){
 	}
 }
 
-void mirtkHashProbabilisticAtlas::WriteHardSegmentation(const char *filename){
+void HashProbabilisticAtlas::WriteHardSegmentation(const char *filename){
 	_segmentation->Write(filename);
 }
 
 
-template void mirtkHashProbabilisticAtlas::AddImage(RealImage image);
-template void mirtkHashProbabilisticAtlas::AddImage(HashRealImage image);
-template void mirtkHashProbabilisticAtlas::AddProbabilityMaps(int, RealImage **atlas);
-template void mirtkHashProbabilisticAtlas::AddProbabilityMaps(int, HashRealImage **atlas);
-template void mirtkHashProbabilisticAtlas::AddBackground(RealImage image);
-template void mirtkHashProbabilisticAtlas::AddBackground(HashRealImage image);
+template void HashProbabilisticAtlas::AddImage(RealImage image);
+template void HashProbabilisticAtlas::AddImage(HashRealImage image);
+template void HashProbabilisticAtlas::AddProbabilityMaps(int, RealImage **atlas);
+template void HashProbabilisticAtlas::AddProbabilityMaps(int, HashRealImage **atlas);
+template void HashProbabilisticAtlas::AddBackground(RealImage image);
+template void HashProbabilisticAtlas::AddBackground(HashRealImage image);
 
 }

@@ -21,21 +21,21 @@
 #ifndef _MIRTKEMCLASSIFICATIONNEO_H
 #define _MIRTKEMCLASSIFICATIONNEO_H
 
-#include <mirtkImage.h>
-#include <mirtkObject.h>
-#include <mirtkHashProbabilisticAtlas.h>
-#include <mirtkGaussian.h>
-#include <mirtkHistogram1D.h>
-#include <mirtkMeanShift.h>
+#include "mirtk/Image.h"
+#include "mirtk/Object.h"
+#include "mirtk/HashProbabilisticAtlas.h"
+#include "mirtk/Gaussian.h"
+#include "mirtk/Histogram1D.h"
+#include "mirtk/MeanShift.h"
 
 /*
 
 Expectation Maximisation Algorithm
 
  */
-namespace mirtk{
+namespace mirtk {
 
-class mirtkEMBase : public Object
+class EMBase : public Object
 {
 
 protected:
@@ -54,13 +54,13 @@ protected:
 	RealImage _estimate;
 
 	/// Posterior probability maps -  segmentation
-	mirtkHashProbabilisticAtlas _output;
+	HashProbabilisticAtlas _output;
 
 	/// Partial volume soft segmentation
-	mirtkHashProbabilisticAtlas _pv_output;
+	HashProbabilisticAtlas _pv_output;
 
 	/// Probability maps (atlas)
-	mirtkHashProbabilisticAtlas _atlas;
+	HashProbabilisticAtlas _atlas;
 
 	/// image segmentation
     IntegerImage _segmentation;
@@ -76,7 +76,7 @@ protected:
 	int _number_of_voxels;
 
 	/// Gaussian distribution parameters for each tissue type
-    mirtkGaussian *_G;
+    Gaussian *_G;
 	double *_mi;
 	double *_sigma;
 	/// mixing coefficients for GMM
@@ -106,22 +106,22 @@ public:
 	ByteImage _mask;
 
 	/// Empty constructor
-	mirtkEMBase();
+	EMBase();
 
 	/// Constructor when adding background
 	template <class ImageType>
-	mirtkEMBase(int noTissues, ImageType **atlas, ImageType *background);
+	EMBase(int noTissues, ImageType **atlas, ImageType *background);
 
 	/// Constructor without adding background
 	template <class ImageType>
-	mirtkEMBase(int noTissues, ImageType **atlas);
+	EMBase(int noTissues, ImageType **atlas);
 
 	/// Constructor without adding background + initialise posteriors
 	template <class ImageType>
-	mirtkEMBase(int noTissues, ImageType **atlas, ImageType **initposteriors ) ;
+	EMBase(int noTissues, ImageType **atlas, ImageType **initposteriors ) ;
 
 	/// Destructor
-	virtual ~mirtkEMBase();
+	virtual ~EMBase();
 
 	// add a probability map
 	template <class ImageType>
@@ -243,14 +243,14 @@ public:
 };
 
 
-inline void mirtkEMBase::addBackground(){
+inline void EMBase::addBackground(){
 	_atlas.AddBackground();
 	_has_background = true;
 	_number_of_tissues = _atlas.GetNumberOfMaps();
 }
 
 template <class ImageType>
-inline void mirtkEMBase::addBackground(ImageType background){
+inline void EMBase::addBackground(ImageType background){
 	_atlas.AddBackground(background);
 	_has_background = true;
 	_number_of_tissues = _atlas.GetNumberOfMaps();
@@ -258,36 +258,36 @@ inline void mirtkEMBase::addBackground(ImageType background){
 
 
 template <class ImageType>
-inline void mirtkEMBase::addProbabilityMap(ImageType image){
+inline void EMBase::addProbabilityMap(ImageType image){
 	_atlas.AddImage(image);
 	_number_of_tissues = _atlas.GetNumberOfMaps();
 }
 
-inline void mirtkEMBase::NormalizeAtlas(){
+inline void EMBase::NormalizeAtlas(){
 	_atlas.NormalizeAtlas();
 }
 
-inline void mirtkEMBase::SetPadding(RealPixel padding)
+inline void EMBase::SetPadding(RealPixel padding)
 {
 	_padding = padding;
 }
 
-inline void mirtkEMBase::WriteEstimate(const char *filename)
+inline void EMBase::WriteEstimate(const char *filename)
 {
 	_estimate.Write(filename);
 }
 
-inline void mirtkEMBase::WriteInput(const char *filename)
+inline void EMBase::WriteInput(const char *filename)
 {
 	_input.Write(filename);
 }
 
-inline void mirtkEMBase::WriteSegmentation(const char *filename)
+inline void EMBase::WriteSegmentation(const char *filename)
 {
 	_segmentation.Write(filename);
 }
 
-inline const char* mirtkEMBase::NameOfClass() const { return "mirtkEMBase"; } 
+inline const char* EMBase::NameOfClass() const { return "EMBase"; } 
 
 }
 

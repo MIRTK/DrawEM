@@ -17,11 +17,11 @@
  * limitations under the License.
  */
 
-#include <mirtkCommon.h>
-#include <mirtkOptions.h>
+#include "mirtk/Common.h"
+#include "mirtk/Options.h"
 
-#include <mirtkImageIOConfig.h>
-#include <mirtkGenericImage.h>
+#include "mirtk/IOConfig.h"
+#include "mirtk/GenericImage.h"
 
 #include <string>
 
@@ -36,19 +36,19 @@ using namespace std;
 // -----------------------------------------------------------------------------
 void PrintHelp(const char *name)
 {
-	cout << endl;
-	cout << "Usage: " << name << " <init_labels> <mask> <N> <probmap_1> <label_1> .. <probmap_N> <label_N> <output> [<init_probmap> <output_probmap_1> .. <output_probmap_N>]" << endl;
-	cout << endl;
-	cout << "Description:" << endl;
-	cout << "  Changes the labels of the <init_labels> image inside the <mask> image" << endl;
-	cout << "  according to probability maps <probmap_1> .. <probmap_N> with labels <label_1> .. <label_N> respectively and saves the result in <output>"<<endl;
-	cout << endl;
-	cout << "Optional: " << endl;
-	cout << endl;
-	cout << "  Split also the initial probability map <init_probmap> according to the \"membership\" of the probability maps <probmap_1> .. <probmap_N> and add it to the probability maps." << endl;
-	cout <<			"  The new probability maps will be saved to  <output_probmap_1> .. <output_probmap_N>" << endl;
-	PrintStandardOptions(cout);
-	cout << endl;
+	std::cout << std::endl;
+	std::cout << "Usage: " << name << " <init_labels> <mask> <N> <probmap_1> <label_1> .. <probmap_N> <label_N> <output> [<init_probmap> <output_probmap_1> .. <output_probmap_N>]" << std::endl;
+	std::cout << std::endl;
+	std::cout << "Description:" << std::endl;
+	std::cout << "  Changes the labels of the <init_labels> image inside the <mask> image" << std::endl;
+	std::cout << "  according to probability maps <probmap_1> .. <probmap_N> with labels <label_1> .. <label_N> respectively and saves the result in <output>"<<std::endl;
+	std::cout << std::endl;
+	std::cout << "Optional: " << std::endl;
+	std::cout << std::endl;
+	std::cout << "  Split also the initial probability map <init_probmap> according to the \"membership\" of the probability maps <probmap_1> .. <probmap_N> and add it to the probability maps." << std::endl;
+	std::cout <<			"  The new probability maps will be saved to  <output_probmap_1> .. <output_probmap_N>" << std::endl;
+	PrintStandardOptions(std::cout);
+	std::cout << std::endl;
 }
 
 // =============================================================================
@@ -64,7 +64,7 @@ int main(int argc, char **argv)
 
 	REQUIRES_POSARGS(6);
 
-	InitializeImageIOLibrary();
+	InitializeIOLibrary();
 	RealImage img;
 	BinaryImage mask;
 

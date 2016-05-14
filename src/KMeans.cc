@@ -18,7 +18,7 @@
  */
 
 
-#include <mirtkKMeans.h>
+#include "mirtk/KMeans.h"
 
 // Hard membership
 void kmeans::KMeansAssign()

@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-#include <mirtkNormalizeNyul.h>
+#include "mirtk/NormalizeNyul.h"
 
 /* "This program implements intensity normalization algorithm published in "
        "Nyul, L.G.; Udupa, J.K.; Xuan Zhang, "
@@ -29,9 +29,9 @@
        */
 
 
-namespace mirtk{
+namespace mirtk {
 
-mirtkNormalizeNyul::mirtkNormalizeNyul(RealImage source, RealImage target){
+NormalizeNyul::NormalizeNyul(RealImage source, RealImage target){
 	_source = source;
 	_target = target;
 	_source_padding = 0;
@@ -39,7 +39,7 @@ mirtkNormalizeNyul::mirtkNormalizeNyul(RealImage source, RealImage target){
 }
 
 
-void mirtkNormalizeNyul::SetMask(RealImage source_mask, RealImage target_mask){
+void NormalizeNyul::SetMask(RealImage source_mask, RealImage target_mask){
 	RealPixel * iPtr, *mPtr;
 	iPtr = _source.GetPointerToVoxels();
 	mPtr = source_mask.GetPointerToVoxels();
@@ -61,20 +61,20 @@ void mirtkNormalizeNyul::SetMask(RealImage source_mask, RealImage target_mask){
 	}
 }
 
-RealImage mirtkNormalizeNyul::GetOutput(){
+RealImage NormalizeNyul::GetOutput(){
 	return _source;
 }
 
-RealImage mirtkNormalizeNyul::GetTarget(){
+RealImage NormalizeNyul::GetTarget(){
 	return _target;
 }
 
-void mirtkNormalizeNyul::SetPadding(int source_padding, int target_padding){
+void NormalizeNyul::SetPadding(int source_padding, int target_padding){
 	_source_padding = source_padding;
 	_target_padding = target_padding;
 }
 
-void mirtkNormalizeNyul::Run(){
+void NormalizeNyul::Run(){
 	   int verbose=0;
 //	  int normalize=0;
 //	  int bimodalT=0;
@@ -88,7 +88,7 @@ void mirtkNormalizeNyul::Run(){
 	  float src_min,src_max;
 	  float trg_min,trg_max;
 
-	  mirtkImageHistogram1D<RealPixel> src_hist_s, trg_hist_s;
+	  ImageHistogram1D<RealPixel> src_hist_s, trg_hist_s;
 
 	  src_hist_s.PutNumberOfBins(hist_bins);
 	  trg_hist_s.PutNumberOfBins(hist_bins);
@@ -114,8 +114,8 @@ void mirtkNormalizeNyul::Run(){
 
 	  if(verbose){
 		std::cout<<"[ min ] "<<src_levels_s[0]<<" => "<<trg_levels_s[0]<<std::endl;
-		std::cout << "nr tgt samples: " << trg_hist_s.NumberOfSamples() << ". nr src samples: " << src_hist_s.NumberOfSamples() << endl;
-		std::cout << "nr tgt bins: " << trg_hist_s.NumberOfBins() << ". nr src bins: " << src_hist_s.NumberOfBins() << endl;
+		std::cout << "nr tgt samples: " << trg_hist_s.NumberOfSamples() << ". nr src samples: " << src_hist_s.NumberOfSamples() << std::endl;
+		std::cout << "nr tgt bins: " << trg_hist_s.NumberOfBins() << ". nr src bins: " << src_hist_s.NumberOfBins() << std::endl;
 		for(int i = 0 ; i < src_hist_s.NumberOfBins(); i++){
 
 		}
@@ -131,7 +131,7 @@ void mirtkNormalizeNyul::Run(){
 		double trg_lev_s=trg_hist_s.CDFToVal(pct);
 
 		if(verbose)
-			std::cout << "step " << i << " perc: " << pct << " src perc: " << src_lev_s << " trg perc: " << trg_lev_s << endl;
+			std::cout << "step " << i << " perc: " << pct << " src perc: " << src_lev_s << " trg perc: " << trg_lev_s << std::endl;
 
 		if(trg_lev_s-trg_levels_s[trg_levels_s.size()-1]<(trg_max-trg_min)/100000.0)
 		{

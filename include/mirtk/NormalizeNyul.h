@@ -20,14 +20,14 @@
 #ifndef MIRTKNORMALIZENYUL_H_
 #define MIRTKNORMALIZENYUL_H_
 
-#include <mirtkImage.h>
-#include <mirtkRegistration.h>
-#include <mirtkImageHistogram1D.h>
+#include "mirtk/Image.h"
+#include "mirtk/Registration.h"
+#include "mirtk/ImageHistogram1D.h"
 
 
-namespace mirtk{
+namespace mirtk {
 
-class mirtkNormalizeNyul{
+class NormalizeNyul{
 
 private:
 	RealImage _target;
@@ -36,7 +36,7 @@ private:
 	int _target_padding;
 
 public:
-	mirtkNormalizeNyul(RealImage source, RealImage target);
+	NormalizeNyul(RealImage source, RealImage target);
 	void SetMask(RealImage source_mask, RealImage target_mask);
 	void SetPadding(int source_padding, int target_padding);
 	static void histogramImage(Histogram1D<RealPixel>* histogram, RealImage* image, double padding);

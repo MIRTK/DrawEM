@@ -19,34 +19,34 @@
  */
 
 
-#include <mirtkDrawEM.h>
+#include "mirtk/DrawEM.h"
 
 namespace mirtk {
 
 // Default constructor
-mirtkDrawEM::mirtkDrawEM() : mirtkEMBase(){
+DrawEM::DrawEM() : EMBase(){
     InitialiseParameters();
 }
 
 template <class ImageType>
-mirtkDrawEM::mirtkDrawEM(int noTissues, ImageType **atlas, ImageType *background) : mirtkEMBase(noTissues, atlas, background)
+DrawEM::DrawEM(int noTissues, ImageType **atlas, ImageType *background) : EMBase(noTissues, atlas, background)
 {
     InitialiseParameters();
 }
 
 template <class ImageType>
-mirtkDrawEM::mirtkDrawEM(int noTissues, ImageType **atlas ) : mirtkEMBase(noTissues, atlas )
+DrawEM::DrawEM(int noTissues, ImageType **atlas ) : EMBase(noTissues, atlas )
 {
     InitialiseParameters();
 }
 
 template <class ImageType>
-mirtkDrawEM::mirtkDrawEM(int noTissues, ImageType **atlas, ImageType **initposteriors ) : mirtkEMBase(noTissues, atlas, initposteriors )
+DrawEM::DrawEM(int noTissues, ImageType **atlas, ImageType **initposteriors ) : EMBase(noTissues, atlas, initposteriors )
 {
     InitialiseParameters();
 }
 
-void mirtkDrawEM::InitialiseParameters(){
+void DrawEM::InitialiseParameters(){
     outlabel=1;
     csflabel=2;
     gmlabel=3;
@@ -56,17 +56,17 @@ void mirtkDrawEM::InitialiseParameters(){
 }
 
 
-void mirtkDrawEM::SetInput(const RealImage &image, const Matrix &connectivity)
+void DrawEM::SetInput(const RealImage &image, const Matrix &connectivity)
 {
     _uncorrected = image;
     if( connectivity.Cols() != _number_of_tissues || connectivity.Rows() != connectivity.Cols() )
     {
-        cerr << "Warning: Connectivity matrix has wrong size! expected: " << _number_of_tissues << "x"<< _number_of_tissues << endl;
-        cerr << "is:" << connectivity.Rows() << "x" << connectivity.Rows() << endl;
+        std::cerr << "Warning: Connectivity matrix has wrong size! expected: " << _number_of_tissues << "x"<< _number_of_tissues << std::endl;
+        std::cerr << "is:" << connectivity.Rows() << "x" << connectivity.Rows() << std::endl;
     }
     _connectivity = connectivity;
 
-    mirtkEMBase::SetInput(_uncorrected);
+    EMBase::SetInput(_uncorrected);
 
 
     //SEG {
@@ -78,7 +78,7 @@ void mirtkDrawEM::SetInput(const RealImage &image, const Matrix &connectivity)
 }
 
 
-void mirtkDrawEM::BStep()
+void DrawEM::BStep()
 {
     // Create bias correction filter
     _biascorrection.SetInput(&_uncorrected, &_estimate);
@@ -95,17 +95,17 @@ void mirtkDrawEM::BStep()
 
 
 // Relaxation according to Cardoso in MICCAI 2011
-void mirtkDrawEM::RStep(){
+void DrawEM::RStep(){
     RStep(0.5);
 }
 
-void mirtkDrawEM::RStep(double rf)
+void DrawEM::RStep(double rf)
 {
     double relaxFactor = rf;
 
     _atlas.First();
     _output.First();
-    mirtkHashProbabilisticAtlas filteredAtlas;
+    HashProbabilisticAtlas filteredAtlas;
 
     RealImage filterInput;
     for( int k = 0; k < _number_of_tissues; ++k )
@@ -135,7 +135,7 @@ void mirtkDrawEM::RStep(double rf)
     for (int i=0; i< _number_of_voxels; i++){
         if (i*10.0/_number_of_voxels > per) {
             per++;
-            cerr<<per<<"0%...";
+            std::cerr<<per<<"0%...";
         }
         double denominator = 0.0;
         if (*pm == 1){
@@ -172,7 +172,7 @@ void mirtkDrawEM::RStep(double rf)
             if (denominator <= 0) {
                 int x,y,z;
                 _input.IndexToVoxel(i, x, y, z);
-                cerr<<"Division by 0 while computing relaxed prior probabilities at voxel "<<x<<","<<y<<","<<z<<endl;
+                std::cerr<<"Division by 0 while computing relaxed prior probabilities at voxel "<<x<<","<<y<<","<<z<<std::endl;
             }
         }
         pm++;
@@ -188,7 +188,7 @@ void mirtkDrawEM::RStep(double rf)
 
 
 
-int mirtkDrawEM::AddPartialVolumeClass(int classA, int classB, int huiclass)
+int DrawEM::AddPartialVolumeClass(int classA, int classB, int huiclass)
 {
     RealImage pvclass = _input;
     RealPixel *ptr_pvclass = pvclass.GetPointerToVoxels();
@@ -221,7 +221,7 @@ int mirtkDrawEM::AddPartialVolumeClass(int classA, int classB, int huiclass)
     }
     else
     {
-        cerr << "No mixel voxels found, not adding partial volume class!" << endl;
+        std::cerr << "No mixel voxels found, not adding partial volume class!" << std::endl;
         return -1;
     }
 
@@ -273,7 +273,7 @@ int mirtkDrawEM::AddPartialVolumeClass(int classA, int classB, int huiclass)
             }
             else
             {
-                cerr << "error probability = 0" << endl;
+                std::cerr << "error probability = 0" << std::endl;
                 return -1;
             }
 
@@ -314,7 +314,7 @@ int mirtkDrawEM::AddPartialVolumeClass(int classA, int classB, int huiclass)
         _atlas.Next();
         _output.Next();
     }
-    cout << "Connectivity before update" << endl;
+    std::cout << "Connectivity before update" << std::endl;
     _connectivity.Print();
     // PV classes get same connectivity as parent class!
     Matrix newconnectivity(_connectivity.Rows()+1, _connectivity.Cols()+1);
@@ -397,8 +397,8 @@ int mirtkDrawEM::AddPartialVolumeClass(int classA, int classB, int huiclass)
 
     pv_connections.push_back( make_pair(classA, classB) );
     pv_fc.push_back(gamma);
-    cout << "Fractional Content of classA=" << 1.0-gamma << endl;
-    cout << "connectivity after update " << endl;
+    std::cout << "Fractional Content of classA=" << 1.0-gamma << std::endl;
+    std::cout << "connectivity after update " << std::endl;
     _connectivity.Print();
 
 
@@ -421,7 +421,7 @@ int mirtkDrawEM::AddPartialVolumeClass(int classA, int classB, int huiclass)
 
 
 bool print=true;
-double mirtkDrawEM::getMRFenergy(int index, int tissue)
+double DrawEM::getMRFenergy(int index, int tissue)
 {
 
 
@@ -476,7 +476,7 @@ double mirtkDrawEM::getMRFenergy(int index, int tissue)
 
 
 double wneighbors[3][3][3];
-double mirtkDrawEM::getMRFenergy_diag(int index, int tissue)
+double DrawEM::getMRFenergy_diag(int index, int tissue)
 {
 
 
@@ -545,15 +545,15 @@ double mirtkDrawEM::getMRFenergy_diag(int index, int tissue)
 
 
 
-void mirtkDrawEM::EStepMRF()
+void DrawEM::EStepMRF()
 {
-    cout << "E-step with MRF" <<endl;
+    std::cout << "E-step with MRF" <<std::endl;
 
     IntegerImage segmentation;
 
     int i, k;
     double x;
-    mirtkGaussian* G = new mirtkGaussian[_number_of_tissues];
+    Gaussian* G = new Gaussian[_number_of_tissues];
 
     for (k = 0; k < _number_of_tissues; k++) {
         G[k].Initialise( _mi[k], _sigma[k]);
@@ -575,7 +575,7 @@ void mirtkDrawEM::EStepMRF()
     for (i=0; i< _number_of_voxels; i++) {
         if (i*10.0/_number_of_voxels > per) {
             per++;
-            cout<<per<<"0%...";
+            std::cout<<per<<"0%...";
         }
         denominator = 0;
         temp = 0;
@@ -642,7 +642,7 @@ void mirtkDrawEM::EStepMRF()
                     if ((value < 0) || (value > 1)) {
                         int x,y,z;
                         _input.IndexToVoxel(i, x, y, z);
-                        cerr << "Probability value = " << value <<" @ Estep-mrf at voxel "<< x<<" "<<y<<" "<<z<< ", structure " << k << endl;
+                        std::cerr << "Probability value = " << value <<" @ Estep-mrf at voxel "<< x<<" "<<y<<" "<<z<< ", structure " << k << std::endl;
                         //exit(1);
                         if (value < 0)value=0;
                         if (value > 1)value=1;
@@ -657,7 +657,7 @@ void mirtkDrawEM::EStepMRF()
             if (denominator <= 0) {
                 int x,y,z;
                 _input.IndexToVoxel(i, x, y, z);
-                cerr<<"Division by 0 while computing probabilities at voxel "<<x<<","<<y<<","<<z<<endl;
+                std::cerr<<"Division by 0 while computing probabilities at voxel "<<x<<","<<y<<","<<z<<std::endl;
             }
         } else {
             for (k = 0; k < _number_of_tissues ; k++) {
@@ -682,7 +682,7 @@ void mirtkDrawEM::EStepMRF()
 
 
 
-double mirtkDrawEM::Iterate(int i)
+double DrawEM::Iterate(int i)
 {
     if( i == 0 )
     {
@@ -702,28 +702,28 @@ double mirtkDrawEM::Iterate(int i)
 
 
     this->MStep();
-    cout << endl << endl << "After M STEP " << endl << endl;
+    std::cout << std::endl << std::endl << "After M STEP " << std::endl << std::endl;
     Print();
     this->WStep();
     this->BStep();
 
-    cout << endl << endl << "After B STEP " << endl << endl;
+    std::cout << std::endl << std::endl << "After B STEP " << std::endl << std::endl;
     Print();
     return LogLikelihood();
 }
 
-void mirtkDrawEM::SetBiasField(mirtkBiasField *biasfield)
+void DrawEM::SetBiasField(BiasField *biasfield)
 {
     _biasfield = biasfield;
 }
 
-void mirtkDrawEM::GetBiasCorrectedImage(RealImage &image)
+void DrawEM::GetBiasCorrectedImage(RealImage &image)
 {
     image = _input;
     //_biascorrection.Apply(_input);
 }
 
-void mirtkDrawEM::GetBiasField(RealImage &image)
+void DrawEM::GetBiasField(RealImage &image)
 {
     BytePixel *pm = _mask.GetPointerToVoxels();
     RealPixel *ptrA = _input.GetPointerToVoxels();
@@ -747,14 +747,14 @@ void mirtkDrawEM::GetBiasField(RealImage &image)
     }
 }
 
-bool mirtkDrawEM::isPVclass(int pvclass)
+bool DrawEM::isPVclass(int pvclass)
 {
     if( pv_classes.find(pvclass) != pv_classes.end() ) return true;
     return false;
 }
 
 
-void mirtkDrawEM::ConstructSegmentationHui(IntegerImage &segmentation)
+void DrawEM::ConstructSegmentationHui(IntegerImage &segmentation)
 {
     int i, j, m;
     RealPixel max;
@@ -788,12 +788,12 @@ void mirtkDrawEM::ConstructSegmentationHui(IntegerImage &segmentation)
 }
 
 
-void mirtkDrawEM::huiPVCorrection(bool changePosterior){
+void DrawEM::huiPVCorrection(bool changePosterior){
     double lambda=0.5;
 
     if(changePosterior)lambda=0;
 
-    cout<<"Hui PV correction "<<outlabel<<csflabel<<gmlabel<<wmlabel<<endl;
+    std::cout<<"Hui PV correction "<<outlabel<<csflabel<<gmlabel<<wmlabel<<std::endl;
     IntegerImage segmentation, actualsegmentation;
     GreyImage scc, csfscc, outscc, mask(_input.Attributes());
     ConstructSegmentationHui(segmentation);
@@ -1087,7 +1087,7 @@ void mirtkDrawEM::huiPVCorrection(bool changePosterior){
 
 
 
-void mirtkDrawEM::getHuiValues(double &outval,double &csfval,double &gmval,double &wmval,int x,int y,int z,bool atlas){
+void DrawEM::getHuiValues(double &outval,double &csfval,double &gmval,double &wmval,int x,int y,int z,bool atlas){
     double vals[5];
     for(int i=0;i<5;i++)vals[i]=0;
 
@@ -1103,7 +1103,7 @@ void mirtkDrawEM::getHuiValues(double &outval,double &csfval,double &gmval,doubl
     wmval=vals[wmlabel];
 }
 
-void mirtkDrawEM::setHuiValues(double &outval,double &csfval,double &gmval,double &wmval,int x,int y,int z,bool atlas){
+void DrawEM::setHuiValues(double &outval,double &csfval,double &gmval,double &wmval,int x,int y,int z,bool atlas){
     double vals[5],newvals[5],hm[5];
     for(int i=0;i<5;i++){
         vals[i]=0;hm[i]=0;
@@ -1145,7 +1145,7 @@ void mirtkDrawEM::setHuiValues(double &outval,double &csfval,double &gmval,doubl
 
 
 
-double mirtkDrawEM::getMRFInterEnergy(int index, int tissue)
+double DrawEM::getMRFInterEnergy(int index, int tissue)
 {
     if( _connectivity.Rows() == 1 || !intermrf)
     {
@@ -1183,11 +1183,11 @@ double mirtkDrawEM::getMRFInterEnergy(int index, int tissue)
 }
 
 
-template mirtkDrawEM::mirtkDrawEM(int, RealImage **, RealImage *);
-template mirtkDrawEM::mirtkDrawEM(int, HashRealImage **, HashRealImage *);
-template mirtkDrawEM::mirtkDrawEM(int, RealImage **);
-template mirtkDrawEM::mirtkDrawEM(int, HashRealImage **);
-template mirtkDrawEM::mirtkDrawEM(int, RealImage **, RealImage **);
-template mirtkDrawEM::mirtkDrawEM(int, HashRealImage **, HashRealImage **);
+template DrawEM::DrawEM(int, RealImage **, RealImage *);
+template DrawEM::DrawEM(int, HashRealImage **, HashRealImage *);
+template DrawEM::DrawEM(int, RealImage **);
+template DrawEM::DrawEM(int, HashRealImage **);
+template DrawEM::DrawEM(int, RealImage **, RealImage **);
+template DrawEM::DrawEM(int, HashRealImage **, HashRealImage **);
 
 }

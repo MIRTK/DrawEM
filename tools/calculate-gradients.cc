@@ -16,12 +16,12 @@
  * limitations under the License.
  */
 
-#include <mirtkCommon.h>
-#include <mirtkOptions.h>
+#include "mirtk/Common.h"
+#include "mirtk/Options.h"
 
-#include <mirtkImageIOConfig.h>
-#include <mirtkGenericImage.h>
-#include <mirtkGaussianBlurring.h>
+#include "mirtk/IOConfig.h"
+#include "mirtk/GenericImage.h"
+#include "mirtk/GaussianBlurring.h"
 
 using namespace mirtk;
 using namespace std;
@@ -34,17 +34,17 @@ using namespace std;
 // -----------------------------------------------------------------------------
 void PrintHelp(const char *name)
 {
-	cout << endl;
-	cout << "Usage: " << name << " <input> <output> <sigma> [<options>]" << endl;
-	cout << endl;
-	cout << "Description:" << endl;
- 	cout << "  A blur with S.D. sigma is appled before the gradient is estimated" << endl;
-	cout << endl;
-	cout << "Optional: " << endl;
-	cout << endl;
-	cout << "  -sep basename    Write separate components to basename-x.nii.gz, basename-y.nii.gz, basename-z.nii.gz" << endl;
-	PrintStandardOptions(cout);
-	cout << endl;
+	std::cout << std::endl;
+	std::cout << "Usage: " << name << " <input> <output> <sigma> [<options>]" << std::endl;
+	std::cout << std::endl;
+	std::cout << "Description:" << std::endl;
+ 	std::cout << "  A blur with S.D. sigma is appled before the gradient is estimated" << std::endl;
+	std::cout << std::endl;
+	std::cout << "Optional: " << std::endl;
+	std::cout << std::endl;
+	std::cout << "  -sep basename    Write separate components to basename-x.nii.gz, basename-y.nii.gz, basename-z.nii.gz" << std::endl;
+	PrintStandardOptions(std::cout);
+	std::cout << std::endl;
 }
 
 // =============================================================================
@@ -58,7 +58,7 @@ int main(int argc, char **argv)
 {
         REQUIRES_POSARGS(3);
 
-        InitializeImageIOLibrary();
+        InitializeIOLibrary();
 
 	RealImage input;
 	RealImage output;

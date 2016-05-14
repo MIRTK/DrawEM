@@ -21,13 +21,13 @@
 #ifndef MIRTKPOLYNOMIALBIASFIELD_H_
 #define MIRTKPOLYNOMIALBIASFIELD_H_
 
-#include <mirtkBiasField.h>
+#include "mirtk/BiasField.h"
 
-namespace mirtk{
+namespace mirtk {
 
-class mirtkPolynomialBiasField : public mirtkBiasField
+class PolynomialBiasField : public BiasField
 {
-	mirtkObjectMacro(mirtkPolynomialBiasField);
+	mirtkObjectMacro(PolynomialBiasField);
 
 private:
 	int _dop;
@@ -35,13 +35,13 @@ private:
 	int _numOfCoefficients;
 
 public:
-	mirtkPolynomialBiasField();
+	PolynomialBiasField();
 
 	/**
 	 * @param dop max degree of polynomial
 	 */
-	mirtkPolynomialBiasField(const GreyImage &image, int dop);
-	~mirtkPolynomialBiasField();
+	PolynomialBiasField(const GreyImage &image, int dop);
+	~PolynomialBiasField();
 
 	/// Calculate weighted least square fit of polynomial to data
 	virtual void WeightedLeastSquares(double *x1, double *y1, double *z1, double *bias, double *weights, int no);

@@ -17,11 +17,11 @@
  */
 
 
-#include <mirtkMeanShift.h>
+#include "mirtk/MeanShift.h"
 
-namespace mirtk{
+namespace mirtk {
 
-mirtkMeanShift::mirtkMeanShift(GreyImage& image, int padding, int nBins)
+MeanShift::MeanShift(GreyImage& image, int padding, int nBins)
 {
 	_image = image;
 	_orig_image=image;
@@ -37,12 +37,12 @@ mirtkMeanShift::mirtkMeanShift(GreyImage& image, int padding, int nBins)
 
 }
 
-mirtkMeanShift::~mirtkMeanShift()
+MeanShift::~MeanShift()
 {
 	delete[] _density;
 }
 
-RealImage mirtkMeanShift::ReturnMask()
+RealImage MeanShift::ReturnMask()
 {
 	RealImage mask = _image;
 	RealPixel *ptr = mask.GetPointerToVoxels();
@@ -59,22 +59,22 @@ RealImage mirtkMeanShift::ReturnMask()
 }
 
 
-void mirtkMeanShift::SetOutput(GreyImage *output)
+void MeanShift::SetOutput(GreyImage *output)
 {
 	_output = output;
 }
 
-double mirtkMeanShift::ValueToBin(double value)
+double MeanShift::ValueToBin(double value)
 {
 	return _nBins*(value-_imin)/(_imax+1-_imin);
 }
 
-double mirtkMeanShift::BinToValue(int bin)
+double MeanShift::BinToValue(int bin)
 {
 	return _imin+bin*(_imax+1-_imin)/_nBins;
 }
 
-double mirtkMeanShift::GenerateDensity(double cut_off)
+double MeanShift::GenerateDensity(double cut_off)
 {
 	int i,j;
 	GreyPixel *ptr=_image.GetPointerToVoxels();
@@ -82,10 +82,10 @@ double mirtkMeanShift::GenerateDensity(double cut_off)
 	int voxels=0;
 
 	_image.GetMinMax(&_imin,&_imax);
-	cout<<_imin<<" "<<_imax<<endl;
+	std::cout<<_imin<<" "<<_imax<<std::endl;
 	_bin_width = (_imax-_imin+1)/_nBins;
 
-	cout<<"generating density..."<<endl;
+	std::cout<<"generating density..."<<std::endl;
 	for(i=0;i<n;i++)
 	{
 		if(*ptr>_padding)
@@ -96,10 +96,10 @@ double mirtkMeanShift::GenerateDensity(double cut_off)
 		}
 		ptr++;
 	}
-	cout<<"done"<<endl;
+	std::cout<<"done"<<std::endl;
 
 
-	cout<<"Cutting off 2% of highest intensities"<<endl;
+	std::cout<<"Cutting off 2% of highest intensities"<<std::endl;
 	double sum=0,bs=0;
 	for(i=0; i<_nBins; i++) sum+=_density[i];
 	i=_nBins-1;
@@ -111,12 +111,12 @@ double mirtkMeanShift::GenerateDensity(double cut_off)
 
 	_limit = BinToValue(i);
 
-	cout<<"limit="<<_limit<<endl<<endl;
+	std::cout<<"limit="<<_limit<<std::endl<<std::endl;
 	return _limit;
 }
 
 
-void mirtkMeanShift::AddPoint(int x, int y, int z)
+void MeanShift::AddPoint(int x, int y, int z)
 {
 	if((x>=0)&&(y>=0)&&(z>=0)&&(x<_image.GetX())&&(y<_image.GetY())&&(z<_image.GetZ()))
 	{
@@ -137,7 +137,7 @@ void mirtkMeanShift::AddPoint(int x, int y, int z)
 	}
 }
 
-void mirtkMeanShift::AddPoint(int x, int y, int z, int label)
+void MeanShift::AddPoint(int x, int y, int z, int label)
 {
 	if((x>=0)&&(y>=0)&&(z>=0)&&(x<_image.GetX())&&(y<_image.GetY())&&(z<_image.GetZ()))
 	{
@@ -157,13 +157,13 @@ void mirtkMeanShift::AddPoint(int x, int y, int z, int label)
 	}
 }
 
-double mirtkMeanShift::msh(double y, double h)
+double MeanShift::msh(double y, double h)
 {
 	double points, sum, y0;
 	GreyPixel* ptr;
 	int n = _image.GetNumberOfVoxels();
 
-	//cout<<"msh: position = "<<y<<", bandwidth = "<<h<<endl;
+	//std::cout<<"msh: position = "<<y<<", bandwidth = "<<h<<std::endl;
 
 	if(h<=_bin_width) return y;
 
@@ -193,7 +193,7 @@ double mirtkMeanShift::msh(double y, double h)
 	return y;
 }
 
-double mirtkMeanShift::findGMvar()
+double MeanShift::findGMvar()
 {
 	double k;
 	int mean = ValueToBin(_gm);
@@ -203,13 +203,13 @@ double mirtkMeanShift::findGMvar()
 	{
 		k=sqrt(2*log(_density[mean]/(double)_density[i]));
 		sigma=abs(BinToValue(i)-_gm)/k;
-		cout<<"Pos "<<BinToValue(i)<<": sigma = "<<sigma<<endl;
+		std::cout<<"Pos "<<BinToValue(i)<<": sigma = "<<sigma<<std::endl;
 	}
 
 	return sigma;
 }
 
-double mirtkMeanShift::findMax(double tr1, double tr2)
+double MeanShift::findMax(double tr1, double tr2)
 {
 	double mx=0, pos=-1;
 	int j1,j2,i0,i;
@@ -218,37 +218,37 @@ double mirtkMeanShift::findMax(double tr1, double tr2)
 	j1=ValueToBin(tr1);
 	j2=ValueToBin(tr2);
 
-	//cout<<imin<<" "<<imax<<endl;
-	//cout<<j1<<" "<<j2<<endl;
+	//std::cout<<imin<<" "<<imax<<std::endl;
+	//std::cout<<j1<<" "<<j2<<std::endl;
 
 	i0 = j1;
 	for (i=j1; i<=j2; i++)
 	{
-		//cout<<_density[i]<<" ";
+		//std::cout<<_density[i]<<" ";
 		if(mx<_density[i])
 		{
 			i0=i;
 			mx=_density[i];
-			//cout<<"density["<<i<<"]="<<_density[i]<<", mx="<<mx<<endl;
+			//std::cout<<"density["<<i<<"]="<<_density[i]<<", mx="<<mx<<std::endl;
 		}
 	}
-	//cout<<i0<<endl;
+	//std::cout<<i0<<std::endl;
 	pos=BinToValue(i0);//imin+i0*(imax+1-imin)/nBins;
-	//cout<<pos<<endl;
+	//std::cout<<pos<<std::endl;
 
-	cout<<"Maximum for interval <"<<tr1<<", "<<tr2<<"> is "<<pos<<endl;
+	std::cout<<"Maximum for interval <"<<tr1<<", "<<tr2<<"> is "<<pos<<std::endl;
 	return pos;
 }
 
-double mirtkMeanShift::findMin(double tr1, double tr2)
+double MeanShift::findMin(double tr1, double tr2)
 {
 	double mx=100000000, pos=-1;
 	int j1,j2,i0,i;
 	//j1 = nBins*(tr1-imin)/(imax+1-imin);
 	//j2 = nBins*(tr2-imin)/(imax+1-imin);
 
-	//cout<<imin<<" "<<imax<<endl;
-	//cout<<j1<<" "<<j2<<endl;
+	//std::cout<<imin<<" "<<imax<<std::endl;
+	//std::cout<<j1<<" "<<j2<<std::endl;
 
 	j1=ValueToBin(tr1);
 	j2=ValueToBin(tr2);
@@ -260,33 +260,33 @@ double mirtkMeanShift::findMin(double tr1, double tr2)
 		{
 			i0=i;
 			mx=_density[i];
-			//cout<<"density["<<i<<"]="<<density[i]<<", mx="<<mx<<endl;
+			//std::cout<<"density["<<i<<"]="<<density[i]<<", mx="<<mx<<std::endl;
 		}
 	}
 	pos=BinToValue(i0);//imin+i0*(imax+1-imin)/nBins;
 	//pos=imin+i0*(imax+1-imin)/nBins;
 
-	cout<<"Minimum for interval <"<<tr1<<", "<<tr2<<"> is "<<pos<<endl;
+	std::cout<<"Minimum for interval <"<<tr1<<", "<<tr2<<"> is "<<pos<<std::endl;
 	return pos;
 }
 
-double mirtkMeanShift::split(double pos1, double pos2, double bw, double h1, double h2)
+double MeanShift::split(double pos1, double pos2, double bw, double h1, double h2)
 {
 	double tr=0.02*_nBins;
 	double m1, m2, m3;
 	bool change = true;
 
-	cout<<"split: "<<pos1<<" "<<pos2<<" "<<bw<<" "<<h1<<" "<<h2<<endl;
+	std::cout<<"split: "<<pos1<<" "<<pos2<<" "<<bw<<" "<<h1<<" "<<h2<<std::endl;
 
 	while(((pos2-pos1) > _bin_width)&&(change)&&( bw>_bin_width ))
 	{
 		change=false;
-		cout<<"pos1="<<pos1<<" pos2="<<pos2<<endl;
+		std::cout<<"pos1="<<pos1<<" pos2="<<pos2<<std::endl;
 		tr=_bin_width;
 		if (tr<1) tr=1;
 		m1=msh(pos1,bw);
 		m2=msh(pos2,bw);
-		cout<<"m1="<<m1<<", m2="<<m2<<endl;
+		std::cout<<"m1="<<m1<<", m2="<<m2<<std::endl;
 
 		if((m2-m1)< tr)
 		{
@@ -294,21 +294,21 @@ double mirtkMeanShift::split(double pos1, double pos2, double bw, double h1, dou
 			bw=(h1+h2)/2;
 			if(bw<=h2-1)
 			{
-				cout<<"reducing bandwidth: bw="<<bw<<endl;
-				cout<<"h1="<<h1<<", h2="<<h2<<endl;
+				std::cout<<"reducing bandwidth: bw="<<bw<<std::endl;
+				std::cout<<"h1="<<h1<<", h2="<<h2<<std::endl;
 				change=true;
 			}
 		}
 		else
 		{
-			cout<<"changing positions:"<<endl;
+			std::cout<<"changing positions:"<<std::endl;
 			m3=msh((pos1+pos2)/2, bw);
-			cout<<"m3="<<m3<<endl;
+			std::cout<<"m3="<<m3<<std::endl;
 			if((m3-m1)<tr)
 			{
 				pos1=(pos1+pos2)/2;
 				change=true;
-				cout<<"pos1="<<pos1<<endl;
+				std::cout<<"pos1="<<pos1<<std::endl;
 			}
 			else
 			{
@@ -316,7 +316,7 @@ double mirtkMeanShift::split(double pos1, double pos2, double bw, double h1, dou
 				{
 					pos2=(pos1+pos2)/2;
 					change=true;
-					cout<<"pos2="<<pos2<<endl;
+					std::cout<<"pos2="<<pos2<<std::endl;
 				}
 				else
 				{
@@ -324,15 +324,15 @@ double mirtkMeanShift::split(double pos1, double pos2, double bw, double h1, dou
 					bw=(h1+h2)/2;
 					if(bw>=h1+1)
 					{
-						cout<<"increasing bandwidth: bw="<<bw<<endl;
-						cout<<"h1="<<h1<<", h2="<<h2<<endl;
+						std::cout<<"increasing bandwidth: bw="<<bw<<std::endl;
+						std::cout<<"h1="<<h1<<", h2="<<h2<<std::endl;
 
 						change=true;
 					}
 					else 
 					{
-						//cout<<"bandwidth fixed:"<<bw<<endl;
-						cout<<"change=false, exiting split."<<endl;
+						//std::cout<<"bandwidth fixed:"<<bw<<std::endl;
+						std::cout<<"change=false, exiting split."<<std::endl;
 
 					}
 				}
@@ -341,27 +341,27 @@ double mirtkMeanShift::split(double pos1, double pos2, double bw, double h1, dou
 		}
 	}
 
-	cout<<"treshold="<<pos1<<endl;
+	std::cout<<"treshold="<<pos1<<std::endl;
 
 	return pos1;
 }
 
 
-void mirtkMeanShift::SetTreshold(double treshold)
+void MeanShift::SetTreshold(double treshold)
 {
-	cout<<"treshold = "<<treshold<<endl;
+	std::cout<<"treshold = "<<treshold<<std::endl;
 
 	_treshold = treshold;
 }
 
-void mirtkMeanShift::SetTreshold()
+void MeanShift::SetTreshold()
 {
 
 	double pos1=0, pos2=_limit;
 	double bw=2*_nBins;
 	double h1=0, h2=bw;
 
-	cout<<"calculating treshold ... ";
+	std::cout<<"calculating treshold ... ";
 
 	_limit1 = split(pos1, pos2, bw, h1, h2);
 	_bg=findMax(0,_limit1);
@@ -371,14 +371,14 @@ void mirtkMeanShift::SetTreshold()
 }
 
 
-int mirtkMeanShift::Lcc(int label, bool add_second)
+int MeanShift::Lcc(int label, bool add_second)
 {
 	int i,j,k;
 	int lcc_size = 0;
 	int lcc2_size = 0;
 	int lcc_x = 0, lcc_y = 0, lcc_z = 0, lcc2_x = 0, lcc2_y = 0, lcc2_z = 0;
 
-	//cout<<"Finding Lcc"<<endl;
+	//std::cout<<"Finding Lcc"<<std::endl;
 	_map=_image;
 	//_image.Write("image.nii.gz");
 
@@ -422,7 +422,7 @@ int mirtkMeanShift::Lcc(int label, bool add_second)
 
 	if((add_second)&&(lcc2_size > 0.5*lcc_size))
 	{
-		cout<<"Adding second largest cluster too. ";
+		std::cout<<"Adding second largest cluster too. ";
 		Grow(lcc2_x,lcc2_y,lcc2_z,label);
 	}
 	//_map.Write("lcc.nii.gz");
@@ -431,7 +431,7 @@ int mirtkMeanShift::Lcc(int label, bool add_second)
 	return lcc_size;
 }
 
-int mirtkMeanShift::LccS(int label, double treshold)
+int MeanShift::LccS(int label, double treshold)
 {
 	int i,j,k;
 	int lcc_size = 0;
@@ -439,7 +439,7 @@ int mirtkMeanShift::LccS(int label, double treshold)
 	queue<Point> seed;
 	queue<int> size;
 
-	//cout<<"Finding Lcc and all cluster of 70% of the size of Lcc"<<endl;
+	//std::cout<<"Finding Lcc and all cluster of 70% of the size of Lcc"<<std::endl;
 	_map=_image;
 	//_image.Write("image.nii.gz");
 
@@ -494,7 +494,7 @@ int mirtkMeanShift::LccS(int label, double treshold)
 }
 
 
-void mirtkMeanShift::Grow(int x, int y, int z, int label)
+void MeanShift::Grow(int x, int y, int z, int label)
 {
 	AddPoint(x,y,z,label);
 
@@ -517,10 +517,10 @@ void mirtkMeanShift::Grow(int x, int y, int z, int label)
 }
 
 
-void mirtkMeanShift::RegionGrowing()
+void MeanShift::RegionGrowing()
 {
 	int i; 
-	cout<<"Removing background"<<endl;
+	std::cout<<"Removing background"<<std::endl;
 	_map=_image;
 
 	GreyPixel* ptr=_map.GetPointerToVoxels();
@@ -561,10 +561,10 @@ void mirtkMeanShift::RegionGrowing()
 }
 
 
-void mirtkMeanShift::RemoveBackground()
+void MeanShift::RemoveBackground()
 {
 	int i; 
-	cout<<"Removing background"<<endl;
+	std::cout<<"Removing background"<<std::endl;
 	_map=_image;
 
 	GreyPixel* ptr=_map.GetPointerToVoxels();
@@ -603,7 +603,7 @@ void mirtkMeanShift::RemoveBackground()
 		AddPoint(x,y,z+1);
 	}
 
-	cout<< "dilating and eroding ... ";
+	std::cout<< "dilating and eroding ... ";
 	_brain = new GreyImage(_map);
 
 	int iterations = 3;
@@ -617,7 +617,7 @@ void mirtkMeanShift::RemoveBackground()
 	erosion.Output(_brain);
 	for (i = 0; i < iterations; i++) erosion.Run();
 
-	cout<<"recalculating ... ";
+	std::cout<<"recalculating ... ";
 
 	ptr=_map.GetPointerToVoxels();
 	for(i=0;i<n;i++)
@@ -651,7 +651,7 @@ void mirtkMeanShift::RemoveBackground()
 		AddPoint(x,y,z+1);
 	}
 
-	cout<<"eroding ... ";
+	std::cout<<"eroding ... ";
 
 	*_brain = _map;
 
@@ -659,7 +659,7 @@ void mirtkMeanShift::RemoveBackground()
 	erosion.Output(_brain);
 	for (i = 0; i < iterations; i++) erosion.Run();
 
-	cout<<"final recalculation ...";
+	std::cout<<"final recalculation ...";
 
 	ptr=_map.GetPointerToVoxels();
 	for(i=0;i<n;i++)
@@ -694,7 +694,7 @@ void mirtkMeanShift::RemoveBackground()
 	}
 
 	delete _brain;
-	cout<<"done."<<endl;
+	std::cout<<"done."<<std::endl;
 
 	ptr=_map.GetPointerToVoxels();
 	GreyPixel *ptr_b=_image.GetPointerToVoxels();
@@ -708,27 +708,27 @@ void mirtkMeanShift::RemoveBackground()
 
 }
 
-void mirtkMeanShift::Write(char *output_name)
+void MeanShift::Write(char *output_name)
 {
 	_image.Write(output_name);
 }
 
-void mirtkMeanShift::WriteMap(char *output_name)
+void MeanShift::WriteMap(char *output_name)
 {
 	_map.Write(output_name);
 }
 
-void mirtkMeanShift::FindWMGMmeans()
+void MeanShift::FindWMGMmeans()
 {
-	cout<<"Finding WM and GM mean"<<endl;
-	cout<<"Make sure that background has been removed when calling this method!!!"<<endl;
+	std::cout<<"Finding WM and GM mean"<<std::endl;
+	std::cout<<"Make sure that background has been removed when calling this method!!!"<<std::endl;
 
 	_gm=findMax(0, _limit);
 	_limit2 = split(_gm, _limit, 2*_nBins, 0, 2*_nBins);
 	_wm=findMax(_limit2,_limit);
 	_split2=findMin(_gm,_wm);
-	cout<<"GM mean = "<<_gm<<endl;
-	cout<<"WM mean = "<<_wm<<endl;
+	std::cout<<"GM mean = "<<_gm<<std::endl;
+	std::cout<<"WM mean = "<<_wm<<std::endl;
 
 	/*
   _limit2 = split(0, _limit, 2*_nBins, 0, 2*_nBins);
@@ -740,8 +740,8 @@ void mirtkMeanShift::FindWMGMmeans()
   if(_bg>-1) _split1=findMin(_bg,_gm);
   _split2=findMin(_gm,_wm);
 
-  cout<<"GM mean = "<<_gm<<endl;
-  cout<<"WM mean = "<<_wm<<endl;
+  std::cout<<"GM mean = "<<_gm<<std::endl;
+  std::cout<<"WM mean = "<<_wm<<std::endl;
 
   GreyImage gmwm(_image);
   GreyPixel *ptr=gmwm.GetPointerToVoxels();

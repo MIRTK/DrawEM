@@ -18,20 +18,20 @@
  * limitations under the License.
  */
 
-#ifndef mirtkDrawEM_H_
-#define mirtkDrawEM_H_
+#ifndef DrawEM_H_
+#define DrawEM_H_
 
-#include <mirtkEMBase.h>
+#include "mirtk/EMBase.h"
 
-#include <mirtkPolynomialBiasField.h>
-#include <mirtkImage.h>
-#include <mirtkHashProbabilisticAtlas.h>
-#include <mirtkBiasField.h>
-#include <mirtkBiasCorrection.h>
-#include <mirtkImage.h>
-#include <mirtkGaussianBlurring.h>
-#include <mirtkEuclideanDistanceTransform.h>
-#include <mirtkConnectedComponents.h>
+#include "mirtk/PolynomialBiasField.h"
+#include "mirtk/Image.h"
+#include "mirtk/HashProbabilisticAtlas.h"
+#include "mirtk/BiasField.h"
+#include "mirtk/BiasCorrection.h"
+#include "mirtk/Image.h"
+#include "mirtk/GaussianBlurring.h"
+#include "mirtk/EuclideanDistanceTransform.h"
+#include "mirtk/ConnectedComponents.h"
 
 #include <set>
 #include <map>
@@ -40,9 +40,9 @@
 
 namespace mirtk {
 
-class mirtkDrawEM : public mirtkEMBase
+class DrawEM : public EMBase
 {
-    mirtkObjectMacro(mirtkDrawEM);
+    mirtkObjectMacro(DrawEM);
 
 protected:
     //
@@ -54,10 +54,10 @@ protected:
     RealImage _uncorrected;
 
     /// Bias field correction filter
-    mirtkBiasCorrection _biascorrection;
+    BiasCorrection _biascorrection;
 
     /// Bias field
-    mirtkBiasField *_biasfield;
+    BiasField *_biasfield;
 
     /// MRF connectivity
     Matrix _connectivity;
@@ -91,13 +91,13 @@ private:
 
 public:
     /// Constructor
-    mirtkDrawEM();
+    DrawEM();
     template <class ImageType>
-    mirtkDrawEM(int noTissues, ImageType **atlas, ImageType *background);
+    DrawEM(int noTissues, ImageType **atlas, ImageType *background);
     template <class ImageType>
-    mirtkDrawEM(int noTissues, ImageType **atlas);
+    DrawEM(int noTissues, ImageType **atlas);
     template <class ImageType>
-    mirtkDrawEM(int noTissues, ImageType **atlas, ImageType **initposteriors);
+    DrawEM(int noTissues, ImageType **atlas, ImageType **initposteriors);
 
     /// Initialize parameters
     void InitialiseParameters();
@@ -120,7 +120,7 @@ public:
 
 protected:
 
-    using mirtkEMBase::SetInput;
+    using EMBase::SetInput;
 
 public:
 
@@ -128,7 +128,7 @@ public:
     virtual void SetInput(const RealImage &, const Matrix &);
 
     /// Set bias field
-    virtual void SetBiasField(mirtkBiasField *);
+    virtual void SetBiasField(BiasField *);
 
     /// Execute one iteration and return log likelihood
     virtual double Iterate(int iteration);
@@ -172,13 +172,13 @@ public:
 
 };
 
-inline void mirtkDrawEM::setHui(bool hui){huipvcorr=hui;}
-inline void mirtkDrawEM::setbignn(bool bnn){bignn=bnn;}
-inline void mirtkDrawEM::setMRFstrength(double mrfw){mrfweight=mrfw;}
-inline void mirtkDrawEM::setMRFInterAtlas(RealImage **&atlas){	_MRF_inter=atlas; intermrf=true;}
-inline void mirtkDrawEM::setBeta(double b){beta=b;}
-inline void mirtkDrawEM::setBetaInter(double b){betainter=b;}
-inline void mirtkDrawEM::setTissueLabels(int num,int *atisslabels){
+inline void DrawEM::setHui(bool hui){huipvcorr=hui;}
+inline void DrawEM::setbignn(bool bnn){bignn=bnn;}
+inline void DrawEM::setMRFstrength(double mrfw){mrfweight=mrfw;}
+inline void DrawEM::setMRFInterAtlas(RealImage **&atlas){	_MRF_inter=atlas; intermrf=true;}
+inline void DrawEM::setBeta(double b){beta=b;}
+inline void DrawEM::setBetaInter(double b){betainter=b;}
+inline void DrawEM::setTissueLabels(int num,int *atisslabels){
     tissuelabels=new int[num];
     for(int i=0;i<num;i++)  tissuelabels[i]=atisslabels[i];
 }
@@ -188,4 +188,4 @@ inline void mirtkDrawEM::setTissueLabels(int num,int *atisslabels){
 
 
 
-#endif /* mirtkDrawEM_H_ */
+#endif /* DrawEM_H_ */

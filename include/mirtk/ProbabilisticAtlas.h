@@ -22,9 +22,9 @@
 
 #define _MIRTKPROBABILISTICATLAS_H
 
-#include <mirtkObject.h>
+#include "mirtk/Object.h"
 
-#include <mirtkImage.h>
+#include "mirtk/Image.h"
 
 #include <vector>
 
@@ -35,12 +35,12 @@ Atlas probability map class
 
  */
 using namespace std;
-namespace mirtk{
+namespace mirtk {
 
 
-class mirtkProbabilisticAtlas : public Object
+class ProbabilisticAtlas : public Object
 {
-	mirtkObjectMacro(mirtkProbabilisticAtlas);
+	mirtkObjectMacro(ProbabilisticAtlas);
 
 	// Vector of probability maps
 	vector<RealImage> _images;
@@ -61,7 +61,7 @@ class mirtkProbabilisticAtlas : public Object
 public:
 
 	/// Constructor
-	mirtkProbabilisticAtlas();
+	ProbabilisticAtlas();
 
 	/// swap images within atlas
 	void SwapImages(int, int);
@@ -121,60 +121,60 @@ public:
 
 };
 
-inline void mirtkProbabilisticAtlas::First()
+inline void ProbabilisticAtlas::First()
 {
 	unsigned int i;
 	for (i=0; i<_pointers.size(); i++) _pointers[i] = _images[i].GetPointerToVoxels();
 }
 
-inline void mirtkProbabilisticAtlas::Next()
+inline void ProbabilisticAtlas::Next()
 {
 	unsigned int i;
 	for (i=0; i<_pointers.size(); i++) _pointers[i]++;
 }
 
-inline RealPixel mirtkProbabilisticAtlas::GetValue(unsigned int channel)
+inline RealPixel ProbabilisticAtlas::GetValue(unsigned int channel)
 {
 	if (channel < _images.size()) return *_pointers[channel];
 	else {
-		cerr << "Channel identificator " << channel <<" out of range." <<endl;
+		std::cerr << "Channel identificator " << channel <<" out of range." <<std::endl;
 		exit(1);
 	}
 }
 
-inline RealPixel mirtkProbabilisticAtlas::GetValue(int x, int y, int z, unsigned int channel)
+inline RealPixel ProbabilisticAtlas::GetValue(int x, int y, int z, unsigned int channel)
 {
 	if (channel < _images.size()) return _images[channel].Get(x,y,z);
 	else {
-		cerr << "Channel identificator " << channel <<" out of range." <<endl;
+		std::cerr << "Channel identificator " << channel <<" out of range." <<std::endl;
 		exit(1);
 	}
 }
 
-inline void mirtkProbabilisticAtlas::SetValue(unsigned int channel, RealPixel value)
+inline void ProbabilisticAtlas::SetValue(unsigned int channel, RealPixel value)
 {
 	if (channel < _images.size()) *_pointers[channel] = value;
 	else {
-		cerr << "Channel identificator " << channel << " out of range." <<endl;
+		std::cerr << "Channel identificator " << channel << " out of range." <<std::endl;
 		exit(1);
 	}
 }
 
-inline void mirtkProbabilisticAtlas::SetValue(int x, int y, int z, unsigned int channel, RealPixel value)
+inline void ProbabilisticAtlas::SetValue(int x, int y, int z, unsigned int channel, RealPixel value)
 {
 	if (channel < _images.size()) _images[channel].Put( x, y, z, value);
 	else {
-		cerr << "Channel identificator " << channel <<" out of range." <<endl;
+		std::cerr << "Channel identificator " << channel <<" out of range." <<std::endl;
 		exit(1);
 	}
 }
 
-inline int mirtkProbabilisticAtlas::GetNumberOfVoxels()
+inline int ProbabilisticAtlas::GetNumberOfVoxels()
 {
 	return _number_of_voxels;
 }
 
-inline int mirtkProbabilisticAtlas::GetNumberOfTissues()
+inline int ProbabilisticAtlas::GetNumberOfTissues()
 {
 	return _number_of_tissues;
 }

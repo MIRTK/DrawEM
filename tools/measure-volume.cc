@@ -17,11 +17,11 @@
  * limitations under the License.
  */
 
-#include <mirtkCommon.h>
-#include <mirtkOptions.h>
+#include "mirtk/Common.h"
+#include "mirtk/Options.h"
 
-#include <mirtkImageIOConfig.h>
-#include <mirtkGenericImage.h>
+#include "mirtk/IOConfig.h"
+#include "mirtk/GenericImage.h"
 
 #include <map>
 
@@ -36,17 +36,17 @@ using namespace std;
 // -----------------------------------------------------------------------------
 void PrintHelp(const char *name)
 {
-	cout << endl;
-	cout << "Usage: " << name << " <input>" << endl;
-	cout << endl;
-	cout << "Description:" << endl;
- 	cout << "  Measures the volume of each label in the input image" << endl;
-	cout << endl;
-	cout << "Optional: " << endl;
-	cout << endl;
-	cout << "  -voxels    count the number of voxels instead" << endl;
-	PrintStandardOptions(cout);
-	cout << endl;
+	std::cout << std::endl;
+	std::cout << "Usage: " << name << " <input>" << std::endl;
+	std::cout << std::endl;
+	std::cout << "Description:" << std::endl;
+ 	std::cout << "  Measures the volume of each label in the input image" << std::endl;
+	std::cout << std::endl;
+	std::cout << "Optional: " << std::endl;
+	std::cout << std::endl;
+	std::cout << "  -voxels    count the number of voxels instead" << std::endl;
+	PrintStandardOptions(std::cout);
+	std::cout << std::endl;
 }
 
 // =============================================================================
@@ -60,7 +60,7 @@ int main(int argc, char **argv)
 {
   REQUIRES_POSARGS(1);
 
-  InitializeImageIOLibrary();
+  InitializeIOLibrary();
   RealImage img(POSARG(1));
 
   bool involume=true;
@@ -92,7 +92,7 @@ int main(int argc, char **argv)
 		if(label==0)continue;
 		double volume=(*ii).second ;
 		if(involume) volume=volume*vsize;
-	       cout << label << " " <<std::setprecision(8)<< volume << endl;
+	       std::cout << label << " " <<std::setprecision(8)<< volume << std::endl;
     }
     
     return 0;

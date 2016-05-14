@@ -17,11 +17,11 @@
  * limitations under the License.
  */
 
-#include <mirtkCommon.h>
-#include <mirtkOptions.h>
+#include "mirtk/Common.h"
+#include "mirtk/Options.h"
 
-#include <mirtkImageIOConfig.h>
-#include <mirtkGenericImage.h>
+#include "mirtk/IOConfig.h"
+#include "mirtk/GenericImage.h"
 
 #include <algorithm>   
 #include <vector>      
@@ -37,24 +37,24 @@ using namespace std;
 // -----------------------------------------------------------------------------
 void PrintHelp(const char *name)
 {
-	cout << endl;
-	cout << "Usage: " << name << " <input> <options>" << endl;
-	cout << endl;
-	cout << "Description:" << endl;
- 	cout << "  Calculates statistics by filtering with a kernel." << endl;
-	cout << endl;
-	cout << "Options: " << endl;
-	cout << "  -kernel <number>       kernel size: number^3 (number must be even, and >=3 !), default: 3 " << endl;
-	cout << endl;
-	cout << "Operations: " << endl;
-	cout << "  -min <output>          calculate min" << endl;
-	cout << "  -max <output>          calculate max" << endl;
-	cout << "  -mean <output>         calculate mean" << endl;
-	cout << "  -median <output>       calculate median" << endl;
-	cout << "  -std <output>          calculate std" << endl;
-	cout << "  -std-median <output>   calculate std based on median" << endl;
-	PrintStandardOptions(cout);
-	cout << endl;
+	std::cout << std::endl;
+	std::cout << "Usage: " << name << " <input> <options>" << std::endl;
+	std::cout << std::endl;
+	std::cout << "Description:" << std::endl;
+ 	std::cout << "  Calculates statistics by filtering with a kernel." << std::endl;
+	std::cout << std::endl;
+	std::cout << "Options: " << std::endl;
+	std::cout << "  -kernel <number>       kernel size: number^3 (number must be even, and >=3 !), default: 3 " << std::endl;
+	std::cout << std::endl;
+	std::cout << "Operations: " << std::endl;
+	std::cout << "  -min <output>          calculate min" << std::endl;
+	std::cout << "  -max <output>          calculate max" << std::endl;
+	std::cout << "  -mean <output>         calculate mean" << std::endl;
+	std::cout << "  -median <output>       calculate median" << std::endl;
+	std::cout << "  -std <output>          calculate std" << std::endl;
+	std::cout << "  -std-median <output>   calculate std based on median" << std::endl;
+	PrintStandardOptions(std::cout);
+	std::cout << std::endl;
 }
 
 // =============================================================================
@@ -68,7 +68,7 @@ int main(int argc, char **argv)
 {
   REQUIRES_POSARGS(1);
 
-  InitializeImageIOLibrary();
+  InitializeIOLibrary();
   RealImage img(POSARG(1));
 
   char *min_name, *max_name, *mean_name, *median_name, *std_name, *std_median_name;

@@ -17,46 +17,15 @@
  */
 
 
-#ifndef _MIRTKGAUSSIAN_H
-
-#define _MIRTKGAUSSIAN_H
-
-#include <mirtkImage.h>
-
-/**
-
-multivariate gaussian probability distribution
-
- */
+#include "mirtk/Gaussian.h"
 
 namespace mirtk {
 
-class mirtkGaussian : public Object
+void Gaussian::Initialise(const double &mi, const double &sigma)
 {
-	mirtkObjectMacro(mirtkGaussian);
-
-protected:
-
-	double _mi;
-	double _sigma;
-	double _norm;
-
-public:
-
-	void Initialise(const double &mi, const double &sigma);
-	double Evaluate(const double &x);
-	double GetNorm();
-};
-
-inline double mirtkGaussian::Evaluate(const double &x)
-{
-	return _norm * exp(-((x - _mi) * (x - _mi)) / (2.0 * _sigma));
-}
-
-inline double mirtkGaussian::GetNorm()
-{
-	return _norm;
+	_mi = mi;
+	_sigma = sigma;
+	_norm = 1.0 / (sqrt(sigma) * sqrt(M_PI*2.0));
 }
 
 }
-#endif

@@ -21,19 +21,19 @@
 #define _MIRTKMEANSHIFT_H
 // queue::push/pop
 
-#include <mirtkGenericImage.h>
-#include <mirtkImage.h>
-#include <mirtkDilation.h>
-#include <mirtkErosion.h>
-#include <mirtkPoint.h>
-#include <mirtkGaussianBlurring.h>
+#include "mirtk/GenericImage.h"
+#include "mirtk/Image.h"
+#include "mirtk/Dilation.h"
+#include "mirtk/Erosion.h"
+#include "mirtk/Point.h"
+#include "mirtk/GaussianBlurring.h"
 #include <algorithm>
 #include <queue>
 
 using namespace std;
-namespace mirtk{
+namespace mirtk {
 
-class mirtkMeanShift
+class MeanShift
 {
 
 	int _nBins;
@@ -54,8 +54,8 @@ public:
 
 public:
 
-	mirtkMeanShift(GreyImage& image, int padding = -1, int nBins = 256);
-	~mirtkMeanShift();
+	MeanShift(GreyImage& image, int padding = -1, int nBins = 256);
+	~MeanShift();
 	void SetOutput( GreyImage *_output);
 	double ValueToBin(double value);
 	double BinToValue(int bin);

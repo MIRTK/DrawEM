@@ -17,11 +17,11 @@
  * limitations under the License.
  */
 
-#include <mirtkCommon.h>
-#include <mirtkOptions.h>
+#include "mirtk/Common.h"
+#include "mirtk/Options.h"
 
-#include <mirtkImageIOConfig.h>
-#include <mirtkGenericImage.h>
+#include "mirtk/IOConfig.h"
+#include "mirtk/GenericImage.h"
 
 #include <vector>
 #include <fstream>
@@ -39,31 +39,31 @@ using namespace std;
 // -----------------------------------------------------------------------------
 void PrintHelp(const char *name)
 {
-	cout << endl;
-	cout << "Usage 1: " << name << " <inputA> <inputB> <output> <Value in inputB> <Padding Value in output> [<-invert>]" << endl;
-	cout << endl;
-	cout << "Description:" << endl;
-	cout << "  Changes the inputA according to inputB.  Sets the padding value where the value is found in inputB. " << endl;
-	cout << "  e.g. " << name << " inputA.nii.gz inputB.nii.gz output.nii.gz 1 0" << endl;
-	cout << "  If the <-invert> flag is supplied, the padding value is set where the value is NOT found. " << endl;
-	cout << "----------------------------------------------------------------------------------------------------"<<endl;
-	cout << endl;
-	cout << "Usage 2: " << name << " <inputA> <inputB> <output> <N> <Value 1 in inputB> .. <Value N in inputB> <Padding Value in output> [<-invert>]" << endl;
-	cout << endl;
-	cout << "Description:" << endl;
-	cout << "  Changes the inputA according to inputB.  Sets the padding value where the N values are found in inputB. " << endl;
-	cout << "  e.g. " << name << " inputA.nii.gz inputB.nii.gz output.nii.gz 2 1 2 100" << endl;
-	cout << "  Different paddings can be entered consecutively to change different values" << endl;
-	cout << "  e.g. " << name << " inputA.nii.gz inputB.nii.gz output.nii.gz 1 1 100  1 2 200  1 3 300" << endl;
-	cout << "  If the <-invert> flag is supplied, the padding value is set where the value is NOT found. " << endl;
-	cout << "----------------------------------------------------------------------------------------------------"<<endl;
-	cout << endl;
-	cout << "Usage 3: " << name << " <inputA> <inputB> <output> <csv>" << endl;
-	cout << endl;
-	cout << "  The csv file contains the values to change with rows:" << endl;
-	cout << "    value padding_value" << endl;
-	PrintStandardOptions(cout);
-	cout << endl;
+	std::cout << std::endl;
+	std::cout << "Usage 1: " << name << " <inputA> <inputB> <output> <Value in inputB> <Padding Value in output> [<-invert>]" << std::endl;
+	std::cout << std::endl;
+	std::cout << "Description:" << std::endl;
+	std::cout << "  Changes the inputA according to inputB.  Sets the padding value where the value is found in inputB. " << std::endl;
+	std::cout << "  e.g. " << name << " inputA.nii.gz inputB.nii.gz output.nii.gz 1 0" << std::endl;
+	std::cout << "  If the <-invert> flag is supplied, the padding value is set where the value is NOT found. " << std::endl;
+	std::cout << "----------------------------------------------------------------------------------------------------"<<std::endl;
+	std::cout << std::endl;
+	std::cout << "Usage 2: " << name << " <inputA> <inputB> <output> <N> <Value 1 in inputB> .. <Value N in inputB> <Padding Value in output> [<-invert>]" << std::endl;
+	std::cout << std::endl;
+	std::cout << "Description:" << std::endl;
+	std::cout << "  Changes the inputA according to inputB.  Sets the padding value where the N values are found in inputB. " << std::endl;
+	std::cout << "  e.g. " << name << " inputA.nii.gz inputB.nii.gz output.nii.gz 2 1 2 100" << std::endl;
+	std::cout << "  Different paddings can be entered consecutively to change different values" << std::endl;
+	std::cout << "  e.g. " << name << " inputA.nii.gz inputB.nii.gz output.nii.gz 1 1 100  1 2 200  1 3 300" << std::endl;
+	std::cout << "  If the <-invert> flag is supplied, the padding value is set where the value is NOT found. " << std::endl;
+	std::cout << "----------------------------------------------------------------------------------------------------"<<std::endl;
+	std::cout << std::endl;
+	std::cout << "Usage 3: " << name << " <inputA> <inputB> <output> <csv>" << std::endl;
+	std::cout << std::endl;
+	std::cout << "  The csv file contains the values to change with rows:" << std::endl;
+	std::cout << "    value padding_value" << std::endl;
+	PrintStandardOptions(std::cout);
+	std::cout << std::endl;
 }
 
 // =============================================================================
@@ -83,7 +83,7 @@ int main(int argc, char **argv)
 	const char *inputB_name = argv[2];
 	const char *output_name = argv[3];
 
-	InitializeImageIOLibrary();
+	InitializeIOLibrary();
 	unique_ptr<BaseImage> inputA(BaseImage::New(inputA_name));
 	unique_ptr<BaseImage> inputB(BaseImage::New(inputB_name));
 
@@ -101,7 +101,7 @@ int main(int argc, char **argv)
 		char* csv_name=argv[restargs];
 		ifstream csv(csv_name);
 		if (!csv.is_open()){
-			cerr << "Could not open file " << csv_name << endl;
+			std::cerr << "Could not open file " << csv_name << std::endl;
 			exit(1);
 		}
 

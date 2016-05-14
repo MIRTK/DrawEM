@@ -17,15 +17,15 @@
  * limitations under the License.
  */
 
-#include <mirtkCommon.h>
-#include <mirtkOptions.h>
+#include "mirtk/Common.h"
+#include "mirtk/Options.h"
 
-#include <mirtkImageIOConfig.h>
-#include <mirtkGenericImage.h>
-#include <mirtkGaussianBlurring.h>
+#include "mirtk/IOConfig.h"
+#include "mirtk/GenericImage.h"
+#include "mirtk/GaussianBlurring.h"
 
-#include <mirtkGaussian.h>
-#include <mirtkKMeans.h>
+#include "mirtk/Gaussian.h"
+#include "mirtk/KMeans.h"
 
 
 using namespace mirtk;
@@ -40,22 +40,22 @@ using namespace std;
 // -----------------------------------------------------------------------------
 void PrintHelp(const char *name)
 {
-	cout << endl;
-	cout << "Usage: " << name << " <input> <K> <output> [options]" << endl;
-	cout << endl;
-	cout << "Description:" << endl;
-	cout << "  Runs k-means clustering at the input image with the provided K number of classes. " << endl;
-	cout << "  e.g. " << name << " input.nii.gz 10 output.nii.gz" << endl;
-	cout << endl;
-	cout << "Input options:" << endl;
-	cout << "  -mask <mask>               run k-means inside the provided mask" << endl;
-	cout <<	"  -replicates <number>       number of random initializations, the best is retained (default: 10)." << endl;
-	cout <<	"  -iterations <number>       maximum number of iterations per replicate  (default: 100)." << endl;
-	cout << "  -saveprobs <basename>      output probabilities. These are computed by initialising a Gaussian distribution for each cluster with the mean and variance of the points."<< endl;
-	cout <<	"  -blurprobs <sigma>         The output probabilities are blurred with a kernel of size sigma." << endl;
-	cout << endl;
-	PrintStandardOptions(cout);
-	cout << endl;
+	std::cout << std::endl;
+	std::cout << "Usage: " << name << " <input> <K> <output> [options]" << std::endl;
+	std::cout << std::endl;
+	std::cout << "Description:" << std::endl;
+	std::cout << "  Runs k-means clustering at the input image with the provided K number of classes. " << std::endl;
+	std::cout << "  e.g. " << name << " input.nii.gz 10 output.nii.gz" << std::endl;
+	std::cout << std::endl;
+	std::cout << "Input options:" << std::endl;
+	std::cout << "  -mask <mask>               run k-means inside the provided mask" << std::endl;
+	std::cout <<	"  -replicates <number>       number of random initializations, the best is retained (default: 10)." << std::endl;
+	std::cout <<	"  -iterations <number>       maximum number of iterations per replicate  (default: 100)." << std::endl;
+	std::cout << "  -saveprobs <basename>      output probabilities. These are computed by initialising a Gaussian distribution for each cluster with the mean and variance of the points."<< std::endl;
+	std::cout <<	"  -blurprobs <sigma>         The output probabilities are blurred with a kernel of size sigma." << std::endl;
+	std::cout << std::endl;
+	PrintStandardOptions(std::cout);
+	std::cout << std::endl;
 }
 
 // =============================================================================
@@ -66,7 +66,7 @@ void PrintHelp(const char *name)
 
 int main(int argc, char **argv){
 	REQUIRES_POSARGS(3);
-	InitializeImageIOLibrary();
+	InitializeIOLibrary();
 	int a=1;
 
 	RealImage input;
@@ -166,7 +166,7 @@ int main(int argc, char **argv){
 		double *centroids=km.getCentroids();
 		double *vars=new double[k];
 		double *denom=new double[k];
-		mirtkGaussian *G=new mirtkGaussian[k];
+		Gaussian *G=new Gaussian[k];
 
 
 		for (i=0;i<k;i++){ 
@@ -223,7 +223,7 @@ int main(int argc, char **argv){
 			ostringstream ss;
 			ss<<probsBase<<i<<".nii.gz";
 			probs[i].Write((ss.str()).c_str());
-			cout<<"c["<<i<<"]="<<centroids[i]<<" , "<<vars[i]<<endl;
+			std::cout<<"c["<<i<<"]="<<centroids[i]<<" , "<<vars[i]<<std::endl;
 		}
 
 		delete[] probs;

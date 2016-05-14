@@ -18,23 +18,23 @@
  */
 
 
-#include <mirtkImage.h>
+#include "mirtk/Image.h"
 
-#include <mirtkProbabilisticAtlas.h>
+#include "mirtk/ProbabilisticAtlas.h"
 
-namespace mirtk{
+namespace mirtk {
 
-mirtkProbabilisticAtlas::mirtkProbabilisticAtlas()
+ProbabilisticAtlas::ProbabilisticAtlas()
 {
 	_number_of_voxels=0;
 	_number_of_tissues=0;
 }
 
-void mirtkProbabilisticAtlas::SwapImages(int a, int b)
+void ProbabilisticAtlas::SwapImages(int a, int b)
 {
 	if( a >= _number_of_tissues || b >= _number_of_tissues )
 	{
-		cerr << "cannot swap images, index out of bounds!" << endl;
+		std::cerr << "cannot swap images, index out of bounds!" << std::endl;
 		return;
 	}
 	RealImage tmpimage = _images[a];
@@ -45,13 +45,13 @@ void mirtkProbabilisticAtlas::SwapImages(int a, int b)
 	_pointers[a] = tmpptr;
 }
 
-void mirtkProbabilisticAtlas::AddImage(RealImage image)
+void ProbabilisticAtlas::AddImage(RealImage image)
 {
 	if (_images.size() == 0) {
 		_number_of_voxels = image.GetNumberOfVoxels();
 	} else {
 		if (_number_of_voxels != image.GetNumberOfVoxels()) {
-			cerr << "Image sizes mismatch" << endl;
+			std::cerr << "Image sizes mismatch" << std::endl;
 			exit(1);
 		}
 	}
@@ -60,14 +60,14 @@ void mirtkProbabilisticAtlas::AddImage(RealImage image)
 	_number_of_tissues = _images.size();
 }
 
-void mirtkProbabilisticAtlas::NormalizeAtlas(RealImage background)
+void ProbabilisticAtlas::NormalizeAtlas(RealImage background)
 {
 	int i, j;
 	RealPixel norm;
 
 	// Add extra image
 	if (_number_of_tissues == 0) {
-		cerr << "mirtkProbabilisticAtlas::NormalizeAtlas: No probability maps found" << endl;
+		std::cerr << "ProbabilisticAtlas::NormalizeAtlas: No probability maps found" << std::endl;
 		exit(1);
 	} else {
 		this->AddImage(background);
@@ -94,14 +94,14 @@ void mirtkProbabilisticAtlas::NormalizeAtlas(RealImage background)
 	}
 }
 
-void mirtkProbabilisticAtlas::NormalizeAtlas()
+void ProbabilisticAtlas::NormalizeAtlas()
 {
 	int i, j;
 	RealPixel norm;
 
 	// Add extra image
 	if (_number_of_tissues == 0) {
-		cerr << "mirtkProbabilisticAtlas::NormalizeAtlas: No probability maps found" << endl;
+		std::cerr << "ProbabilisticAtlas::NormalizeAtlas: No probability maps found" << std::endl;
 		exit(1);
 	}
 	_number_of_tissues = _images.size();
@@ -116,7 +116,7 @@ void mirtkProbabilisticAtlas::NormalizeAtlas()
 		{
 			if( *(_pointers[j]) < .0 )
 			{
-				//cerr << " atlas prob < 0: " << *(_pointers[j]) << "  tissue " << j << " voxel" << i << endl;
+				//std::cerr << " atlas prob < 0: " << *(_pointers[j]) << "  tissue " << j << " voxel" << i << std::endl;
 				*(_pointers[j]) = .0;
 			}
 		}
@@ -144,14 +144,14 @@ void mirtkProbabilisticAtlas::NormalizeAtlas()
 }
 
 
-void mirtkProbabilisticAtlas::AddBackground()
+void ProbabilisticAtlas::AddBackground()
 {
 	int i, j;
 	RealPixel norm, min, max;
 
 	// Add extra image
 	if (_number_of_tissues == 0) {
-		cerr << "mirtkProbabilisticAtlas::AddBackground: No probability maps found" << endl;
+		std::cerr << "ProbabilisticAtlas::AddBackground: No probability maps found" << std::endl;
 		exit(1);
 	} else {
 		this->AddImage(_images[0]);
@@ -163,7 +163,7 @@ void mirtkProbabilisticAtlas::AddBackground()
 	RealImage other;
 	other = _images[0];
 	for (i = 1; i < _number_of_tissues-1; i++) {
-		cerr<<i<<endl;
+		std::cerr<<i<<std::endl;
 		other += _images[i];
 	}
 	other.GetMinMax(&min, &max);
@@ -183,31 +183,31 @@ void mirtkProbabilisticAtlas::AddBackground()
 	}
 }
 
-void mirtkProbabilisticAtlas::AddProbabilityMaps(int n, RealImage **atlas)
+void ProbabilisticAtlas::AddProbabilityMaps(int n, RealImage **atlas)
 {
 	int i;
 
 	for (i = 0; i < n; i++) {
-		// cout<<"adding image "<<i<<endl;
+		// std::cout<<"adding image "<<i<<std::endl;
 		this->AddImage(*(atlas[i]));
 	}
 };
 
-void mirtkProbabilisticAtlas::Write(int i, const char *filename)
+void ProbabilisticAtlas::Write(int i, const char *filename)
 {
 	if  (i < _number_of_tissues) {
 		//_images[i] *= 255;
 		_images[i].Write(filename);
 		//_images[i] /= 255;
 	} else {
-		cerr << "mirtkProbabilisticAtlas::Write: No such probability map" << endl;
+		std::cerr << "ProbabilisticAtlas::Write: No such probability map" << std::endl;
 		exit(1);
 	}
 }
 
-RealImage mirtkProbabilisticAtlas::ComputeHardSegmentation()
+RealImage ProbabilisticAtlas::ComputeHardSegmentation()
 {
-	cerr<<"mirtkProbabilisticAtlas::ComputeHardSegmentation"<<endl;
+	std::cerr<<"ProbabilisticAtlas::ComputeHardSegmentation"<<std::endl;
 	int i, tissue, j=0;
 	double max = 0;
 	_segmentation = _images[0];
@@ -231,14 +231,14 @@ RealImage mirtkProbabilisticAtlas::ComputeHardSegmentation()
 	return _segmentation;
 }
 
-RealImage mirtkProbabilisticAtlas::GetImage(int i)
+RealImage ProbabilisticAtlas::GetImage(int i)
 {
 	return _images[i];
 }
 
-void mirtkProbabilisticAtlas::ExtractLabel(int label, RealImage& image)
+void ProbabilisticAtlas::ExtractLabel(int label, RealImage& image)
 {
-	cerr<<"mirtkProbabilisticAtlas::ExtractLabel"<<endl;
+	std::cerr<<"ProbabilisticAtlas::ExtractLabel"<<std::endl;
 	int i;
 	//ComputeHardSegmentation();
 
@@ -253,7 +253,7 @@ void mirtkProbabilisticAtlas::ExtractLabel(int label, RealImage& image)
 	}
 }
 
-void mirtkProbabilisticAtlas::WriteHardSegmentation(const char *filename)
+void ProbabilisticAtlas::WriteHardSegmentation(const char *filename)
 {
 	_segmentation.Write(filename);
 }

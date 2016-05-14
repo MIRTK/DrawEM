@@ -21,22 +21,22 @@
 
 #define _MIRTKBIASFIELD_H
 
-//#include <mirtkGeometry.h>
-#include <mirtkPoint.h>
-#include <mirtkMatrix.h>
+//#include "mirtk/Geometry.h"
+#include "mirtk/Point.h"
+#include "mirtk/Matrix.h"
 
-#include <mirtkTransformation.h>
+#include "mirtk/Transformation.h"
 
 #define MIRTKBIASFIELD_MAGIC            815008
 
 #define MIRTKBIASFIELD_BSPLINE          1
 #define MIRTKBIASFIELD_POLYNOMIAL       2
 
-namespace mirtk{
+namespace mirtk {
 
-class mirtkBiasField : public Object
+class BiasField : public Object
 {
-	mirtkAbstractMacro(mirtkBiasField);
+	mirtkAbstractMacro(BiasField);
 
 protected:
 
@@ -214,32 +214,32 @@ public:
 
 };
 
-inline int mirtkBiasField::GetX() const
+inline int BiasField::GetX() const
 {
 	return _x;
 }
 
-inline int mirtkBiasField::GetY() const
+inline int BiasField::GetY() const
 {
 	return _y;
 }
 
-inline int mirtkBiasField::GetZ() const
+inline int BiasField::GetZ() const
 {
 	return _z;
 }
 
-inline int mirtkBiasField::NumberOfDOFs() const
+inline int BiasField::NumberOfDOFs() const
 {
 	return _x*_y*_z;
 }
 
-inline double mirtkBiasField::Get(int index) const
+inline double BiasField::Get(int index) const
 {
 	int i, j, k;
 
 	if (index >= _x*_y*_z) {
-		cerr << "mirtkBiasField::Get: No such dof" << endl;
+		std::cerr << "BiasField::Get: No such dof" << std::endl;
 		exit(1);
 	}
 	i = index/(_y*_z);
@@ -248,22 +248,22 @@ inline double mirtkBiasField::Get(int index) const
 	return _data[k][j][i];
 }
 
-inline double mirtkBiasField::Get(int i, int j, int k) const
+inline double BiasField::Get(int i, int j, int k) const
 {
 	if ((i < 0) || (i >= _x) || (j < 0) || (j >= _y) || (k < 0) || (k >= _z)) {
-		cerr << "mirtkBiasField::Get: No such dof" << endl;
+		std::cerr << "BiasField::Get: No such dof" << std::endl;
 		exit(1);
 	}
 	return _data[k][j][i];
 }
 
-inline void mirtkBiasField::Put(int index, double x)
+inline void BiasField::Put(int index, double x)
 {
 	Point p;
 	int i, j, k;
 
 	if (index >= _x*_y*_z) {
-		cerr << "mirtkBiasField::Put: No such dof" << endl;
+		std::cerr << "BiasField::Put: No such dof" << std::endl;
 		exit(1);
 	}
 	i = index/(_y*_z);
@@ -272,23 +272,23 @@ inline void mirtkBiasField::Put(int index, double x)
 	_data[k][j][i] = x;
 }
 
-inline void mirtkBiasField::Put(int i, int j, int k, double x)
+inline void BiasField::Put(int i, int j, int k, double x)
 {
 	if ((i < 0) || (i >= _x) || (j < 0) || (j >= _y) || (k < 0) || (k >= _z)) {
-		cerr << "mirtkBiasField::Put: No such dof" << endl;
+		std::cerr << "BiasField::Put: No such dof" << std::endl;
 		exit(1);
 	}
 	_data[k][j][i] = x;
 }
 
-inline void mirtkBiasField::GetSpacing(double &dx, double &dy, double &dz) const
+inline void BiasField::GetSpacing(double &dx, double &dy, double &dz) const
 {
 	dx = _dx;
 	dy = _dy;
 	dz = _dz;
 }
 
-inline void mirtkBiasField::PutOrientation(double *xaxis, double *yaxis, double *zaxis)
+inline void BiasField::PutOrientation(double *xaxis, double *yaxis, double *zaxis)
 {
 	_xaxis[0] = xaxis[0];
 	_xaxis[1] = xaxis[1];
@@ -303,7 +303,7 @@ inline void mirtkBiasField::PutOrientation(double *xaxis, double *yaxis, double 
 	this->UpdateMatrix();
 }
 
-inline void mirtkBiasField::GetOrientation(double *xaxis, double *yaxis, double *zaxis) const
+inline void BiasField::GetOrientation(double *xaxis, double *yaxis, double *zaxis) const
 {
 	xaxis[0] = _xaxis[0];
 	xaxis[1] = _xaxis[1];
@@ -316,7 +316,7 @@ inline void mirtkBiasField::GetOrientation(double *xaxis, double *yaxis, double 
 	zaxis[2] = _zaxis[2];
 }
 
-inline void mirtkBiasField::PutBoundingBox(double x1, double y1, double z1, double x2, double y2, double z2)
+inline void BiasField::PutBoundingBox(double x1, double y1, double z1, double x2, double y2, double z2)
 {
 	// Initialize control point domain
 	_origin._x = (x2 + x1) / 2.0;
@@ -352,12 +352,12 @@ inline void mirtkBiasField::PutBoundingBox(double x1, double y1, double z1, doub
 	this->UpdateMatrix();
 }
 
-inline void mirtkBiasField::PutBoundingBox(Point p1, Point p2)
+inline void BiasField::PutBoundingBox(Point p1, Point p2)
 {
 	this->PutBoundingBox(p1._x, p1._y, p1._z, p2._x, p2._y, p2._z);
 }
 
-inline void mirtkBiasField::WorldToLattice(double &x, double &y, double &z) const
+inline void BiasField::WorldToLattice(double &x, double &y, double &z) const
 {
 	double a, b, c;
 
@@ -372,12 +372,12 @@ inline void mirtkBiasField::WorldToLattice(double &x, double &y, double &z) cons
 	z = c;
 }
 
-inline void mirtkBiasField::WorldToLattice(Point &p) const
+inline void BiasField::WorldToLattice(Point &p) const
 {
 	this->WorldToLattice(p._x, p._y, p._z);
 }
 
-inline void mirtkBiasField::LatticeToWorld(double &x, double &y, double &z) const
+inline void BiasField::LatticeToWorld(double &x, double &y, double &z) const
 {
 	double a, b, c;
 
@@ -392,12 +392,12 @@ inline void mirtkBiasField::LatticeToWorld(double &x, double &y, double &z) cons
 	z = c;
 }
 
-inline void mirtkBiasField::LatticeToWorld(Point &p) const
+inline void BiasField::LatticeToWorld(Point &p) const
 {
 	this->LatticeToWorld(p._x, p._y, p._z);
 }
 
-inline void mirtkBiasField::IndexToLattice(int index, int& i, int& j, int& k) const
+inline void BiasField::IndexToLattice(int index, int& i, int& j, int& k) const
 {
 
 	if (index >= _x*_y*_z) {
@@ -411,12 +411,12 @@ inline void mirtkBiasField::IndexToLattice(int index, int& i, int& j, int& k) co
 	k = index%(_y*_z)%_z;
 }
 
-inline int mirtkBiasField::LatticeToIndex(int i, int j, int k) const
+inline int BiasField::LatticeToIndex(int i, int j, int k) const
 {
 	return i * _y * _z + j * _z + k;
 }
 
-#include "mirtkBSplineBiasField.h"
+#include "BSplineBiasField.h"
 
 }
 

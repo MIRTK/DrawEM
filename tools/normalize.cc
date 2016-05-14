@@ -16,41 +16,41 @@
  * limitations under the License.
  */
 
-#include <mirtkCommon.h>
-#include <mirtkOptions.h>
-#include <mirtkImageIOConfig.h>
+#include "mirtk/Common.h"
+#include "mirtk/Options.h"
+#include "mirtk/IOConfig.h"
 
-#include <mirtkImage.h>
-#include <mirtkImageHistogram1D.h>
-//#include <mirtkSegmentationFunction.h>
-#include <mirtkGaussianBlurring.h>
-#include <mirtkNormalizeNyul.h>
+#include "mirtk/Image.h"
+#include "mirtk/ImageHistogram1D.h"
+//#include "mirtk/SegmentationFunction.h"
+#include "mirtk/GaussianBlurring.h"
+#include "mirtk/NormalizeNyul.h"
 
 using namespace mirtk;
 
 void PrintHelp(const char *name)
 {
-  cout << "usage: " << name << " <target> <source> <output_source> [options]" << endl;
-  cout << "       " << name << " <input> <output> -equalize <padding>" << endl;
-  cout << endl;
-  cout << "Normalizes the intensity distribution of an image to be similar to" << endl;
-  cout << "the intensity distribution of a given reference image. Moreover," << endl;
-  cout << "this tool can be used to equalize the histograms of either a single" << endl;
-  cout << "given image or two images using the same transfer function." << endl;
-  cout << endl;
-  cout << "Options:" << endl;
-  cout << "  -Tp <value>   Target padding value" << endl;
-  cout << "  -Sp <value>   Source padding value" << endl;
-  cout << "  -piecewise    Use a piecewise linear function as suggested by Nyul et al." << endl;
-  cout << "  -equalize <padding> [<target_output>]   Equalize histograms before normalization." << endl;
-  PrintCommonOptions(cout);
+  std::cout << "usage: " << name << " <target> <source> <output_source> [options]" << std::endl;
+  std::cout << "       " << name << " <input> <output> -equalize <padding>" << std::endl;
+  std::cout << std::endl;
+  std::cout << "Normalizes the intensity distribution of an image to be similar to" << std::endl;
+  std::cout << "the intensity distribution of a given reference image. Moreover," << std::endl;
+  std::cout << "this tool can be used to equalize the histograms of either a single" << std::endl;
+  std::cout << "given image or two images using the same transfer function." << std::endl;
+  std::cout << std::endl;
+  std::cout << "Options:" << std::endl;
+  std::cout << "  -Tp <value>   Target padding value" << std::endl;
+  std::cout << "  -Sp <value>   Source padding value" << std::endl;
+  std::cout << "  -piecewise    Use a piecewise linear function as suggested by Nyul et al." << std::endl;
+  std::cout << "  -equalize <padding> [<target_output>]   Equalize histograms before normalization." << std::endl;
+  PrintCommonOptions(std::cout);
 }
 
 int main(int argc, char **argv)
 {
   // Positional arguments
   REQUIRES_POSARGS(2);
-  InitializeImageIOLibrary();
+  InitializeIOLibrary();
 
   const char *target_name   = NULL;
   const char *target_output = NULL;
@@ -101,14 +101,14 @@ int main(int argc, char **argv)
   // Read input image(s)
   RealImage target;
   if (target_name) {
-    if (verbose) cout << "Reading target image ... ", cout.flush();
+    if (verbose) std::cout << "Reading target image ... ", std::cout.flush();
     target.Read(target_name);
-    if (verbose) cout << "done" << endl;
+    if (verbose) std::cout << "done" << std::endl;
   }
 
-  if (verbose) cout << "Reading source image ... ", cout.flush();
+  if (verbose) std::cout << "Reading source image ... ", std::cout.flush();
   RealImage source(source_name);
-  if (verbose) cout << "done" << endl;
+  if (verbose) std::cout << "done" << std::endl;
 
   // Equalize histograms
   if (equalize) {
@@ -116,16 +116,16 @@ int main(int argc, char **argv)
     RealImage *reference = (target.IsEmpty() ? &source : &target);
 
     if (verbose) {
-      cout << "Equalize histogram" << ((reference == &target) ? "s" : "") << " ... ";
-      cout.flush();
+      std::cout << "Equalize histogram" << ((reference == &target) ? "s" : "") << " ... ";
+      std::cout.flush();
     }
 
     reference->GetMinMaxAsDouble(min, max);
     if (min < equalize_padding) min = equalize_padding;
 
-		mirtkImageHistogram1D<RealPixel> histogram;
+		ImageHistogram1D<RealPixel> histogram;
 		histogram.Evaluate(reference, equalize_padding);
-		//mirtkNormalizeNyul::histogramImage(&histogram, reference, equalize_padding);
+		//NormalizeNyul::histogramImage(&histogram, reference, equalize_padding);
 		histogram.Equalize(min, max);
 		histogram.BackProject(reference);
 
@@ -133,12 +133,12 @@ int main(int argc, char **argv)
       source.GetMinMaxAsDouble(min, max);
       if (min < equalize_padding) min = equalize_padding;
       histogram.Evaluate(&source, equalize_padding);
-      //mirtkNormalizeNyul::histogramImage(&histogram, &source, equalize_padding);
+      //NormalizeNyul::histogramImage(&histogram, &source, equalize_padding);
       histogram.Equalize(min, max);
       histogram.BackProject(&source);
     }
 
-    if (verbose) cout << "done" << endl;
+    if (verbose) std::cout << "done" << std::endl;
   }
 
   // Stop if source image equalization is done only
@@ -147,11 +147,11 @@ int main(int argc, char **argv)
     return 0;
   }
 
-  if (verbose) cout << "Normalize histogram ... ";
+  if (verbose) std::cout << "Normalize histogram ... ";
 
   // Normalize histogram
   if (piecewise) {
-    mirtkNormalizeNyul nn(source, target);
+    NormalizeNyul nn(source, target);
     nn.SetPadding(source_padding, target_padding);
     nn.Run();
     source = nn.GetOutput();
@@ -179,8 +179,8 @@ int main(int argc, char **argv)
       }
 	  }
 	  if (n == 0) {
-      cout << "failed" << endl;
-      cerr << EXECNAME << ": Number of samples should be larger than zero" << endl;
+      std::cout << "failed" << std::endl;
+      std::cerr << EXECNAME << ": Number of samples should be larger than zero" << std::endl;
       exit(1);
 	  }
 
@@ -208,7 +208,7 @@ int main(int argc, char **argv)
 	  a = y_avg - b * x_avg;
 
     if (verbose) {
-      cout << "scaling = " << b << ", offset = " << b;
+      std::cout << "scaling = " << b << ", offset = " << b;
     }
 
 	  for (int k = 0; k < source.GetZ(); k++)
@@ -219,7 +219,7 @@ int main(int argc, char **argv)
       }
 	  }
 
-    if (verbose) cout << "done" << endl;
+    if (verbose) std::cout << "done" << std::endl;
   }
 
   // Write normalized image

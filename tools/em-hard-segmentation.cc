@@ -17,12 +17,12 @@
  * limitations under the License.
  */
 
-#include <mirtkCommon.h>
-#include <mirtkOptions.h>
+#include "mirtk/Common.h"
+#include "mirtk/Options.h"
 
-#include <mirtkImageIOConfig.h>
+#include "mirtk/IOConfig.h"
 
-#include <mirtkHashProbabilisticAtlas.h>
+#include "mirtk/HashProbabilisticAtlas.h"
 
 
 using namespace mirtk;
@@ -36,20 +36,20 @@ using namespace std;
 // -----------------------------------------------------------------------------
 void PrintHelp(const char *name)
 {
-    cout << endl;
-    cout << "Usage: " << name << " <N> <atlas1> .. <atlasN> <output> [options]" << endl;
-    cout << endl;
-    cout << "Description:" << endl;
-    cout << "  Computes the hard segmentation of the N atlases. " << endl;
-    cout << "  Optionally MRF smoothing can be additionally applied." << endl;
-    cout << endl;
-    cout << "Input options:" << endl;
-    cout << "  -mrftimes <number>              number of times the mrf term will be applied (default 0)" << endl;
-    cout <<	"  -mrfweight <double>             weight of the mrf term (default 1/3)." << endl;
-    cout <<	"  -posteriors <post1> .. <postN>  write posteriors (useful when MRF is used)." << endl;
-    cout << endl;
-    PrintStandardOptions(cout);
-    cout << endl;
+    std::cout << std::endl;
+    std::cout << "Usage: " << name << " <N> <atlas1> .. <atlasN> <output> [options]" << std::endl;
+    std::cout << std::endl;
+    std::cout << "Description:" << std::endl;
+    std::cout << "  Computes the hard segmentation of the N atlases. " << std::endl;
+    std::cout << "  Optionally MRF smoothing can be additionally applied." << std::endl;
+    std::cout << std::endl;
+    std::cout << "Input options:" << std::endl;
+    std::cout << "  -mrftimes <number>              number of times the mrf term will be applied (default 0)" << std::endl;
+    std::cout <<	"  -mrfweight <double>             weight of the mrf term (default 1/3)." << std::endl;
+    std::cout <<	"  -posteriors <post1> .. <postN>  write posteriors (useful when MRF is used)." << std::endl;
+    std::cout << std::endl;
+    PrintStandardOptions(std::cout);
+    std::cout << std::endl;
 }
 
 // =============================================================================
@@ -63,7 +63,7 @@ double sx, sy,sz;
 int maxx,maxy,maxz;
 double mrfweight=1.0/3.0;
 int n;
-mirtkHashProbabilisticAtlas atlas;
+HashProbabilisticAtlas atlas;
 
 
 
@@ -119,7 +119,7 @@ void MRFStep(){
 
 int main(int argc, char **argv){
     REQUIRES_POSARGS(4);
-    InitializeImageIOLibrary();
+    InitializeIOLibrary();
     int a=1;
 
   // Number of tissues
@@ -129,9 +129,9 @@ int main(int argc, char **argv){
   double min, max;
   for (int i = 0; i < n; i++) {
     RealImage image(POSARG(a));
-    cerr << "Image " << i <<" = " << POSARG(a);
+    std::cerr << "Image " << i <<" = " << POSARG(a);
     image.GetMinMaxAsDouble(&min, &max);
-    cout << " with range: "<<  min <<" - "<<max<<endl;
+    std::cout << " with range: "<<  min <<" - "<<max<<std::endl;
     atlas.AddImage(image);
     a++;
   }
@@ -178,9 +178,9 @@ int main(int argc, char **argv){
       sz = 1.0/dz;
 
     for(int i=1;i<=mrftimes;i++){
-      cout<<"MRF iteration "<<i<<"...";
+      std::cout<<"MRF iteration "<<i<<"...";
       MRFStep();
-      cout<<"done"<<endl;
+      std::cout<<"done"<<std::endl;
     }
   }
 

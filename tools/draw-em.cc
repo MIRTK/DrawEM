@@ -18,15 +18,15 @@
  * limitations under the License.
  */
 
-#include <mirtkCommon.h>
-#include <mirtkOptions.h>
+#include "mirtk/Common.h"
+#include "mirtk/Options.h"
 
-#include <mirtkImageIOConfig.h>
-#include <mirtkGenericImage.h>
+#include "mirtk/IOConfig.h"
+#include "mirtk/GenericImage.h"
 
-#include <mirtkPolynomialBiasField.h>
-#include <mirtkDrawEM.h>
-#include <mirtkMatrix.h>
+#include "mirtk/PolynomialBiasField.h"
+#include "mirtk/DrawEM.h"
+#include "mirtk/Matrix.h"
 
 #include <iostream>
 #include <fstream>
@@ -46,59 +46,59 @@ using namespace std;
 // -----------------------------------------------------------------------------
 void PrintHelp(const char *name)
 {
-	cout << endl;
-	cout << "Usage: " << name << " <input> <N> <prob1> .. <probN> <output> [options]" << endl;
-	cout << endl;
-	cout << "Description:" << endl;
-    cout << "  Runs the DrawEM segmentation at the input image with the provided N probability maps of structures. " << endl;
-	cout << "  The main algorithm is outlined in [1]. " << endl;
-	cout << endl;
+	std::cout << std::endl;
+	std::cout << "Usage: " << name << " <input> <N> <prob1> .. <probN> <output> [options]" << std::endl;
+	std::cout << std::endl;
+	std::cout << "Description:" << std::endl;
+    std::cout << "  Runs the DrawEM segmentation at the input image with the provided N probability maps of structures. " << std::endl;
+	std::cout << "  The main algorithm is outlined in [1]. " << std::endl;
+	std::cout << std::endl;
 
-	cout << "Input options:" << endl;
-	cout << "GENERAL EM PARAMETERS:" << endl;
-	cout << " -biasfielddegree <number>       polynomial degree (of one dimension) of biasfield (default = 4)" << endl;
-	cout << " -mask <mask>                    mask image" << endl;
-    cout << " -padding <number>               padding value (default is min intensity)" << endl;
-    cout << " -iterations <number>            max number of iterations (default: 20)" << endl;
-	cout << " -reldiff <double>               min relative difference that assumes convergence" << endl;
-    cout << " -pv <class1> <class2>           add partial volume class between class class1 and class2" << endl;
-	cout << endl;
+	std::cout << "Input options:" << std::endl;
+	std::cout << "GENERAL EM PARAMETERS:" << std::endl;
+	std::cout << " -biasfielddegree <number>       polynomial degree (of one dimension) of biasfield (default = 4)" << std::endl;
+	std::cout << " -mask <mask>                    mask image" << std::endl;
+    std::cout << " -padding <number>               padding value (default is min intensity)" << std::endl;
+    std::cout << " -iterations <number>            max number of iterations (default: 20)" << std::endl;
+	std::cout << " -reldiff <double>               min relative difference that assumes convergence" << std::endl;
+    std::cout << " -pv <class1> <class2>           add partial volume class between class class1 and class2" << std::endl;
+	std::cout << std::endl;
 
-	cout << "MRF PARAMETERS:" << endl;
-	cout << " -mrf <file>                     use MRF, file contains a nxn connection matrix defining in at entry (i,j) if class i is adjacent, distant or identic to class j. " << endl;
-	cout << " -mrfstrength <double>           MRF strength (default 1) " << endl;
-    cout << " -bigmrf                         use 26-connectivity in the MRF neighborhood (default no)" << endl;
-    cout << " -mrftimes <number>              max number of times mrf will be performed (default == number of max iterations)" << endl;
-	cout << endl;
+	std::cout << "MRF PARAMETERS:" << std::endl;
+	std::cout << " -mrf <file>                     use MRF, file contains a nxn connection matrix defining in at entry (i,j) if class i is adjacent, distant or identic to class j. " << std::endl;
+	std::cout << " -mrfstrength <double>           MRF strength (default 1) " << std::endl;
+    std::cout << " -bigmrf                         use 26-connectivity in the MRF neighborhood (default no)" << std::endl;
+    std::cout << " -mrftimes <number>              max number of times mrf will be performed (default == number of max iterations)" << std::endl;
+	std::cout << std::endl;
 
-	cout << "RELAXATION PARAMETERS:" << endl;
-    cout << " -relax                          perform prior relaxation (default:no) " << endl;
-    cout << " -relaxfactor <double>           relaxation factor (weighting of smooth posteriors) (default: 0.5)" << endl;
-    cout << " -relaxtimes <number>            number of times relaxation will be performed (default: 1)" << endl;
-	cout << endl;
+	std::cout << "RELAXATION PARAMETERS:" << std::endl;
+    std::cout << " -relax                          perform prior relaxation (default:no) " << std::endl;
+    std::cout << " -relaxfactor <double>           relaxation factor (weighting of smooth posteriors) (default: 0.5)" << std::endl;
+    std::cout << " -relaxtimes <number>            number of times relaxation will be performed (default: 1)" << std::endl;
+	std::cout << std::endl;
 
-	cout << "SEGMENTATION PARAMETERS SPECIFIC IN [1]:" << endl;
-	cout << " -postpenalty <file>              image with the GMM weighting. Note that the weight is inverse to the AM IEEE TMI paper (0:use posterior, 1:use prior)" << endl;
-	cout << " -superlabel <N> <class1> .. <classN>    "
-			"                                  classes defining a superclass" << endl;
-	cout << " -tissues <Nout> <out1> .. <outN> <Ncsf> <csf1> .. <csfN> <Ngm> <gm1> .. <gmN> <Nwm> <wm1> .. <wmN>   "
-			"                                  tissue classes" << endl;
-	cout << " -hui                             hui-style PV correction (must have set tissue classes)" << endl;
-	cout << " -pvh <class1> <class2> <tissue>  add partial volume class between class number1 and number2, set tissue class for the pv" << endl;
-	cout << "                                  tissue is 1 for outlier, 2 for csf, 3 for gm, 4 for wm" << endl;
-    cout << endl;
+	std::cout << "SEGMENTATION PARAMETERS SPECIFIC IN [1]:" << std::endl;
+	std::cout << " -postpenalty <file>              image with the GMM weighting. Note that the weight is inverse to the AM IEEE TMI paper (0:use posterior, 1:use prior)" << std::endl;
+	std::cout << " -superlabel <N> <class1> .. <classN>    "
+			"                                  classes defining a superclass" << std::endl;
+	std::cout << " -tissues <Nout> <out1> .. <outN> <Ncsf> <csf1> .. <csfN> <Ngm> <gm1> .. <gmN> <Nwm> <wm1> .. <wmN>   "
+			"                                  tissue classes" << std::endl;
+	std::cout << " -hui                             hui-style PV correction (must have set tissue classes)" << std::endl;
+	std::cout << " -pvh <class1> <class2> <tissue>  add partial volume class between class number1 and number2, set tissue class for the pv" << std::endl;
+	std::cout << "                                  tissue is 1 for outlier, 2 for csf, 3 for gm, 4 for wm" << std::endl;
+    std::cout << std::endl;
 
-	cout << "OUTPUT PARAMETERS:" << endl;
-	cout << " -corrected <file>                save corrected image" << endl;
-	cout << " -savepv <file>                   save segmentation with pvs" << endl;
-	cout << " -saveprob <number> <file>        save posterior probability of tissue to file"<<endl;
-	cout << " -biasfield <file>                save final bias field (for log transformed intensities) to file. " << endl;
-    cout << endl;
-    PrintStandardOptions(cout);
-    cout << endl;
+	std::cout << "OUTPUT PARAMETERS:" << std::endl;
+	std::cout << " -corrected <file>                save corrected image" << std::endl;
+	std::cout << " -savepv <file>                   save segmentation with pvs" << std::endl;
+	std::cout << " -saveprob <number> <file>        save posterior probability of tissue to file"<<std::endl;
+	std::cout << " -biasfield <file>                save final bias field (for log transformed intensities) to file. " << std::endl;
+    std::cout << std::endl;
+    PrintStandardOptions(std::cout);
+    std::cout << std::endl;
 
-	cout << "References:" << endl;
-    cout << "[1] A. Makropoulos et al. Automatic whole brain MRI segmentation of the developing neonatal brain, IEEE TMI, 2014 "<<endl;
+	std::cout << "References:" << std::endl;
+    std::cout << "[1] A. Makropoulos et al. Automatic whole brain MRI segmentation of the developing neonatal brain, IEEE TMI, 2014 "<<std::endl;
 
 }
 
@@ -115,14 +115,14 @@ void readConnectivityMatrix( Matrix* mat, char* filename)
 	from.open(filename);
 
 	int value;
-    cout<<"Connectivity matrix: "<<filename<<endl;
+    std::cout<<"Connectivity matrix: "<<filename<<std::endl;
 	for( int i = 0; i < mat->Rows(); ++i ){
 		for( int j = 0; j < mat->Cols(); ++j ){
 			from >> value;
 			mat->Put(i,j,value);
 		}
     }
-    cout<<endl;
+    std::cout<<std::endl;
     from.close();
 }
 
@@ -131,7 +131,7 @@ void readConnectivityMatrix( Matrix* mat, char* filename)
 int main(int argc, char **argv)
 {
 	REQUIRES_POSARGS(4);
-	InitializeImageIOLibrary();
+	InitializeIOLibrary();
 	int a=1;
 
 	clock_t begin = clock();
@@ -149,14 +149,14 @@ int main(int argc, char **argv)
 	output_biascorrection=NULL;
 
 	// Input image
-	cout<<"reading "<<argv[1]<<endl;
+	std::cout<<"reading "<<argv[1]<<std::endl;
 	RealImage image;
 	image.Read(POSARG(a++));
 	image.Print();
 
 	// Number of tissues
 	n = atoi(POSARG(a++));
-	cout<<n<<" atlases"<<endl;
+	std::cout<<n<<" atlases"<<std::endl;
 
 	// Probabilistic atlas
 	char **atlas_names=new char*[n];
@@ -228,16 +228,16 @@ int main(int argc, char **argv)
 		}
 		else if (OPTION("-biasfielddegree")){
 			biasfield_degree=atoi(ARGUMENT);
-			cout << "Degree of biasfield polynomial: " << biasfield_degree << endl;
+			std::cout << "Degree of biasfield polynomial: " << biasfield_degree << std::endl;
 		}
 		else if (OPTION("-biasfield")){
 			output_biasfield=ARGUMENT;
-			cout << "Output biasfield to: " << output_biasfield << endl;
+			std::cout << "Output biasfield to: " << output_biasfield << std::endl;
 		}
 		else if (OPTION("-postpenalty")){
 			char *ppf=ARGUMENT;
 			postpenalty.Read(ppf);
-			cout<<"will use postpenalty "<<ppf<<endl;
+			std::cout<<"will use postpenalty "<<ppf<<std::endl;
 			postpen=true;
 		}
         else if (OPTION("-relax")){
@@ -352,15 +352,15 @@ int main(int argc, char **argv)
 
 
     // Create classification object
-    cout<<"initialize segmentation"<<endl;
-    mirtkDrawEM *classification = new mirtkDrawEM();
+    std::cout<<"initialize segmentation"<<std::endl;
+    DrawEM *classification = new DrawEM();
 	double atlasmin, atlasmax;
 	for (i = 0; i < n; i++) {
-		cout << "Image " << i <<" = " << atlas_names[i];
+		std::cout << "Image " << i <<" = " << atlas_names[i];
 		RealImage atlas(atlas_names[i]);
 		classification->addProbabilityMap(atlas);
 		atlas.GetMinMaxAsDouble(&atlasmin, &atlasmax);
-		cout << " with range: "<<  atlasmin <<" - "<<atlasmax<<endl;
+		std::cout << " with range: "<<  atlasmin <<" - "<<atlasmax<<std::endl;
 	}
 
 	Matrix* G;
@@ -379,7 +379,7 @@ int main(int argc, char **argv)
 	if(bignn)classification->setbignn(bignn);
 	if(superlbls)classification->setSuperlabels(superlabels);
 	if(settissues)	classification->setTissueLabels(n,tissuelabels);
-    else if(hui){ cerr<<"need to set tissues for pv correction"<<endl; PrintHelp(EXECNAME); exit(1);}
+    else if(hui){ std::cerr<<"need to set tissues for pv correction"<<std::endl; PrintHelp(EXECNAME); exit(1);}
 	if(hui)	classification->setHui(hui);
 	if(mrfstrength!=1)classification->setMRFstrength(mrfstrength);
 
@@ -397,7 +397,7 @@ int main(int argc, char **argv)
 		classification->SetMask(maskByteImage);
     }
     classification->Initialise();
-    cout<<"initialization: success"<<endl;
+    std::cout<<"initialization: success"<<std::endl;
 	std::cout.setf(std::ios::unitbuf);
 
 
@@ -408,7 +408,7 @@ int main(int argc, char **argv)
     int improvePhase = 0;
 
 	// Create bias field
-	mirtkPolynomialBiasField *biasfield = new mirtkPolynomialBiasField(image, curr_biasfield_degree);
+	PolynomialBiasField *biasfield = new PolynomialBiasField(image, curr_biasfield_degree);
 	classification->SetBiasField(biasfield);
 
 	bool BFupdate = false;
@@ -451,7 +451,7 @@ int main(int argc, char **argv)
                 if( curr_biasfield_degree < biasfield_degree && number_current_iterations){
 					curr_biasfield_degree++;
 					delete biasfield;
-					biasfield = new mirtkPolynomialBiasField(image, curr_biasfield_degree);
+					biasfield = new PolynomialBiasField(image, curr_biasfield_degree);
 					classification->SetBiasField(biasfield);
 
 					BFupdate = true;
@@ -480,9 +480,9 @@ int main(int argc, char **argv)
 			case 3:
                 if(( relax && !relaxed )){
 					// relax priors
-					cout << "relaxing priors now..." << endl;
+					std::cout << "relaxing priors now..." << std::endl;
 					classification->RStep(rfactor);
-                    cout << "done!" << endl;
+                    std::cout << "done!" << std::endl;
 					relaxtimes--;
 					if(relaxtimes==0){
 						improvePhase++;
@@ -504,10 +504,10 @@ int main(int argc, char **argv)
 						int h = hpv[i];
 
 						// add partial volume classes
-						cout << "adding partial volume classes between " << a << " " << b<< " with hui class"<< h<< endl;
+						std::cout << "adding partial volume classes between " << a << " " << b<< " with hui class"<< h<< std::endl;
 						pv_positions.push_back( classification->AddPartialVolumeClass( a, b, h) );
-						cout << "New PV Class at position: " << pv_positions[i] << endl;
-						cout << "done!" << endl;
+						std::cout << "New PV Class at position: " << pv_positions[i] << std::endl;
+						std::cout << "done!" << std::endl;
 					}
 					PVon = true;
 					improvePhase++;
@@ -536,13 +536,13 @@ int main(int argc, char **argv)
     classification->ConstructSegmentation(output_image);
 
 	// Save segmentation
-	cout<<"saving segmentation to "<<output_segmentation<<endl;
+	std::cout<<"saving segmentation to "<<output_segmentation<<std::endl;
 	output_image.Write(output_segmentation);
 
 	RealImage bias(image.Attributes());
 	if (output_biascorrection != NULL) {
 		// Bias corrected image
-		cout<<"preparing bias corrected image"<<endl;
+		std::cout<<"preparing bias corrected image"<<std::endl;
 		classification->GetBiasCorrectedImage(bias);
 
         for( int k = 0; k < bias.GetZ(); ++k){
@@ -556,18 +556,18 @@ int main(int argc, char **argv)
 				}
 			}
 		}
-		cout<<"saving bias corrected image to "<<output_biascorrection<<endl;
+		std::cout<<"saving bias corrected image to "<<output_biascorrection<<std::endl;
 		bias.Write(output_biascorrection);
 	}
 
 	if (output_biasfield != NULL) {
 		classification->GetBiasField( bias );
-		cout<<"saving bias field to "<<output_biasfield<<endl;
+		std::cout<<"saving bias field to "<<output_biasfield<<std::endl;
 		bias.Write(output_biasfield);
 	}
 
 	for( unsigned int i = 0; i < ss; ++i ){
-		cout<<"saving probability map of structure "<<savesegsnr[i]<<" to "<<savesegs[i]<<endl;
+		std::cout<<"saving probability map of structure "<<savesegsnr[i]<<" to "<<savesegs[i]<<std::endl;
 		classification->WriteProbMap(savesegsnr[i],savesegs[i].c_str());
 	}
 
@@ -579,7 +579,7 @@ int main(int argc, char **argv)
 	int elapsed_secs = round( double(end - begin) / CLOCKS_PER_SEC);
 	int elapsed_mins = elapsed_secs/60;
 	elapsed_secs%=elapsed_mins;
-	cout<<"elapsed time: "<<elapsed_mins<<" min "<<elapsed_secs<<" sec"<<endl;
+	std::cout<<"elapsed time: "<<elapsed_mins<<" min "<<elapsed_secs<<" sec"<<std::endl;
 
 	return 0;
 }

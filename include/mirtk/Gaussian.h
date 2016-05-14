@@ -17,32 +17,46 @@
  */
 
 
-#ifndef _mirtkImageHistogram1D_H
+#ifndef _MIRTKGAUSSIAN_H
 
-#define _mirtkImageHistogram1D_H
+#define _MIRTKGAUSSIAN_H
 
-#include <mirtkHistogram1D.h>
-#include <mirtkGenericImage.h>
+#include "mirtk/Image.h"
+
+/**
+
+multivariate gaussian probability distribution
+
+ */
 
 namespace mirtk {
 
-template <class VoxelType> 
-class mirtkImageHistogram1D : public Histogram1D<VoxelType>
+class Gaussian : public Object
 {
+	mirtkObjectMacro(Gaussian);
+
 protected:
-    /// min for equalize
-    VoxelType _emin;
-    /// max for equalize
-    VoxelType _emax;
+
+	double _mi;
+	double _sigma;
+	double _norm;
 
 public:
-	/// Evaluate the histogram from a given image with padding value
-	virtual void Evaluate(GenericImage<VoxelType> *, VoxelType padding = -10000);
-	/// Histogram Equalization
-	virtual void Equalize(VoxelType min,VoxelType max);
-	/// Back project the equalized histogram to image
-	virtual void BackProject(GenericImage<VoxelType> *); 
+
+	void Initialise(const double &mi, const double &sigma);
+	double Evaluate(const double &x);
+	double GetNorm();
 };
+
+inline double Gaussian::Evaluate(const double &x)
+{
+	return _norm * exp(-((x - _mi) * (x - _mi)) / (2.0 * _sigma));
+}
+
+inline double Gaussian::GetNorm()
+{
+	return _norm;
+}
 
 }
 #endif

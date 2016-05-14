@@ -16,13 +16,13 @@
  * limitations under the License.
  */
 
-#include <mirtkCommon.h>
-#include <mirtkOptions.h>
+#include "mirtk/Common.h"
+#include "mirtk/Options.h"
 
-#include <mirtkImageIOConfig.h>
-#include <mirtkGenericImage.h>
+#include "mirtk/IOConfig.h"
+#include "mirtk/GenericImage.h"
 
-#include <mirtkEMBase.h>
+#include "mirtk/EMBase.h"
 #include <vector>
 #include <sstream>
 
@@ -37,23 +37,23 @@ using namespace std;
 // -----------------------------------------------------------------------------
 void PrintHelp(const char *name)
 {
-	cout << endl;
-	cout << "Usage: " << name << " <input> <N> <prob1> .. <probN> <output> [options]" << endl;
-	cout << endl;
-	cout << "Description:" << endl;
-	cout << "  Runs EM segmentation at the input image with the provided N probability maps of structures. " << endl;
-	cout << "  e.g. " << name << " input.nii.gz 5 bg.nii.gz csf.nii.gz gm.nii.gz wm.nii.gz dgm.nii.gz segmentation.nii.gz" << endl;
-	cout << endl;
-	cout << "Input options:" << endl;
-	cout << "  -mask <mask>               run EM inside the provided mask" << endl;
-	cout << "  -padding <number>          run EM where input > padding value" << endl;
-	cout << "  -iterations <number>       maximum number of iterations (default: 50)" << endl;
-	cout << "  -saveprob <number> <file>  save posterior probability of structure with number <number> to file "<<endl;
-	cout <<	"                             (0-indexed i.e. structure 1 has number 0)"<<endl;
-	cout << "  -saveprobs <basename>      save posterior probability of structures to files with basename <basename>"<<endl;
-	cout << endl;
-	PrintStandardOptions(cout);
-	cout << endl;
+	std::cout << std::endl;
+	std::cout << "Usage: " << name << " <input> <N> <prob1> .. <probN> <output> [options]" << std::endl;
+	std::cout << std::endl;
+	std::cout << "Description:" << std::endl;
+	std::cout << "  Runs EM segmentation at the input image with the provided N probability maps of structures. " << std::endl;
+	std::cout << "  e.g. " << name << " input.nii.gz 5 bg.nii.gz csf.nii.gz gm.nii.gz wm.nii.gz dgm.nii.gz segmentation.nii.gz" << std::endl;
+	std::cout << std::endl;
+	std::cout << "Input options:" << std::endl;
+	std::cout << "  -mask <mask>               run EM inside the provided mask" << std::endl;
+	std::cout << "  -padding <number>          run EM where input > padding value" << std::endl;
+	std::cout << "  -iterations <number>       maximum number of iterations (default: 50)" << std::endl;
+	std::cout << "  -saveprob <number> <file>  save posterior probability of structure with number <number> to file "<<std::endl;
+	std::cout <<	"                             (0-indexed i.e. structure 1 has number 0)"<<std::endl;
+	std::cout << "  -saveprobs <basename>      save posterior probability of structures to files with basename <basename>"<<std::endl;
+	std::cout << std::endl;
+	PrintStandardOptions(std::cout);
+	std::cout << std::endl;
 }
 
 // =============================================================================
@@ -68,7 +68,7 @@ void PrintHelp(const char *name)
 int main(int argc, char **argv)
 {
 	REQUIRES_POSARGS(4);
-	InitializeImageIOLibrary();
+	InitializeIOLibrary();
 	int a=1;
 
 	int i, n, ok, padding, iterations;
@@ -131,14 +131,14 @@ int main(int argc, char **argv)
 		else HANDLE_STANDARD_OR_UNKNOWN_OPTION();
 	}
 
-	mirtkEMBase *classification = new mirtkEMBase();
+	EMBase *classification = new EMBase();
 	double atlasmin, atlasmax;
 	for (i = 0; i < n; i++) {
-		cout << "Image " << i <<" = " << atlas_names[i];
+		std::cout << "Image " << i <<" = " << atlas_names[i];
 		RealImage atlas(atlas_names[i]);
 		classification->addProbabilityMap(atlas);
 		atlas.GetMinMaxAsDouble(&atlasmin, &atlasmax);
-		cout << " with range: "<<  atlasmin <<" - "<<atlasmax<<endl;
+		std::cout << " with range: "<<  atlasmin <<" - "<<atlasmax<<std::endl;
 	}
 	if (usemask) classification->SetMask(mask);
 	classification->SetPadding(padding);
@@ -148,7 +148,7 @@ int main(int argc, char **argv)
 	double rel_diff;
 	i=0;
 	do {
-		cout << "Iteration = " << i+1 << " / " << iterations << endl;
+		std::cout << "Iteration = " << i+1 << " / " << iterations << std::endl;
 		rel_diff = classification->Iterate(i);
 		i++;
 	} while ((rel_diff>0.001)&&(i<iterations));
@@ -159,7 +159,7 @@ int main(int argc, char **argv)
 
 
 	for( unsigned int i = 0; i < ss; ++i ){
-		cout<<"saving probability map of structure "<<savesegsnr[i]<<" to "<<savesegs[i]<<endl;
+		std::cout<<"saving probability map of structure "<<savesegsnr[i]<<" to "<<savesegs[i]<<std::endl;
 		classification->WriteProbMap(savesegsnr[i],savesegs[i].c_str());
 	}
 

@@ -18,11 +18,11 @@
  */
 
 
-#include <mirtkImageHistogram1D.h>
+#include "mirtk/ImageHistogram1D.h"
 
 namespace mirtk {
 
-template <class VoxelType> void mirtkImageHistogram1D<VoxelType>::Evaluate(GenericImage<VoxelType> *image, VoxelType padding)
+template <class VoxelType> void ImageHistogram1D<VoxelType>::Evaluate(GenericImage<VoxelType> *image, VoxelType padding)
 {  
 	double value,min,max;
 	int i,j,k,l;
@@ -43,7 +43,7 @@ template <class VoxelType> void mirtkImageHistogram1D<VoxelType>::Evaluate(Gener
 	}
 }
 
-template <class VoxelType> void mirtkImageHistogram1D<VoxelType>::BackProject(GenericImage<VoxelType> *image)
+template <class VoxelType> void ImageHistogram1D<VoxelType>::BackProject(GenericImage<VoxelType> *image)
 {  
 	VoxelType value;
 	int i,j,k,l;
@@ -61,7 +61,7 @@ template <class VoxelType> void mirtkImageHistogram1D<VoxelType>::BackProject(Ge
 	}
 }
 
-template <class VoxelType> void mirtkImageHistogram1D<VoxelType>::Equalize(VoxelType min,VoxelType max)
+template <class VoxelType> void ImageHistogram1D<VoxelType>::Equalize(VoxelType min,VoxelType max)
 {
 	int i;
 	double count = 0,current;
@@ -74,10 +74,10 @@ template <class VoxelType> void mirtkImageHistogram1D<VoxelType>::Equalize(Voxel
     this->_emax = max;
 }
 
-template class mirtkImageHistogram1D<unsigned char>;
-template class mirtkImageHistogram1D<short>;
-template class mirtkImageHistogram1D<unsigned short>;
-template class mirtkImageHistogram1D<float>;
-template class mirtkImageHistogram1D<double>;
+template class ImageHistogram1D<unsigned char>;
+template class ImageHistogram1D<short>;
+template class ImageHistogram1D<unsigned short>;
+template class ImageHistogram1D<float>;
+template class ImageHistogram1D<double>;
 
 }

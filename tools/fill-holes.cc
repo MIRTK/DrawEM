@@ -20,13 +20,13 @@
 // Source code adapted from FSL fslmaths -fillh
 
 
-#include <mirtkCommon.h>
-#include <mirtkOptions.h>
+#include "mirtk/Common.h"
+#include "mirtk/Options.h"
 
-#include <mirtkImageIOConfig.h>
-#include <mirtkGenericImage.h>
+#include "mirtk/IOConfig.h"
+#include "mirtk/GenericImage.h"
 
-#include <mirtkConnectedComponents.h>
+#include "mirtk/ConnectedComponents.h"
 #include <set>
 
 using namespace mirtk;
@@ -40,18 +40,18 @@ using namespace std;
 // -----------------------------------------------------------------------------
 void PrintHelp(const char *name)
 {
-	cout << endl;
-    cout << "Usage: " << name << " <input> <output>" << endl;
-	cout << endl;
-	cout << "Description:" << endl;
-    cout << "  Fills holes in the input."<<endl;
-    cout << "  Note: The code is adapted from fslmaths -fillh" <<endl;
-    cout << endl;
-    cout << "Input options:" << endl;
-    cout << "  -connectivity <number>  voxel connectivity for finding holes - 6 or 26 (default: 6)" <<endl;
-    cout << endl;
-	PrintStandardOptions(cout);
-	cout << endl;
+	std::cout << std::endl;
+    std::cout << "Usage: " << name << " <input> <output>" << std::endl;
+	std::cout << std::endl;
+	std::cout << "Description:" << std::endl;
+    std::cout << "  Fills holes in the input."<<std::endl;
+    std::cout << "  Note: The code is adapted from fslmaths -fillh" <<std::endl;
+    std::cout << std::endl;
+    std::cout << "Input options:" << std::endl;
+    std::cout << "  -connectivity <number>  voxel connectivity for finding holes - 6 or 26 (default: 6)" <<std::endl;
+    std::cout << std::endl;
+	PrintStandardOptions(std::cout);
+	std::cout << std::endl;
 }
 
 // =============================================================================
@@ -63,7 +63,7 @@ void PrintHelp(const char *name)
 int main(int argc, char **argv){
 
     REQUIRES_POSARGS(2);
-	InitializeImageIOLibrary();
+	InitializeIOLibrary();
 
     int a = 1;
 

@@ -18,11 +18,11 @@
  */
 
 
-#include <mirtkBiasField.h>
+#include "mirtk/BiasField.h"
 
-namespace mirtk{
+namespace mirtk {
 
-void mirtkBiasField::UpdateMatrix()
+void BiasField::UpdateMatrix()
 {
 	// Update image to world coordinate system matrix
 	_matL2W.Ident();
@@ -86,7 +86,7 @@ void mirtkBiasField::UpdateMatrix()
 	_matW2L = tmp1 * (tmp2 * (_matW2L * tmp3));
 }
 
-double ***mirtkBiasField::Allocate(double ***data, int x, int y, int z)
+double ***BiasField::Allocate(double ***data, int x, int y, int z)
 {
 	int i, j, k;
 
@@ -95,15 +95,15 @@ double ***mirtkBiasField::Allocate(double ***data, int x, int y, int z)
 	}
 
 	if ((data = new double **[z+8]) == NULL) {
-		cerr << "Allocate: malloc failed for " << x << " x " << y << " x ";
-		cerr << z << "\n";
+		std::cerr << "Allocate: malloc failed for " << x << " x " << y << " x ";
+		std::cerr << z << "\n";
 		exit(1);
 	}
 	data += 4;
 
 	if ((data[-4] = new double *[(z+8)*(y+8)]) == NULL) {
-		cerr << "Allocate: malloc failed for " << x << " x " << y << " x ";
-		cerr << z << "\n";
+		std::cerr << "Allocate: malloc failed for " << x << " x " << y << " x ";
+		std::cerr << z << "\n";
 		exit(1);
 	}
 	data[-4] += 4;
@@ -113,8 +113,8 @@ double ***mirtkBiasField::Allocate(double ***data, int x, int y, int z)
 	}
 
 	if ((data[-4][-4] = new double[(z+8)*(y+8)*(x+8)]) == NULL) {
-		cerr << "Allocate: malloc failed for " << x << " x " << y << " x ";
-		cerr << z << "\n";
+		std::cerr << "Allocate: malloc failed for " << x << " x " << y << " x ";
+		std::cerr << z << "\n";
 		exit(1);
 	}
 	data[-4][-4] += 4;
@@ -136,7 +136,7 @@ double ***mirtkBiasField::Allocate(double ***data, int x, int y, int z)
 	return data;
 }
 
-double ***mirtkBiasField::Deallocate(double ***data, int, int, int)
+double ***BiasField::Deallocate(double ***data, int, int, int)
 {
 	if (data != NULL) {
 		delete [](data[-4][-4]-4);
@@ -146,7 +146,7 @@ double ***mirtkBiasField::Deallocate(double ***data, int, int, int)
 	return NULL;
 }
 
-Point mirtkBiasField::ControlPointLocation(int index) const
+Point BiasField::ControlPointLocation(int index) const
 {
 	int i, j, k;
 
@@ -158,7 +158,7 @@ Point mirtkBiasField::ControlPointLocation(int index) const
 	return p;
 }
 
-void mirtkBiasField::ControlPointLocation(int index, double &x, double &y, double &z) const
+void BiasField::ControlPointLocation(int index, double &x, double &y, double &z) const
 {
 	x = index/(_y*_z);
 	y = index%(_y*_z)/_z;
@@ -166,7 +166,7 @@ void mirtkBiasField::ControlPointLocation(int index, double &x, double &y, doubl
 	this->LatticeToWorld(x, y, z);
 }
 
-void mirtkBiasField::BoundingBox(Point &p1, Point &p2) const
+void BiasField::BoundingBox(Point &p1, Point &p2) const
 {
 	p1._x = 0;
 	p1._y = 0;
@@ -178,7 +178,7 @@ void mirtkBiasField::BoundingBox(Point &p1, Point &p2) const
 	this->LatticeToWorld(p2);
 }
 
-void mirtkBiasField::BoundingBox(double &x1, double &y1, double &z1, double &x2, double &y2, double &z2) const
+void BiasField::BoundingBox(double &x1, double &y1, double &z1, double &x2, double &y2, double &z2) const
 {
 	x1 = 0;
 	y1 = 0;
@@ -190,7 +190,7 @@ void mirtkBiasField::BoundingBox(double &x1, double &y1, double &z1, double &x2,
 	this->LatticeToWorld(x2, y2, z2);
 }
 
-void mirtkBiasField::BoundingBox(int index, Point &p1, Point &p2, double fraction) const
+void BiasField::BoundingBox(int index, Point &p1, Point &p2, double fraction) const
 {
 	int i, j, k;
 
@@ -203,7 +203,7 @@ void mirtkBiasField::BoundingBox(int index, Point &p1, Point &p2, double fractio
 	this->LatticeToWorld(p2);
 }
 
-void mirtkBiasField::BoundingBox(int index, double &x1, double &y1, double &z1, double &x2, double &y2, double &z2, double fraction) const
+void BiasField::BoundingBox(int index, double &x1, double &y1, double &z1, double &x2, double &y2, double &z2, double fraction) const
 {
 	x1 = index/(_y*_z)-2*fraction;
 	y1 = index%(_y*_z)/_z-2*fraction;
@@ -215,7 +215,7 @@ void mirtkBiasField::BoundingBox(int index, double &x1, double &y1, double &z1, 
 	this->LatticeToWorld(x2, y2, z2);
 }
 
-void mirtkBiasField::BoundingBox(GreyImage *image, int index, int &i1, int &j1, int &k1, int &i2, int &j2, int &k2, double fraction) const
+void BiasField::BoundingBox(GreyImage *image, int index, int &i1, int &j1, int &k1, int &i2, int &j2, int &k2, double fraction) const
 {
 	double x1, y1, z1, x2, y2, z2;
 
