@@ -73,7 +73,7 @@ int main(int argc, char **argv)
 
 	int N=atoi(POSARG(3));
 	int labels[N];
-	RealImage probs[N];
+	RealImage *probs = new RealImage[N];
 
 	int a=4;
 	for(int i=0;i<N;i++){
@@ -86,7 +86,7 @@ int main(int argc, char **argv)
 
 	bool calcprobs=false;
 	RealImage prob;
-	string outputprobs[N];
+	string *outputprobs = new string[N];
 	if(a < NUM_POSARGS){
 		calcprobs=true;
 		prob.Read(POSARG(a)); a++;
@@ -137,6 +137,9 @@ int main(int argc, char **argv)
 	if(calcprobs){
 		for(int i=0;i<N;i++) probs[i].Write(outputprobs[i].c_str());
 	}
+
+	delete[] probs;
+	delete[] outputprobs;
 
 	return 0;
 }

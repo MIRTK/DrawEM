@@ -139,7 +139,7 @@ int main(int argc, char **argv){
   // File name for output
   char *output_name = POSARG(a++);
 
-  string post[n];
+  string *post = new string[n];
   bool saveposts=false;
   int mrftimes=0;
   for (ALL_OPTIONS) {
@@ -205,7 +205,7 @@ int main(int argc, char **argv){
        }
   }
 	  
-  
+  delete[] post;
 
 
 }

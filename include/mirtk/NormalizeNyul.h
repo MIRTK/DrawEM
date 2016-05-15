@@ -21,7 +21,7 @@
 #define MIRTKNORMALIZENYUL_H_
 
 #include "mirtk/Image.h"
-#include "mirtk/Registration.h"
+//#include "mirtk/Registration.h"
 #include "mirtk/ImageHistogram1D.h"
 
 

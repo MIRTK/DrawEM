@@ -61,7 +61,8 @@ int main(int argc, char **argv){
 
 	int a = 1;
 	int numAtlases = atoi(POSARG(a)); a++;
-	string atlasNames[numAtlases], weightNames[numAtlases];
+        string *atlasNames = new string[numAtlases]; 
+        string *weightNames = new string[numAtlases];
 
 	// atlases
 	for(int j = 0; j < numAtlases; j++){
@@ -74,7 +75,7 @@ int main(int argc, char **argv){
 
 	// structures
 	int numStructuresToDo= atoi(POSARG(a)); a++;
-	string names[numStructuresToDo];
+	string *names = new string[numStructuresToDo];
 	int values[numStructuresToDo];
 	for(int j = 0; j < numStructuresToDo; j++){
 		values[j] = atoi(POSARG(a)); a++;
@@ -139,6 +140,10 @@ int main(int argc, char **argv){
 	for(int j = 0; j < numStructuresToDo; j++){
 		probs.Write(j, names[j].c_str());
 	}
+
+        delete[] names;
+        delete[] atlasNames;
+        delete[] weightNames;
 
 	return 0;
 }
