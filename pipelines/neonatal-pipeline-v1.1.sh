@@ -22,19 +22,16 @@
 usage()
 {
   base=$(basename "$0")
-  echo "usage: $base subjectID [options]
+  echo "usage: $base subject_T2.nii.gz scan_age [options]
 This script runs the neonatal segmentation pipeline of Draw-EM.
-Required Options:
-  -a / -age  <number>           Subject age in weeks. This is used to select the appropriate template for the initial registration. 
+
+Arguments:
+  subject_T2.nii.gz             Nifti Image: The T2 image of the subject to be segmented.
+  scan_age                      Number: Subject age in weeks. This is used to select the appropriate template for the initial registration. 
 			        If the age is <28w or >44w, it will be set to 28w or 44w respectively.
-
-  Note: The age of the subject can be alternatively provided by a file named 'ages.csv' inside the data directory.
-        The format of the file must be a space-delimited file with lines: 'subjectID age'
-
-Additional options:
+Options:
+  -d / -data-dir  <directory>   The directory used to run the script and output the files. 
   -c / -cleanup  <0/1>          Whether cleanup of temporary files is required (default: 1)
-  -d / -data-dir  <directory>   The directory used to run the script. 
-			        It must contain a T2 folder and the T2/subjectID.nii.gz image of the subject.
   -p / -save-posteriors  <0/1>  Whether the structures' posteriors are required (default: 0)
   -t / -threads  <number>       Number of threads (CPU cores) allowed for the registration to run in parallel (default: 1)
   -v / -verbose  <0/1>          Whether the script progress is reported (default: 1)
@@ -51,14 +48,18 @@ else
   export DRAWEMDIR="$(cd "$(dirname "$BASH_SOURCE")"/.. && pwd)"
 fi
 
-[ $# -ge 1 ] || { usage; }
-subj=$1
+[ $# -ge 2 ] || { usage; }
+T2=$1
+age=$2
 
-case "$subj" in
-    -h|-help|--help) usage; ;;
-esac
+[ -f "$T2" ] || { echo "The T2 image provided as argument does not exist!" >&2; exit 1; }
+subj=`basename $T2  |sed -e 's:.nii.gz::g' |sed -e 's:.nii::g'`
+age=`printf "%.*f\n" 0 $age` #round
+[ $age -lt 44 ] || { age=44; }
+[ $age -gt 28 ] || { age=28; }
 
-age=""
+
+
 cleanup=1 # whether to delete temporary files once done
 datadir=`pwd`
 posteriors=0   # whether to output posterior probability maps
@@ -69,13 +70,12 @@ atlasname=non-rigid-v2
 version="v1.1"
 
 while [ $# -gt 0 ]; do
-  case "$2" in
-    -a|-age)  shift; age=$2; ;;
-    -c|-cleanup)  shift; cleanup=$2; ;;
-    -d|-data-dir)  shift; datadir=$2; ;;
-    -p|-save-posteriors) shift; posteriors=$2; ;;
-    -t|-threads)  shift; threads=$2; ;; 
-    -v|-verbose)  shift; verbose=$2; ;; 
+  case "$3" in
+    -c|-cleanup)  shift; cleanup=$3; ;;
+    -d|-data-dir)  shift; datadir=$3; ;;
+    -p|-save-posteriors) shift; posteriors=$3; ;;
+    -t|-threads)  shift; threads=$3; ;; 
+    -v|-verbose)  shift; verbose=$3; ;; 
     -h|-help|--help) usage; ;;
     -*) echo "$0: Unrecognized option $1" >&2; usage; ;;
      *) break ;;
@@ -83,14 +83,9 @@ while [ $# -gt 0 ]; do
   shift
 done
 
-
-cd "$datadir" || { echo "$0: Directory $datadir does not exist" >&2;exit 1; }
-
-[ -n "$age" -o ! -f ages.csv ] || { age=`cat ages.csv | tr '\t' ' ' | grep "^$subj " | cut -d' ' -f2`; }
-[ -n "$age" ] || { echo "Subject age must be provided as argument or from the $datadir/ages.csv file" >&2; exit 1; }
-age=`printf "%.*f\n" 0 $age` #round
-[ $age -gt 28 ] || { age=28; }
-[ $age -lt 44 ] || { age=44; }
+mkdir -p $datadir/T2 
+cp $T2 $datadir/T2/
+cd $datadir
 
 
 [ $verbose -le 0 ] || { echo "DrawEM multi atlas $version
@@ -119,7 +114,7 @@ run()
 }
 
 rm -f logs/$subj logs/$subj-err
-run preprocess.sh        $subj $age
+run preprocess.sh        $subj
 # phase 1 tissue segmentation
 run tissue-priors.sh     $subj $age $atlasname $threads
 # registration using gm posterior + image

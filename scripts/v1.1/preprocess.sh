@@ -20,9 +20,8 @@
 # ============================================================================
 
 
-[ $# -eq 2 ] || { echo "usage: $(basename "$0") <subject> <age>" 1>&2; exit 1; }
+[ $# -eq 1 ] || { echo "usage: $(basename "$0") <subject>" 1>&2; exit 1; }
 subj=$1
-age=$2
 
 
 if [ -n "$FSLDIR" ]; then
@@ -40,7 +39,6 @@ run(){
 
 
 sdir=segmentations-data
-dof=dofs/$subj-template-$age-n.dof.gz
 
 mkdir -p $sdir/brain N4 dofs bias || exit 1
 

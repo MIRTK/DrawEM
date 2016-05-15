@@ -416,7 +416,7 @@ inline int BiasField::LatticeToIndex(int i, int j, int k) const
 	return i * _y * _z + j * _z + k;
 }
 
-#include "BSplineBiasField.h"
+//#include "BSplineBiasField.h"
 
 }
 
