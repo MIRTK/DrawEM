@@ -18,7 +18,10 @@ In order to compile it as part of MIRTK you need to do the following steps:
 See the [installation instructions](https://mirtk.github.io/install.html) 
 for a step-by-step guide on how to install the MIRTK.
 
-The atlases required by Draw-EM need to be downloaded from [here](https://www.doc.ic.ac.uk/~am411/atlases-DrawEM.html) and extracted inside the Draw-EM directory.
+The segmentation pipeline further requires the following:
+- [FSL](http://fsl.fmrib.ox.ac.uk/fsl/fslwiki/) installed
+- The atlases required by Draw-EM need to be downloaded from [here](https://www.doc.ic.ac.uk/~am411/atlases-DrawEM.html) and extracted inside the Draw-EM directory.
+- The N4 bias field correction from ITK is included in the ThirdParty/ITK folder. If the executable does not work, you will need to compile ITK and replace the ThirdParty/ITK/N4 binary with the N4BiasFieldCorrectionImageFilter binary
 
 
 Run
