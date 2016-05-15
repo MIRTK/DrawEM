@@ -11,12 +11,12 @@ Installation
 Draw-EM is part of MIRTK. 
 In order to compile it as part of MIRTK you need to do the following steps:
 - download (clone) Draw-EM inside the Packages folder of your MIRTK directory
-- modify the BasisProject.cmake by adding the following line under the "MODULE_DIRS" line:  "    Packages/DrawEM"
+- modify the BasisProject.cmake in the MIRTK directory by adding the following line under the "MODULE_DIRS" line:  "    Packages/DrawEM"
 - enable compile of the package by setting the CMake flag "MODULE_DrawEM" of MIRTK to "ON" (using cmake or ccmake)
 - build MIRTK
 
 See the [installation instructions](https://mirtk.github.io/install.html) 
-for a step-by-step guide on how to install the MIRTK.
+for a step-by-step guide on how to install MIRTK.
 
 The segmentation pipeline further requires the following:
 - [FSL](http://fsl.fmrib.ox.ac.uk/fsl/fslwiki/) installed
@@ -28,7 +28,9 @@ Run
 ---
 
 The segmentation pipeline can be run with the following script:
+
 pipelines/neonatal-pipeline-v1.1.sh 
+
 The script requires the T2 image and the age at scan of the subject to be segmented (as first and second argument respectively).
 Run the script without arguments for a detailed list of options.
 
@@ -50,7 +52,7 @@ The covered file (N4) and license (LICENSE) can be found in ThirdParty/ITK.
 Citation and acknowledgements
 -----------------------------
 
-If you found Draw-EM useful please give appropriate credit to the software.
+In case you found Draw-EM useful please give appropriate credit to the software.
 
 Publication:
 
