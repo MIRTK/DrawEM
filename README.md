@@ -11,7 +11,6 @@ Installation
 Draw-EM is part of MIRTK. 
 In order to compile it as part of MIRTK you need to do the following steps:
 - download (clone) Draw-EM inside the Packages folder of your MIRTK directory
-- modify the BasisProject.cmake in the MIRTK directory by adding the following line under the "MODULE_DIRS" line:  "    Packages/DrawEM"
 - enable compile of the package by setting the CMake flag "MODULE_DrawEM" of MIRTK to "ON" (using cmake or ccmake)
 - build MIRTK
 
