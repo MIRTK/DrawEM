@@ -71,7 +71,7 @@ int main(int argc, char **argv)
 	InitializeIOLibrary();
 	int a=1;
 
-	int i, n, ok, padding, iterations;
+	int i, n, padding, iterations;
 
 	// Input image
 	RealImage image;

@@ -217,7 +217,7 @@ void EMBase::InitialiseGMMParameters(int n, double *m, double *s, double *c)
 void EMBase::MStep()
 {
     std::cout << "M-step" << std::endl;
-	int i, k;
+    int k;
     double mi_num[_number_of_tissues];
     double sigma_num[_number_of_tissues];
     double denom[_number_of_tissues];
@@ -495,7 +495,7 @@ void EMBase::GetVariance(double *variance){
 void EMBase::MStepGMM(bool uniform_prior)
 {
     std::cout << "M-step GMM" << std::endl;
-	int i, k;
+    int k;
     double mi_num[_number_of_tissues];
     double sigma_num[_number_of_tissues];
     double denom[_number_of_tissues];
@@ -585,7 +585,7 @@ void EMBase::MStepGMM(bool uniform_prior)
 void EMBase::MStepVarGMM(bool uniform_prior)
 {
     std::cout << "M-step VarGMM" << std::endl;
-	int i, k;
+    int k;
     double mi_num[_number_of_tissues];
     double denom[_number_of_tissues];
     double num_vox[_number_of_tissues];

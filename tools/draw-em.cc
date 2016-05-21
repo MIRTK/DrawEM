@@ -140,7 +140,7 @@ int main(int argc, char **argv)
         bool relax = false;
 	vector< pair<int,int> > pv_classes;
 	vector<int> hpv;
-	int i, n, ok, padding, maxIterations;
+	int i, n, padding, maxIterations;
 	int biasfield_degree = 4;
 	output_biasfield = NULL;
 	connections = NULL;
