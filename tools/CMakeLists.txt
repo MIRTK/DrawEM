@@ -23,18 +23,27 @@
 # @brief Build configuration of MIRTK Draw-EM tools.
 ##############################################################################
 
+macro(add_image_command cmd)
+  mirtk_add_executable(${cmd})
+  mirtk_target_dependencies(${cmd} LibCommon LibNumerics LibImage LibIO ${ARGN})
+endmacro()
 
-mirtk_add_executable(calculate-filtering  DEPENDS LibCommon LibNumerics LibImage LibIO)
-mirtk_add_executable(calculate-gradients  DEPENDS LibCommon LibNumerics LibImage LibIO)
-mirtk_add_executable(change-label  DEPENDS LibCommon LibNumerics LibImage LibIO)
-mirtk_add_executable(fill-holes  DEPENDS LibCommon LibNumerics LibImage LibIO LibDrawEM)
-mirtk_add_executable(fill-holes-nn-based  DEPENDS LibCommon LibNumerics LibImage LibIO LibDrawEM)
-mirtk_add_executable(measure-volume  DEPENDS LibCommon LibNumerics LibImage LibIO)
-mirtk_add_executable(padding  DEPENDS LibCommon LibNumerics LibImage LibIO)
+add_image_command(calculate-filtering)
+add_image_command(calculate-gradients)
+add_image_command(change-label)
+add_image_command(measure-volume)
+add_image_command(padding)
 
-mirtk_add_executable(em  DEPENDS LibCommon LibNumerics LibImage LibIO LibDrawEM)
-mirtk_add_executable(draw-em  DEPENDS LibCommon LibNumerics LibImage LibIO LibDrawEM)
-mirtk_add_executable(em-hard-segmentation  DEPENDS LibCommon LibNumerics LibImage LibIO LibDrawEM)
-mirtk_add_executable(kmeans  DEPENDS LibCommon LibNumerics LibImage LibIO LibDrawEM)
-mirtk_add_executable(normalize  DEPENDS LibCommon LibNumerics LibImage LibIO LibDrawEM)
-mirtk_add_executable(split-labels  DEPENDS LibCommon LibNumerics LibImage LibIO LibDrawEM)
+
+macro(add_drawem_command cmd)
+  add_image_command(${cmd} LibDrawEM)
+endmacro()
+
+add_drawem_command(fill-holes)
+add_drawem_command(fill-holes-nn-based)
+add_drawem_command(em)
+add_drawem_command(draw-em)
+add_drawem_command(em-hard-segmentation)
+add_drawem_command(kmeans)
+add_drawem_command(normalize)
+add_drawem_command(split-labels)

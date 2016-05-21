@@ -18,9 +18,8 @@
 # limitations under the License.
 # ============================================================================
 
-
 set(HEADERS
-  ${BINARY_INCLUDE_DIR}/mirtk/DrawEMExport.h
+  ${BINARY_INCLUDE_DIR}/mirtk/${PROJECT_NAME}Export.h
   BiasCorrection.h
   BiasField.h
   BSplineBiasField.h
@@ -57,9 +56,6 @@ set(DEPENDS
   LibNumerics
   LibImage
   LibIO
-  #LibPointSet
 )
 
 mirtk_add_library(AUTO_REGISTER)
-
-
