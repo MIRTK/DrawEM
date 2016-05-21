@@ -104,7 +104,6 @@ int main(int argc, char **argv)
 				int mval=mask.Get(x,y,z);
 				if(mval==0)continue;
 
-				int exlabel=img.Get(x,y,z);
 				double maxval=0.0, sum=0.0, newprob=0.0;
 				int maxlabel=0;
 				double vals[N];
