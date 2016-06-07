@@ -37,6 +37,9 @@ basis_project (
   DEPENDS
     MIRTK{Common,Numerics,Image}
     #<dependency>
+  OPTIONAL_DEPENDS
+    TBB{tbb}
+    #<optional-dependency>
   TOOLS_DEPENDS
     MIRTK{IO}
   TEST_DEPENDS
