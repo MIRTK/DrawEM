@@ -1,0 +1,65 @@
+################################################
+# ITK-SnAP Label Description File
+# File format: 
+# IDX   -R-  -G-  -B-  -A--  VIS MSH  LABEL
+# Fields: 
+#    IDX:   Zero-based index 
+#    -R-:   Red color component (0..255)
+#    -G-:   Green color component (0..255)
+#    -B-:   Blue color component (0..255)
+#    -A-:   Label transparency (0.00 .. 1.00)
+#    VIS:   Label visibility (0 or 1)
+#    IDX:   Label mesh visibility (0 or 1)
+#  LABEL:   Label description 
+################################################
+    0     0    0    0        0  0  0    "Clear Label"
+    1   255    0    0        1  1  1    "Hippocampus left"
+    2     0  255    0        1  1  1    "Hippocampus right"
+    3     0    0  255        1  1  1    "Amygdala left"
+    4   255  255    0        1  1  1    "Amygdala right"
+    5     0  255  255        1  1  1    "Anterior temporal lobe, medial part left"
+    6   255    0  255        1  1  1    "Anterior temporal lobe, medial part right"
+    7   255  239  213        1  1  1    "Anterior temporal lobe, lateral part left"
+    8     0    0  205        1  1  1    "Anterior temporal lobe, lateral part right"
+    9   205  133   63        1  1  1    "Gyri parahippocampalis et ambiens anterior part left"
+   10   210  180  140        1  1  1    "Gyri parahippocampalis et ambiens anterior part right"
+   11   102  205  170        1  1  1    "Superior temporal gyrus, middle part left"
+   12     0    0  128        1  1  1    "Superior temporal gyrus, middle part right"
+   13     0  139  139        1  1  1    "Medial and inferior temporal gyri anterior part left"
+   14    46  139   87        1  1  1    "Medial and inferior temporal gyri anterior part right"
+   15   255  228  225        1  1  1    "Lateral occipitotemporal gyrus, gyrus fusiformis anterior part left"
+   16   106   90  205        1  1  1    "Lateral occipitotemporal gyrus, gyrus fusiformis anterior part right"
+   17   221  160  221        1  1  1    "Cerebellum left"
+   18   233  150  122        1  1  1    "Cerebellum right"
+   19   165   42   42        1  1  1    "Brainstem, spans the midline"
+   20   255  250  250        1  1  1    "Insula right"
+   21   147  112  219        1  1  1    "Insula left"
+   22   218  112  214        1  1  1    "Occipital lobe right"
+   23    75    0  130        1  1  1    "Occipital lobe left"
+   24   255  182  193        1  1  1    "Gyri parahippocampalis et ambiens posterior part right"
+   25    60  179  113        1  1  1    "Gyri parahippocampalis et ambiens posterior part left"
+   26   255  235  205        1  1  1    "Lateral occipitotemporal gyrus, gyrus fusiformis posterior part right"
+   27   255  228  196        1  1  1    "Lateral occipitotemporal gyrus, gyrus fusiformis posterior part left"
+   28   218  165   32        1  1  1    "Medial and inferior temporal gyri posterior part right"
+   29     0  128  128        1  1  1    "Medial and inferior temporal gyri posterior part left"
+   30   188  143  143        1  1  1    "Superior temporal gyrus, posterior part right"
+   31   255  105  180        1  1  1    "Superior temporal gyrus, posterior part left"
+   32   255  218  185        1  1  1    "Cingulate gyrus, anterior part right"
+   33   222  184  135        1  1  1    "Cingulate gyrus, anterior part left"
+   34   127  255    0        1  1  1    "Cingulate gyrus, posterior part right"
+   35   139   69   19        1  1  1    "Cingulate gyrus, posterior part left"
+   36   124  252    0        1  1  1    "Frontal lobe right"
+   37   255  255  224        1  1  1    "Frontal lobe left"
+   38    70  130  180        1  1  1    "Parietal lobe right"
+   39     0  100    0        1  1  1    "Parietal lobe left"
+   40   238  130  238        1  1  1    "Caudate nucleus right"
+   41   238  232  170        1  1  1    "Caudate nucleus left"
+   42   240  255  240        1  1  1    "Thalamus right"
+   43   245  222  179        1  1  1    "Thalamus left"
+   44   184  134   11        1  1  1    "Subthalamic nucleus right"
+   45    32  178  170        1  1  1    "Subthalamic nucleus left "
+   46   255   20  147        1  1  1    "Lentiform Nucleus right"
+   47    25   25  112        1  1  1    "Lentiform Nucleus left"
+   48   112  128  144        1  1  1    "Corpus Callosum"
+   49    34  139   34        1  1  1    "Lateral Ventricle left"
+   50   248  248  255        1  1  1    "Lateral Ventricle right"
