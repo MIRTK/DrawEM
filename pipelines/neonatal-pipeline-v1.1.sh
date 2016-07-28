@@ -84,7 +84,11 @@ while [ $# -gt 0 ]; do
 done
 
 mkdir -p $datadir/T2 
-cp $T2 $datadir/T2/
+if [[ "$T2" == *nii ]];then 
+  mirtk convert-image $T2 $datadir/T2/$subj.nii.gz
+else
+  cp $T2 $datadir/T2/$subj.nii.gz
+fi
 cd $datadir
 
 
