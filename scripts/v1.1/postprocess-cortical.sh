@@ -54,8 +54,8 @@ for ((n=0;n<$numcorts;n++));do
   segnumbers="$segnumbers 1 $segnum $r" 
 done
 
-run mirtk em-hard-segmentation $segnum $labels $sdir/cortical/$subj.nii.gz -mrftimes 1 -posteriors $structs || exit 1
-run mirtk padding $sdir/cortical/$subj.nii.gz $sdir/cortical/$subj.nii.gz $sdir/cortical/$subj.nii.gz $segnumbers || exit 1
+run mirtk em-hard-segmentation $segnum $labels $sdir/cortical/$subj.nii.gz -mrftimes 1 -posteriors $structs
+run mirtk padding $sdir/cortical/$subj.nii.gz $sdir/cortical/$subj.nii.gz $sdir/cortical/$subj.nii.gz $segnumbers
 
 
 
