@@ -38,12 +38,12 @@ run mirtk calculate $sdir/tissue-posteriors/gm/$subj.nii.gz -mul 100 -out $sdir/
 
 mkdir -p dofs
 for i in {01..20};do
-atlas=ALBERT_$i
-dof=dofs/$subj-$atlas-n.dof.gz
+  atlas=ALBERT_$i
+  dof=dofs/$subj-$atlas-n.dof.gz
 
-if [ ! -f $dof ];then
-run mirtk register N4/$subj.nii.gz $DRAWEMDIR/atlases/ALBERTs/T2/$atlas.nii.gz $sdir/gm-posteriors/$subj.nii.gz $DRAWEMDIR/atlases/ALBERTs/gm-posteriors-v3/$atlas.nii.gz -parin $DRAWEMDIR/parameters/ireg-multichannel-structural.cfg  -dofout $dof -threads $njobs
-fi
+  if [ ! -f $dof ];then
+    run mirtk register N4/$subj.nii.gz $DRAWEMDIR/atlases/ALBERTs/T2/$atlas.nii.gz $sdir/gm-posteriors/$subj.nii.gz $DRAWEMDIR/atlases/ALBERTs/gm-posteriors-v3/$atlas.nii.gz -parin $DRAWEMDIR/parameters/ireg-multichannel-structural.cfg  -dofout $dof -threads $njobs
+  fi
 
 done
 
