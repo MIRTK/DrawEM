@@ -35,7 +35,7 @@ run(){
 
 #registration
 dof=dofs/$subj-template-$age-n.dof.gz
-mkdir -p $(basename "${dof}")
+mkdir -p $(dirname "${dof}")
 
 if [ ! -f $dof ];then 
   run mirtk register N4/$subj.nii.gz $DRAWEMDIR/atlases/$atlasname/T2/template-$age.nii.gz -dofout $dof -parin $DRAWEMDIR/parameters/ireg.cfg -threads $njobs
