@@ -35,6 +35,8 @@ run(){
 
 #registration
 dof=dofs/$subj-template-$age-n.dof.gz
+mkdir -p $(dirname "${dof}")
+
 if [ ! -f $dof ];then 
   run mirtk register N4/$subj.nii.gz $DRAWEMDIR/atlases/$atlasname/T2/template-$age.nii.gz -dofout $dof -parin $DRAWEMDIR/parameters/ireg.cfg -threads $njobs
 fi
@@ -64,6 +66,7 @@ run mirtk transform-image $DRAWEMDIR/atlases/$atlasname/atlas-9/structure$strnum
 emsstructures="$emsstructures $strems"
 done
 
+mkdir -p logs
 run mirtk draw-em N4/$subj.nii.gz 9 $emsstructures $sdir/tissue-initial-segmentations/$subj.nii.gz -padding 0 -mrf $DRAWEMDIR/parameters/conn_tissues_ven_cstem_dgm_hwm_lwm.mrf -tissues 1 3 1 0 1 1 3 2 7 8 -hui -relaxtimes 2 $emsposts  1>logs/$subj-tissue-em 2>logs/$subj-tissue-em-err
 
 fi
