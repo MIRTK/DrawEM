@@ -66,118 +66,148 @@ void PrintHelp(const char *name)
 
 int main(int argc, char **argv)
 {
-  REQUIRES_POSARGS(1);
+  EXPECTS_POSARGS(1);
 
   InitializeIOLibrary();
   RealImage img(POSARG(1));
 
-  char *min_name, *max_name, *mean_name, *median_name, *std_name, *std_median_name;
-  RealImage *min=NULL, *max=NULL, *mean=NULL, *median=NULL, *std=NULL, *std_median=NULL;
-  bool ok=false;
-  int kernel=1;
+  const char *mask_name        = nullptr;
+  const char *min_name         = nullptr;
+  const char *max_name         = nullptr;
+  const char *mean_name        = nullptr;
+  const char *median_name      = nullptr;
+  const char *std_name         = nullptr;
+  const char *std_median_name  = nullptr;
+  bool        have_output_name = false;
+  int         kernel           = 1;
 
-    for (ALL_OPTIONS) {
-        if (OPTION("-kernel")){
-           kernel=atoi(ARGUMENT); 
-	   if(kernel%2==0 || kernel<3) HANDLE_STANDARD_OR_UNKNOWN_OPTION();
-	   kernel=float((kernel-1)/2);
-        }
-        else if (OPTION("-min")){
-            min_name=ARGUMENT; min=new RealImage(img.Attributes());
-	    ok=true;
-        }
-        else if (OPTION("-max")){
-            max_name=ARGUMENT; max=new RealImage(img.Attributes());
-	    ok=true;
-        }
-        else if (OPTION("-mean")){
-            mean_name=ARGUMENT; mean=new RealImage(img.Attributes());
-	    ok=true;
-        }
-        else if (OPTION("-median")){
-            median_name=ARGUMENT; median=new RealImage(img.Attributes());
-	    ok=true;
-        }
-        else if (OPTION("-std")){
-            std_name=ARGUMENT; std=new RealImage(img.Attributes());
-	    ok=true;
-        }
-        else if (OPTION("-std_median")){
-            std_median_name=ARGUMENT; std_median=new RealImage(img.Attributes());
-	    ok=true;
-        }
-        else HANDLE_STANDARD_OR_UNKNOWN_OPTION();
+  for (ALL_OPTIONS) {
+    if (OPTION("-kernel")){
+      PARSE_ARGUMENT(kernel);
+      if (kernel % 2 == 0 || kernel < 3) {
+        FatalError("Invalid -kernel width");
+      }
+      kernel = (kernel - 1) / 2;
     }
-    if(!ok){ PrintHelp(EXECNAME); exit(1); }
+    else if (OPTION("-min")) {
+      min_name = ARGUMENT;
+      have_output_name = true;
+    }
+    else if (OPTION("-max")){
+      max_name=ARGUMENT;
+      have_output_name = true;
+    }
+    else if (OPTION("-mean")){
+      mean_name=ARGUMENT;
+      have_output_name = true;
+    }
+    else if (OPTION("-median")){
+      median_name=ARGUMENT;
+      have_output_name = true;
+    }
+    else if (OPTION("-std")){
+      std_name=ARGUMENT;
+      have_output_name = true;
+    }
+    else if (OPTION("-std_median")){
+      std_median_name=ARGUMENT;
+      have_output_name = true;
+    }
+    else if (OPTION("-mask")) {
+      mask_name = ARGUMENT;
+    }
+    else HANDLE_STANDARD_OR_UNKNOWN_OPTION();
+  }
+  if (!have_output_name) {
+    FatalError("At least one output file name option must be given!");
+  }
 
+  RealImage min_img, max_img, mean_img, median_img, std_img, std_median_img;
+  if (min_name) min_img.Initialize(img.Attributes());
+  if (max_name) max_img.Initialize(img.Attributes());
+  if (mean_name) mean_img.Initialize(img.Attributes());
+  if (median_name) median_img.Initialize(img.Attributes());
+  if (std_name) std_img.Initialize(img.Attributes());
+  if (std_median_name) std_median_img.Initialize(img.Attributes());
 
-    int x,x1,x2,xn, y,y1,y2,yn, z,z1,z2,zn, i;
-    double minv,maxv,meanv,medianv,stdv,std_medianv,v;
-    for(x = 0; x < img.GetX(); x++){
-      for(y = 0; y < img.GetY(); y++){
-	for(z = 0; z < img.GetZ(); z++){
-	  x1=std::max(0,x-kernel);
-	  y1=std::max(0,y-kernel);
-	  z1=std::max(0,z-kernel);
-	  x2=std::min(x+kernel,img.GetX()-1);
-	  y2=std::min(y+kernel,img.GetY()-1);
-	  z2=std::min(z+kernel,img.GetZ()-1);
+  BinaryImage mask;
+  if (mask_name) mask.Read(mask_name);
 
-	  vector<RealPixel> values;
-	  for(xn = x1; xn <=x2; xn++){
-      	    for(yn = y1; yn <=y2; yn++){
-	      for(zn = z1; zn <=z2; zn++){
-		values.push_back(img.Get(xn, yn, zn));
-	      }
-	    }
-	  }
+  Array<RealPixel> values;
+  values.reserve((2 * kernel + 1) * (2 * kernel + 1) * (2 * kernel + 1));
 
-	  minv=DBL_MAX; maxv=DBL_MIN; meanv=0;
-	  for(i=0; i<values.size(); i++){
-	     v=values[i];
-	     if(min) minv=std::min(minv, v);
-	     if(max) maxv=std::max(maxv, v);
-	     if(mean || std) meanv+=v;
-	  }
-	  if(mean || std) meanv/=(double)values.size();
-	  if(median || std_median){ 
-	     sort(values.begin(), values.end());
-	     medianv=values[floor(values.size()/2)];
-	  }
+  int x,x1,x2,xn, y,y1,y2,yn, z,z1,z2,zn;
+  double minv, maxv, meanv, medianv, sum2;
 
-	  if(std){
-	     stdv=0;
-	     for(i=0; i<values.size(); i++){
-    		stdv += pow(values[i]-meanv, 2);
-	     }
-	     stdv/=values.size();
-	  }
-	  if(std_median){
-	     std_medianv=0;
-	     for(i=0; i<values.size(); i++){
-    		std_medianv += pow(values[i]-medianv, 2);
-	     }
-	     std_medianv/=values.size();
-	  }
+  for (z = 0; z < img.Z(); ++z)
+  for (y = 0; y < img.Y(); ++y)
+  for (x = 0; x < img.X(); ++x) {
 
-	  if(min) min->Put(x,y,z, minv);
-	  if(max) max->Put(x,y,z, maxv);
-	  if(mean) mean->Put(x,y,z, meanv);
-	  if(median) median->Put(x,y,z, medianv);
-	  if(std) std->Put(x,y,z, stdv);
-	  if(std_median) std_median->Put(x,y,z, std_medianv);
+    x1 = max(0,x-kernel);
+    y1 = max(0,y-kernel);
+    z1 = max(0,z-kernel);
+    x2 = min(x+kernel, img.X()-1);
+    y2 = min(y+kernel, img.Y()-1);
+    z2 = min(z+kernel, img.Z()-1);
 
-	}
+    values.clear();
+    for (xn = x1; xn <= x2; ++xn)
+    for (yn = y1; yn <= y2; ++yn)
+    for (zn = z1; zn <= z2; ++zn) {
+      if (!mask_name || mask(xn, yn, zn) != 0) {
+        values.push_back(img.Get(xn, yn, zn));
       }
     }
 
+    if (values.empty()) {
+      if (min_name) min_img(x, y, z) = 0.;
+      if (max_name) max_img(x, y, z) = 0.;
+      if (median_name) median_img(x, y, z) = 0.;
+      if (mean_name) mean_img(x, y, z) = 0.;
+      if (std_name) std_img(x, y, z) = 0.;
+      if (std_median_name) std_median_img(x, y, z) = 0;
+      continue;
+    }
 
-    if(min){ min->Write(min_name); delete min;}
-    if(max){ max->Write(max_name); delete max;}
-    if(mean){ mean->Write(mean_name); delete mean;}
-    if(median){ median->Write(median_name); delete median;}
-    if(std){ std->Write(std_name); delete std;}
-    if(std_median){ std_median->Write(std_median_name); delete std_median;}
-    
-    return 0;
+    minv = maxv = values.front(), meanv = 0.;
+    for (auto v : values) {
+      minv = min(minv, v);
+      maxv = max(maxv, v);
+      meanv += v;
+    }
+    meanv /= values.size();
+
+    if (min_name) min_img(x, y, z) = minv;
+    if (max_name) max_img(x, y, z) = maxv;
+    if (mean_name) mean_img(x, y, z) = meanv;
+    if (median_name || std_median_name) {
+      medianv = NthElement(values, static_cast<int>(values.size()) / 2);
+      if (median_name) median_img(x,y,z) = medianv;
+    }
+    if (std_name) {
+      sum2 = 0.;
+      for (auto v : values) {
+        v -= meanv;
+        sum2 += v * v;
+      }
+      std_img(x, y, z) = sqrt(sum2 / static_cast<double>(values.size()));
+    }
+    if (std_median_name) {
+      sum2 = 0.;
+      for (auto v : values) {
+        v -= medianv;
+        sum2 += v * v;
+      }
+      std_median_img(x, y, z) = sqrt(sum2 / static_cast<double>(values.size()));
+    }
+  }
+
+  if (min_name) min_img.Write(min_name);
+  if (max_name) max_img.Write(max_name);
+  if (mean_name) mean_img.Write(mean_name);
+  if (median_name) median_img.Write(median_name);
+  if (std_name) std_img.Write(std_name);
+  if (std_median_name) std_median_img.Write(std_median_name);
+
+  return 0;
 }
