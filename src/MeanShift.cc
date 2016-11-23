@@ -28,8 +28,7 @@ MeanShift::MeanShift(GreyImage& image, int padding, int nBins)
 	_nBins=nBins;
 	_padding=padding;
 	_brain=NULL;
-	_density = new double[_nBins];
-	for(int i=0;i<_nBins;i++) _density[i]=0;
+  _density.resize(nBins, 0.);
 	_bg=-1;
 	_gm=-1;
 	_wm=-1;
@@ -39,7 +38,6 @@ MeanShift::MeanShift(GreyImage& image, int padding, int nBins)
 
 MeanShift::~MeanShift()
 {
-	delete[] _density;
 }
 
 RealImage MeanShift::ReturnMask()
@@ -64,9 +62,9 @@ void MeanShift::SetOutput(GreyImage *output)
 	_output = output;
 }
 
-double MeanShift::ValueToBin(double value)
+int MeanShift::ValueToBin(double value)
 {
-	return _nBins*(value-_imin)/(_imax+1-_imin);
+	return static_cast<int>(_nBins*(value-_imin)/(_imax+1-_imin));
 }
 
 double MeanShift::BinToValue(int bin)
@@ -121,17 +119,11 @@ void MeanShift::AddPoint(int x, int y, int z)
 	if((x>=0)&&(y>=0)&&(z>=0)&&(x<_image.GetX())&&(y<_image.GetY())&&(z<_image.GetZ()))
 	{
 		bool mask=true;
-		Point p;
 		if(_brain!=NULL) if(_brain->Get(x,y,z)==1) mask=false;
 
 		if((_map.Get(x,y,z)==1)&&(_image.Get(x,y,z)<_treshold)&&(mask))
 		{
-			p._x=x;
-			p._y=y;
-			p._z=z;
-
-			_q.push(p);
-
+			_q.push(Voxel(x, y, z));
 			_map.Put(x,y,z,0);
 		}
 	}
@@ -141,16 +133,9 @@ void MeanShift::AddPoint(int x, int y, int z, int label)
 {
 	if((x>=0)&&(y>=0)&&(z>=0)&&(x<_image.GetX())&&(y<_image.GetY())&&(z<_image.GetZ()))
 	{
-		Point p;
-
 		if((_map.Get(x,y,z)==0)&&(_image.Get(x,y,z)==label))
 		{
-			p._x=x;
-			p._y=y;
-			p._z=z;
-
-			_q.push(p);
-
+			_q.push(Voxel(x, y, z));
 			_map.Put(x,y,z,1);
 			_clusterSize++;
 		}
@@ -436,8 +421,8 @@ int MeanShift::LccS(int label, double treshold)
 	int i,j,k;
 	int lcc_size = 0;
 	int lcc_x, lcc_y, lcc_z;
-	queue<Point> seed;
-	queue<int> size;
+	Queue<Voxel> seed;
+	Queue<int> size;
 
 	//std::cout<<"Finding Lcc and all cluster of 70% of the size of Lcc"<<std::endl;
 	_map=_image;
@@ -468,8 +453,7 @@ int MeanShift::LccS(int label, double treshold)
 				if (_clusterSize > 0)
 				{
 					size.push(_clusterSize);
-					Point p(i,j,k);
-					seed.push(p);
+					seed.push(Voxel(i, j, k));
 				}
 			}
 
@@ -483,7 +467,9 @@ int MeanShift::LccS(int label, double treshold)
 
 	while (!size.empty())
 	{
-		if ( size.front()> treshold*lcc_size ) Grow(seed.front()._x,seed.front()._y,seed.front()._z,label);
+    if (static_cast<double>(size.front()) > treshold*lcc_size) {
+      Grow(seed.front()._x, seed.front()._y, seed.front()._z, label);
+    }
 		seed.pop();
 		size.pop();
 	}

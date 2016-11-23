@@ -90,12 +90,12 @@ int main(int argc, char **argv){
     cc.Output(&suspectedcc);
     cc.Run();
 
-    int numccs=cc.NumberOfComponents();
-    int numccNNs[numccs];
-    int numccMaskNNs[numccs];
+    const int numccs=cc.NumberOfComponents();
+    Array<int> numccNNs(numccs);
+    Array<int> numccMaskNNs(numccs);
     for(int i=0; i<numccs; i++){
-	numccNNs[i]=0;
-	numccMaskNNs[i]=0;
+      numccNNs[i]=0;
+      numccMaskNNs[i]=0;
     }
 
 
@@ -146,9 +146,10 @@ int main(int argc, char **argv){
 	}
     }
 
-    bool fill[numccs];
-    for(int i=0; i<numccs; i++)
-	fill[i]=( ((double)numccMaskNNs[i]/(double)numccNNs[i]) >= majority);
+    Array<bool> fill(numccs);
+    for (int i = 0; i < numccs; i++) {
+      fill[i] = (((double)numccMaskNNs[i] / (double)numccNNs[i]) >= majority);
+    }
 	
 
     GreyPixel *p=image.GetPointerToVoxels();

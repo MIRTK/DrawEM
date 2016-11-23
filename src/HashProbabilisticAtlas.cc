@@ -84,7 +84,7 @@ void HashProbabilisticAtlas::NormalizeAtlas(){
 	// normalize atlas to 0 to 1
 	this->First();
 	RealPixel norm;
-	RealPixel values[_number_of_maps];
+	Array<RealPixel> values(_number_of_maps);
 	for (i = 0; i < _number_of_voxels; i++) {
 		norm = 0;
 		for (j = 0; j < _number_of_maps; j++) {
@@ -118,7 +118,7 @@ void HashProbabilisticAtlas::AddBackground(){
 
 	// normalize atlas to 0 to 1
 	RealPixel norm, min, max, div, value;
-	RealPixel values[_number_of_maps];
+	Array<RealPixel> values(_number_of_maps);
 
 	HashRealImage *other;
 	other = _images[0];

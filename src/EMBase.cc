@@ -57,21 +57,14 @@ EMBase::EMBase(int noTissues, ImageType **atlas, ImageType **initposteriors)
 
 EMBase::~EMBase()
 {
-	if (_G!=NULL) delete []_G;
-	delete []_mi;
-	delete []_sigma;
-	delete []_c;
 }
 
-void EMBase::InitialiseParameters(){
+void EMBase::InitialiseParameters()
+{
 	_padding = MIN_GREY;
 	_number_of_voxels = 0;
 	_number_of_tissues = 0;
-	_mi = NULL;
-	_sigma = NULL;
-	_c = NULL;
 	_f = 0;
-    _G = NULL;
 	_superlabels=false;
     _postpen=false;
 	_posteriors_set=false;
@@ -131,11 +124,11 @@ void EMBase::Initialise()
 	if(!_posteriors_set) _output = _atlas;
 	else _output.NormalizeAtlas();
 
-    CreateMask();
+  CreateMask();
 
-	_mi = new double[_number_of_tissues];
-	_sigma = new double[_number_of_tissues];
-	_c = new double[_number_of_tissues];
+  _mi.resize(_number_of_tissues);
+  _sigma.resize(_number_of_tissues);
+  _c.resize(_number_of_tissues);
 
 	this->MStep();
 	Print();
@@ -182,9 +175,9 @@ void EMBase::InitialiseGMMParameters(int n)
 	RealPixel imin, imax;
     _input.GetMinMaxPad(&imin, &imax,_padding);
 	_number_of_tissues=n;
-	_mi=new double[n];
-	_sigma=new double[n];
-	_c=new double[n];
+  _mi.resize(_number_of_tissues);
+  _sigma.resize(_number_of_tissues);
+  _c.resize(_number_of_tissues);
 	for (i=0; i<n; i++) {
 		_mi[i]=imin+i*(imax-imin)/(n-1);
 		_sigma[i]=((imax-imin)/(n-1))*((imax-imin)/(n-1));
@@ -199,9 +192,9 @@ void EMBase::InitialiseGMMParameters(int n, double *m, double *s, double *c)
 	int i;
 
 	_number_of_tissues = n;
-	_mi = new double[_number_of_tissues];
-	_sigma = new double[_number_of_tissues];
-	_c = new double[_number_of_tissues];
+  _mi.resize(_number_of_tissues);
+  _sigma.resize(_number_of_tissues);
+  _c.resize(_number_of_tissues);
 
 	for ( i=0; i<n; i++) {
 		_mi[i]=m[i];
@@ -216,40 +209,39 @@ void EMBase::InitialiseGMMParameters(int n, double *m, double *s, double *c)
 
 void EMBase::MStep()
 {
-    std::cout << "M-step" << std::endl;
-    int k;
-    double mi_num[_number_of_tissues];
-    double sigma_num[_number_of_tissues];
-    double denom[_number_of_tissues];
+  std::cout << "M-step" << std::endl;
+  int k;
+  Array<double> mi_num(_number_of_tissues);
+  Array<double> sigma_num(_number_of_tissues);
+  Array<double> denom(_number_of_tissues);
 
 	for (k = 0; k < _number_of_tissues; k++) {
-        mi_num[k] = 0;
-        sigma_num[k] = 0;
+    mi_num[k] = 0;
+    sigma_num[k] = 0;
 		denom[k] = 0;
 	}
 
 	//superlabels
-    double mi_num_super[_number_of_tissues];
-    double sigma_num_super[_number_of_tissues];
-    double denom_super[_number_of_tissues];
-    if(_superlabels){
-        for (k = 0; k < _number_of_tissues; k++) {
-            mi_num_super[k] = 0;
-            sigma_num_super[k] = 0;
-            denom_super[k]=0;
-        }
-    }
-
+  Array<double> mi_num_super, sigma_num_super, denom_super;
+  if(_superlabels) {
+    mi_num_super.resize(_number_of_tissues);
+    sigma_num_super.resize(_number_of_tissues);
+    denom_super.resize(_number_of_tissues);
     for (k = 0; k < _number_of_tissues; k++) {
-        HashRealImage::DataIterator begin=_output.Begin(k), end=_output.End(k);
-        for ( auto it = begin; it != end; ++it ){
-            if (_mask.Get(it->first)==1){
-                mi_num[k] += it->second * _input.Get(it->first);
-                denom[k]  += it->second;
-            }
-        }
+      mi_num_super[k] = 0;
+      sigma_num_super[k] = 0;
+      denom_super[k]=0;
     }
-
+  }
+  for (k = 0; k < _number_of_tissues; k++) {
+    const auto end = _output.End(k);
+    for (auto it = _output.Begin(k); it != end; ++it) {
+      if (_mask.Get(it->first)==1) {
+        mi_num[k] += it->second * _input.Get(it->first);
+        denom[k]  += it->second;
+      }
+    }
+  }
 
     /*
 	_output.First();
@@ -271,12 +263,11 @@ void EMBase::MStep()
 
 
 	//superlabels
-    if(_superlabels){
+  if(_superlabels) {
 		for (k = 0; k < _number_of_tissues; k++) {
-            mi_num_super[_super[k]] +=  mi_num[k];
+      mi_num_super[_super[k]] +=  mi_num[k];
 			denom_super[_super[k]] += denom[k];
 		}
-
 		for (k = 0; k < _number_of_tissues; k++) {
 			mi_num[k] =  mi_num_super[_super[k]];
 			denom[k] = denom_super[_super[k]];
@@ -287,21 +278,19 @@ void EMBase::MStep()
 		if (denom[k] != 0) {
 			_mi[k] = mi_num[k] / denom[k];
 		} else {
-            std::cerr << "Division by zero while computing tissue mean!" << std::endl;
+      std::cerr << "Division by zero while computing tissue mean!" << std::endl;
 			exit(1);
 		}
 	}
 
-
-    for (k = 0; k < _number_of_tissues; k++) {
-        HashRealImage::DataIterator begin=_output.Begin(k), end=_output.End(k);
-        for ( auto it = begin; it != end; ++it ){
-            if (_mask.Get(it->first)==1){
-                sigma_num[k] += it->second * pow(_input.Get(it->first) - _mi[k],2);
-            }
-        }
+  for (k = 0; k < _number_of_tissues; k++) {
+    const auto end = _output.End(k);
+    for (auto it = _output.Begin(k); it != end; ++it) {
+      if (_mask.Get(it->first)==1) {
+        sigma_num[k] += it->second * pow(_input.Get(it->first) - _mi[k],2);
+      }
     }
-
+  }
 
     /*
 	_output.First();
@@ -321,63 +310,57 @@ void EMBase::MStep()
     }*/
 
 	//superlabels
-    if(_superlabels){
+  if(_superlabels){
 		for (k = 0; k < _number_of_tissues; k++) {
 			sigma_num_super[_super[k]] +=  sigma_num[k];
 		}
-
 		for (k = 0; k < _number_of_tissues; k++) {
 			sigma_num[k] =  sigma_num_super[_super[k]];
 		}
 	}
 
-    for (k = 0; k <_number_of_tissues; k++) {
+  for (k = 0; k <_number_of_tissues; k++) {
 		_sigma[k] = sigma_num[k] / denom[k];
 		_sigma[k] = max( _sigma[k], 0.005 );
-
 	}
 }
 
 void EMBase::EStep()
 {
-    std::cout << "E-step" << std::endl;
+  std::cout << "E-step" << std::endl;
 	int i, k;
 	double x;
 
 	RealImage segmentation;
-
-	Gaussian* G = new Gaussian[_number_of_tissues];
-
+  Array<Gaussian> G(_number_of_tissues);
 	for (k = 0; k < _number_of_tissues; k++) {
-		G[k].Initialise( _mi[k], _sigma[k]);
+		G[k].Initialise(_mi[k], _sigma[k]);
 	}
 
-	RealPixel *pptr;
-    if(_postpen) pptr= _postpenalty.GetPointerToVoxels();
+	RealPixel *pptr = nullptr;
+  if (_postpen) pptr = _postpenalty.GetPointerToVoxels();
 
-
-	double likelihood[_number_of_tissues];double sumlike;
+	Array<double> likelihood(_number_of_tissues);
+  double sumlike;
 
 	_atlas.First();
 	_output.First();
 	RealPixel *ptr = _input.GetPointerToVoxels();
 	BytePixel *pm = _mask.GetPointerToVoxels();
-    double* numerator = new double[_number_of_tissues];
-    double denominator, temp;
-    for (i=0; i< _number_of_voxels; i++) {
+  Array<double> numerator(_number_of_tissues);
+  double denominator, temp;
+  for (i=0; i< _number_of_voxels; i++) {
 		if (*pm == 1) {
-
 			x = *ptr;
-            sumlike=0;
+      sumlike=0;
 			for (k = 0; k < _number_of_tissues; k++) {
 				likelihood[k] = G[k].Evaluate(x);
-                sumlike+=likelihood[k];
+        sumlike += likelihood[k];
 			}
 			for (k = 0; k < _number_of_tissues; k++) {
 				likelihood[k] /= sumlike;
 			}
-
-            denominator=0;
+      denominator=0;
 			for (k = 0; k < _number_of_tissues; k++) {
 				temp = likelihood[k] * _atlas.GetValue(k);
 				numerator[k] = temp;
@@ -385,7 +368,7 @@ void EMBase::EStep()
 			}
 
 			//model averaging
-            if (_postpen && denominator != 0) {
+      if (_postpen && denominator != 0) {
 				double olddenom=denominator;
 				denominator=0;
 				for (k = 0; k < _number_of_tissues; k++) {
@@ -397,8 +380,6 @@ void EMBase::EStep()
 				}
 			}
 
-
-
 			for (k = 0; k < _number_of_tissues; k++) {
 				if (denominator != 0) {
 					double value = numerator[k]/denominator;
@@ -408,17 +389,18 @@ void EMBase::EStep()
 						std::cerr << "Probability value = " << value <<" @ Estep at voxel "<< x<<" "<<y<<" "<<z<< ", structure " << k << std::endl;
 						if (value < 0)value=0;
 						if (value > 1)value=1;
-					}_output.SetValue(k, value);
-                		} else {
-                   			 _output.SetValue(k,_atlas.GetValue(k));
+					}
+          _output.SetValue(k, value);
+        } else {
+          _output.SetValue(k,_atlas.GetValue(k));
 				}
 			}
 
-            if (denominator == 0) {
-                int x,y,z;
-                _input.IndexToVoxel(i, x, y, z);
-                std::cerr<<"Division by 0 while computing probabilities at voxel "<<x<<","<<y<<","<<z<<std::endl;
-            }
+      if (denominator == 0) {
+        int x,y,z;
+        _input.IndexToVoxel(i, x, y, z);
+        std::cerr<<"Division by 0 while computing probabilities at voxel "<<x<<","<<y<<","<<z<<std::endl;
+      }
 		} else {
 			for (k = 0; k < _number_of_tissues ; k++) {
 				_output.SetValue(k, 0);
@@ -426,43 +408,41 @@ void EMBase::EStep()
 		}
 		ptr++;
 		pm++;
-        if(_postpen)pptr++;
+    if(_postpen) pptr++;
 		_atlas.Next();
-        _output.Next();
+    _output.Next();
 	}
-    delete[] numerator;
-	delete[] G;
 }
 
 
 void EMBase::WStep()
 {
-    std::cout << "W-step" << std::endl;
+  std::cout << "W-step" << std::endl;
 	int i,k;
 	double num, den;
-    std::cout<<"Calculating weights ...";
+  std::cout<<"Calculating weights ...";
 	RealPixel *pi=_input.GetPointerToVoxels();
-    RealPixel *pw=_weights.GetPointerToVoxels();
+  RealPixel *pw=_weights.GetPointerToVoxels();
 	RealPixel *pe=_estimate.GetPointerToVoxels();
 	BytePixel *pm=_mask.GetPointerToVoxels();
 	_output.First();
 	_atlas.First();
 
-    for (i=0; i< _number_of_voxels; i++) {
-        if (*pm == 1){
+  for (i=0; i< _number_of_voxels; i++) {
+    if (*pm == 1){
 			num=0;
 			den=0;
 			for (k=0; k<_number_of_tissues; k++) {
 				num += _output.GetValue(k)*_mi[k]/_sigma[k];
 				den += _output.GetValue(k)/_sigma[k];
 			}
-            if (den!=0){
-                *pw=den;
-                *pe=num/den;
-            }else{
-                *pw=_padding;
-                *pe=_padding;
-            }
+      if (den!=0){
+        *pw=den;
+        *pe=num/den;
+      } else {
+        *pw=_padding;
+        *pe=_padding;
+      }
 		} else {
 			*pw=_padding;
 			*pe=_padding;
@@ -470,12 +450,12 @@ void EMBase::WStep()
 
 		pi++;
 		pm++;
-        pw++;
+    pw++;
 		pe++;
 		_output.Next();
 		_atlas.Next();
 	}
-    std::cout<<"done."<<std::endl;
+  std::cout<<"done."<<std::endl;
 }
 
 void EMBase::GetMean(double *mean){
@@ -494,31 +474,30 @@ void EMBase::GetVariance(double *variance){
 
 void EMBase::MStepGMM(bool uniform_prior)
 {
-    std::cout << "M-step GMM" << std::endl;
-    int k;
-    double mi_num[_number_of_tissues];
-    double sigma_num[_number_of_tissues];
-    double denom[_number_of_tissues];
-    double num_vox[_number_of_tissues];
+  std::cout << "M-step GMM" << std::endl;
+  int k;
+  Array<double> mi_num(_number_of_tissues);
+  Array<double> sigma_num(_number_of_tissues);
+  Array<double> denom(_number_of_tissues);
+  Array<double> num_vox(_number_of_tissues);
 
 	for (k = 0; k < _number_of_tissues; k++) {
-        mi_num[k] = 0;
-        sigma_num[k] = 0;
-        denom[k] = 0;
+    mi_num[k] = 0;
+    sigma_num[k] = 0;
+    denom[k] = 0;
 		num_vox[k] = 0;
 	}
 
-
-    for (k = 0; k < _number_of_tissues; k++) {
-        HashRealImage::DataIterator begin=_output.Begin(k), end=_output.End(k);
-        for ( auto it = begin; it != end; ++it ){
-            if (_mask.Get(it->first)==1){
-                mi_num[k] += it->second * _input.Get(it->first);
-                denom[k]  += it->second;
-                num_vox[k]+= 1;
-            }
-        }
+  for (k = 0; k < _number_of_tissues; k++) {
+    const auto end=_output.End(k);
+    for (auto it = _output.Begin(k); it != end; ++it) {
+      if (_mask.Get(it->first)==1) {
+        mi_num[k] += it->second * _input.Get(it->first);
+        denom[k]  += it->second;
+        num_vox[k]+= 1;
+      }
     }
+  }
 
     /*
 	_output.First();
@@ -551,14 +530,14 @@ void EMBase::MStepGMM(bool uniform_prior)
 	}
 
 
-    for (k = 0; k < _number_of_tissues; k++) {
-        HashRealImage::DataIterator begin=_output.Begin(k), end=_output.End(k);
-        for ( auto it = begin; it != end; ++it ){
-            if (_mask.Get(it->first)==1){
-                sigma_num[k] += it->second * pow(_input.Get(it->first) - _mi[k],2);
-            }
-        }
+  for (k = 0; k < _number_of_tissues; k++) {
+    const auto end=_output.End(k);
+    for (auto it = _output.Begin(k); it != end; ++it) {
+      if (_mask.Get(it->first)==1) {
+        sigma_num[k] += it->second * pow(_input.Get(it->first) - _mi[k],2);
+      }
     }
+  }
 
     /*_output.First();
 	ptr = _input.GetPointerToVoxels();
@@ -577,36 +556,35 @@ void EMBase::MStepGMM(bool uniform_prior)
 
 	for (k = 0; k <_number_of_tissues; k++) {
 		_sigma[k] = sigma_num[k] / denom[k];
-		if(_sigma[k]<1)
-			_sigma[k] = 1;
+		if(_sigma[k]<1) _sigma[k] = 1;
 	}
 }
 
 void EMBase::MStepVarGMM(bool uniform_prior)
 {
-    std::cout << "M-step VarGMM" << std::endl;
-    int k;
-    double mi_num[_number_of_tissues];
-    double denom[_number_of_tissues];
-    double num_vox[_number_of_tissues];
-    double sigma_num = 0;
+  std::cout << "M-step VarGMM" << std::endl;
+  int k;
+  Array<double> mi_num(_number_of_tissues);
+  Array<double> denom(_number_of_tissues);
+  Array<double> num_vox(_number_of_tissues);
+  double sigma_num = 0;
 
 	for (k = 0; k < _number_of_tissues; k++) {
 		mi_num[k] = 0;
-        denom[k] = 0;
-        num_vox[k] = 0;
-    }
+    denom[k] = 0;
+    num_vox[k] = 0;
+  }
 
-    for (k = 0; k < _number_of_tissues; k++) {
-        HashRealImage::DataIterator begin=_output.Begin(k), end=_output.End(k);
-        for ( auto it = begin; it != end; ++it ){
-            if (_mask.Get(it->first)==1){
-                mi_num[k] += it->second * _input.Get(it->first);
-                denom[k]  += it->second;
-                num_vox[k]+= 1;
-            }
-        }
+  for (k = 0; k < _number_of_tissues; k++) {
+    const auto end=_output.End(k);
+    for (auto it = _output.Begin(k); it != end; ++it) {
+      if (_mask.Get(it->first)==1){
+        mi_num[k] += it->second * _input.Get(it->first);
+        denom[k]  += it->second;
+        num_vox[k]+= 1;
+      }
     }
+  }
 
     /*
 	_output.First();
@@ -631,23 +609,21 @@ void EMBase::MStepVarGMM(bool uniform_prior)
 		if (denom[k] != 0) {
 			_mi[k] = mi_num[k] / denom[k];
 		} else {
-           		std::cerr << "Division by zero while computing tissue mean!" << std::endl;
+      std::cerr << "Division by zero while computing tissue mean!" << std::endl;
 			exit(1);
 		}
 		if (uniform_prior) _c[k]=1.0/_number_of_tissues;
 		else _c[k]=denom[k]/num_vox[k];
 	}
 
-
-
-    for (k = 0; k < _number_of_tissues; k++) {
-        HashRealImage::DataIterator begin=_output.Begin(k), end=_output.End(k);
-        for ( auto it = begin; it != end; ++it ){
-            if (_mask.Get(it->first)==1){
-                sigma_num += it->second * pow(_input.Get(it->first) - _mi[k],2);
-            }
-        }
+  for (k = 0; k < _number_of_tissues; k++) {
+    const auto end=_output.End(k);
+    for (auto it = _output.Begin(k); it != end; ++it) {
+      if (_mask.Get(it->first)==1){
+        sigma_num += it->second * pow(_input.Get(it->first) - _mi[k],2);
+      }
     }
+  }
 
     /*
 	_output.First();
@@ -673,15 +649,14 @@ void EMBase::MStepVarGMM(bool uniform_prior)
 }
 
 
-
 void EMBase::EStepGMM(bool uniform_prior)
 {
-    std::cout << "E-step GMM" << std::endl;
+  std::cout << "E-step GMM" << std::endl;
 	int i, k;
 	double x;
-	double *gv = new double[_number_of_tissues];
-	double *numerator = new double[_number_of_tissues];
-	Gaussian *G = new Gaussian[_number_of_tissues];
+	Array<double> gv(_number_of_tissues);
+	Array<double> numerator(_number_of_tissues);
+	Array<Gaussian> G(_number_of_tissues);
 
 	for (k = 0; k < _number_of_tissues; k++) {
 		G[k].Initialise( _mi[k], _sigma[k]);
@@ -691,8 +666,8 @@ void EMBase::EStepGMM(bool uniform_prior)
 	RealPixel *ptr = _input.GetPointerToVoxels();
 	BytePixel *pm = _mask.GetPointerToVoxels();
 
-    for (i=0; i< _number_of_voxels; i++) {
-		double denominator=0, temp=0;
+  for (i=0; i< _number_of_voxels; i++) {
+	  double denominator=0, temp=0;
 		if (*pm == 1) {
 			x = *ptr;
 			for (k = 0; k < _number_of_tissues; k++) {
@@ -712,60 +687,56 @@ void EMBase::EStepGMM(bool uniform_prior)
 						std::cerr << "Probability value = " << value <<" @ Estep gmm at voxel "<< x<<" "<<y<<" "<<z<< ", structure " << k << std::endl;
 						if (value < 0)value=0;
 						if (value > 1)value=1;
-					}_output.SetValue(k, value);
-                } else {
-                    _output.SetValue(k,_atlas.GetValue(k));
+					}
+          _output.SetValue(k, value);
+        } else {
+          _output.SetValue(k,_atlas.GetValue(k));
 				}
-            }
+      }
 
-            if (denominator <= 0) {
-                int x,y,z;
-                _input.IndexToVoxel(i, x, y, z);
-                 std::cerr<<"Division by 0 while computing probabilities at voxel "<<x<<","<<y<<","<<z<<std::endl;
-            }
+      if (denominator <= 0) {
+        int x,y,z;
+        _input.IndexToVoxel(i, x, y, z);
+        std::cerr<<"Division by 0 while computing probabilities at voxel "<<x<<","<<y<<","<<z<<std::endl;
+      }
 
 		} else {
 			for (k = 0; k < _number_of_tissues ; k++) {
 				_output.SetValue(k, 0);
-            }
+      }
 		}
 		ptr++;
 		pm++;
 		_output.Next();
 	}
-
-	delete[] G;
-	delete[] gv;
-	delete[] numerator;
 }
 
 void EMBase::Print()
 {
 	int k;
 
-    std::cout << "mean:";
+  std::cout << "mean:";
 	for (k = 0;  k <_number_of_tissues; k++) {
-        std::cout << " " << k << ": " << _mi[k];
-    }
-    std::cout << std::endl;
+    std::cout << " " << k << ": " << _mi[k];
+  }
+  std::cout << std::endl;
 
-    std::cout << "sigma:";
+  std::cout << "sigma:";
 	for (k = 0; k < _number_of_tissues; k++) {
-        std::cout << " " << k << ": " << sqrt(_sigma[k]);
+    std::cout << " " << k << ": " << sqrt(_sigma[k]);
 	}
-    std::cout << std::endl;
+  std::cout << std::endl;
 }
 
 void EMBase::PrintGMM()
 {
 	int k;
 	Print();
-    std::cout << "c:";
+  std::cout << "c:";
 	for (k = 0; k < _number_of_tissues; k++) {
-        std::cout << " " << k << ": " << _c[k];
-    }
-    std::cout << std::endl;
-
+    std::cout << " " << k << ": " << _c[k];
+  }
+  std::cout << std::endl;
 }
 
 double EMBase::Iterate(int)
@@ -782,7 +753,6 @@ double EMBase::IterateGMM(int iteration, bool equal_var, bool uniform_prior)
 	if (equal_var) this->MStepVarGMM(uniform_prior);
 	else this->MStepGMM(uniform_prior);
 	PrintGMM();
-
 	return LogLikelihoodGMM();
 }
 
@@ -790,9 +760,9 @@ double EMBase::LogLikelihood()
 {
 	int i, k;
 	double temp, f;
-    std::cout<< "Log likelihood: ";
-	Gaussian* G = new Gaussian[_number_of_tissues];
-	double* gv = new double[_number_of_tissues];
+  std::cout<< "Log likelihood: ";
+	Array<Gaussian> G(_number_of_tissues);
+	Array<double> gv(_number_of_tissues);
 
 	for (k = 0; k < _number_of_tissues; k++) {
 		G[k].Initialise( _mi[k], _sigma[k]);
@@ -802,8 +772,8 @@ double EMBase::LogLikelihood()
 	BytePixel *pm = _mask.GetPointerToVoxels();
 	_output.First();
 	f = 0;
-    for (i = 0; i < _number_of_voxels; i++) {
-        if (*pm == 1) {
+  for (i = 0; i < _number_of_voxels; i++) {
+    if (*pm == 1) {
 			temp = 0;
 			double max = 0;
 			int max_k = 0;
@@ -841,10 +811,7 @@ double EMBase::LogLikelihood()
 
 	_f=f;
 
-    std::cout << "f= "<< f << " diff = " << diff << " rel_diff = " << rel_diff <<std::endl;
-	delete[] G;
-	delete[] gv;
-
+  std::cout << "f= "<< f << " diff = " << diff << " rel_diff = " << rel_diff <<std::endl;
 	return rel_diff;
 }
 
@@ -852,9 +819,9 @@ double EMBase::LogLikelihoodGMM()
 {
 	int i, k;
 	double temp, f;
-    std::cout<< "Log likelihood GMM: ";
-	Gaussian* G = new Gaussian[_number_of_tissues];
-	double* gv = new double[_number_of_tissues];
+  std::cout<< "Log likelihood GMM: ";
+	Array<Gaussian> G(_number_of_tissues);
+	Array<double> gv(_number_of_tissues);
 
 	for (k = 0; k < _number_of_tissues; k++) {
 		G[k].Initialise( _mi[k], _sigma[k]);
@@ -864,7 +831,7 @@ double EMBase::LogLikelihoodGMM()
 	BytePixel *pm = _mask.GetPointerToVoxels();
 	_output.First();
 	f = 0;
-    for (i = 0; i < _number_of_voxels; i++) {
+  for (i = 0; i < _number_of_voxels; i++) {
 		if (*pm == 1) {
 			temp = 0;
 			for (k=0; k < _number_of_tissues; k++) {
@@ -892,56 +859,53 @@ double EMBase::LogLikelihoodGMM()
 
 	_f=f;
 
-    std::cout << "f= "<< f << " diff = " << diff << " rel_diff = " << rel_diff <<std::endl;
-	delete[] G;
-	delete[] gv;
-
+  std::cout << "f= "<< f << " diff = " << diff << " rel_diff = " << rel_diff <<std::endl;
 	return rel_diff;
 }
 
 void EMBase::ConstructSegmentation(IntegerImage &segmentation)
 {
-    int i, j, m;
-    RealPixel max;
+  int i, j, m;
+  RealPixel max;
 
-    std::cout<<"Constructing segmentation"<<std::endl;
+  std::cout<<"Constructing segmentation"<<std::endl;
 
-    // Initialize pointers of probability maps
-    _output.First();
+  // Initialize pointers of probability maps
+  _output.First();
 
-    // Initialize segmentation to same size as input
-    segmentation = IntegerImage(_input.Attributes());
-    RealPixel *ptr = _input.GetPointerToVoxels();
-    int *sptr = segmentation.GetPointerToVoxels();
-    BytePixel *pm = _mask.GetPointerToVoxels();
+  // Initialize segmentation to same size as input
+  segmentation = IntegerImage(_input.Attributes());
+  RealPixel *ptr = _input.GetPointerToVoxels();
+  int *sptr = segmentation.GetPointerToVoxels();
+  BytePixel *pm = _mask.GetPointerToVoxels();
 
-    for (i = 0; i < _number_of_voxels; i++) {
-        m = 0;
-        if (*pm == 1) {
-            max  = 0;
-            for (j = 0; j < _number_of_tissues; j++) {
-                if (_output.GetValue(j) > max) {
-                    max  = _output.GetValue(j);
-                    m = j+1;
-                    if ( _has_background && (j+1) == _number_of_tissues) m=0;
-                }
-            }
-            if(max==0){
-                int x,y,z;
-                int index=i;
-                z = index / (_input.GetX() * _input.GetY());
-                index -= z * (_input.GetX() * _input.GetY());
-                x = index % _input.GetX();
-                y = index / _input.GetX();
-                std::cerr<<"voxel at "<<x<<","<<y<<","<<z<<" has 0 prob"<<std::endl;
-            }
+  for (i = 0; i < _number_of_voxels; i++) {
+    m = 0;
+    if (*pm == 1) {
+      max  = 0;
+      for (j = 0; j < _number_of_tissues; j++) {
+        if (_output.GetValue(j) > max) {
+          max  = _output.GetValue(j);
+          m = j+1;
+          if ( _has_background && (j+1) == _number_of_tissues) m=0;
         }
-        *sptr = m;
-        sptr++;
-        ptr++;
-        pm++;
-        _output.Next();
+      }
+      if(max==0){
+        int x,y,z;
+        int index=i;
+        z = index / (_input.GetX() * _input.GetY());
+        index -= z * (_input.GetX() * _input.GetY());
+        x = index % _input.GetX();
+        y = index / _input.GetX();
+        std::cerr<<"voxel at "<<x<<","<<y<<","<<z<<" has 0 prob"<<std::endl;
+      }
     }
+    *sptr = m;
+    sptr++;
+    ptr++;
+    pm++;
+    _output.Next();
+  }
 }
 
 void EMBase::ConstructSegmentation()
@@ -952,7 +916,7 @@ void EMBase::ConstructSegmentation()
 
 void EMBase::GetProbMap(int i,RealImage& image){
 	if  (i < _number_of_tissues) {
-		image= _output.GetImage(i);
+		image = _output.GetImage(i);
 	} else {
 		std::cerr << "HashProbabilisticAtlas::Write: No such probability map" << std::endl;
 		exit(1);
@@ -962,8 +926,7 @@ void EMBase::GetProbMap(int i,RealImage& image){
 void EMBase::WriteProbMap(int i, const char *filename)
 {
 	if  (i < _number_of_tissues) {
-		HashRealImage image= _output.GetImage(i);
-		image.Write(filename);
+		_output.GetImage(i).Write(filename);
 	} else {
 		std::cerr << "HashProbabilisticAtlas::Write: No such probability map" << std::endl;
 		exit(1);
@@ -972,8 +935,7 @@ void EMBase::WriteProbMap(int i, const char *filename)
 
 void EMBase::WriteGaussianParameters(const char *file_name, int flag)
 {
-    std::cout << "Writing GaussianDistributionParameters: " << file_name << std::endl;
-
+  std::cout << "Writing GaussianDistributionParameters: " << file_name << std::endl;
 	ofstream fileOut(file_name);
 
 	if (!fileOut) {
@@ -1025,15 +987,14 @@ void EMBase::WriteWeights(const char *filename)
 	RealPixel *pw = w.GetPointerToVoxels();
 	int i;
 	double sigma_min=_sigma[0];
-
-	for (i=1; i<_number_of_tissues; i++) if (sigma_min > _sigma[i]) sigma_min = _sigma[i];
+  for (i = 1; i < _number_of_tissues; i++) {
+    if (sigma_min > _sigma[i]) sigma_min = _sigma[i];
+  }
 	std::cerr<<"sigma min = "<<sigma_min<<std::endl;
-
 	for (i=0; i<w.GetNumberOfVoxels(); i++) {
 		if (*pw != _padding) *pw=(*pw) * sigma_min * 100;
 		pw++;
 	}
-
 	w.Write(filename);
 }
 
@@ -1042,7 +1003,9 @@ double EMBase::PointLogLikelihoodGMM(double x)
 	int k;
 	double temp=0;
 
-	for (k=0; k < _number_of_tissues; k++) temp+= _G[k].Evaluate(x) * _c[k];
+  for (k = 0; k < _number_of_tissues; k++) {
+    temp += _G[k].Evaluate(x) * _c[k];
+  }
 	if (-log(temp)> 1000000) exit(1);
 
 	if ((temp > 1) || (temp < 0)) {
@@ -1055,30 +1018,28 @@ double EMBase::PointLogLikelihoodGMM(double x)
 
 void EMBase::GInit()
 {
-	if (_G!=NULL) delete[] _G;
-	_G = new Gaussian[_number_of_tissues];
-
-	for (int k = 0; k < _number_of_tissues; k++) {
-		_G[k].Initialise( _mi[k], _sigma[k]);
+	_G.resize(_number_of_tissues);
+	for (int i = 0; i < _number_of_tissues; ++i) {
+		_G[i].Initialise(_mi[i], _sigma[i]);
 	}
 }
 
 
-
-void EMBase::setSuperlabels(int *superlabels){
-	_super=superlabels;
+void EMBase::setSuperlabels(int *superlabels)
+{
+  for (int i = 0; i < _number_of_tissues; ++i) {
+    _super[i] = superlabels[i];
+  }
 	_superlabels=true;
 }
 
 
-void EMBase::GetProportions(double *proportions){
-	int i;
-	for(i=0;i<_number_of_tissues;i++){
+void EMBase::GetProportions(double *proportions)
+{
+	for(int i = 0; i < _number_of_tissues; ++i) {
 		proportions[i] =  _c[i];
 	}
 }
-
-
 
 
 template EMBase::EMBase(int, RealImage **, RealImage *);
@@ -1093,4 +1054,5 @@ template void EMBase::addProbabilityMap(HashRealImage image);
 template void EMBase::addBackground(RealImage image);
 template void EMBase::addBackground(HashRealImage image);
 
-}
+
+} // namespace mirtk

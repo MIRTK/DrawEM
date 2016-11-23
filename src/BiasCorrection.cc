@@ -60,17 +60,17 @@ void BiasCorrection::Run()
 	RealPixel *ptr2target, *ptr2ref, *ptr2w;
 
 	if (_reference == NULL) {
-		std::cerr << "BiasCorrection::Run: Filter has no reference input" << std::endl;
+		cerr << "BiasCorrection::Run: Filter has no reference input" << endl;
 		exit(1);
 	}
 
 	if (_target == NULL) {
-		std::cerr << "BiasCorrection::Run: Filter has no target input" << std::endl;
+		cerr << "BiasCorrection::Run: Filter has no target input" << endl;
 		exit(1);
 	}
 
 	if (_biasfield == NULL) {
-		std::cerr << "BiasCorrection::Run: Filter has no transformation output" << std::endl;
+		cerr << "BiasCorrection::Run: Filter has no transformation output" << endl;
 		exit(1);
 	}
 
@@ -119,11 +119,11 @@ void BiasCorrection::Run()
 		}
 	}
 
-	std::cout << "Computing bias field ... ";
-	std::cout.flush();
+	cout << "Computing bias field ... ";
+	cout.flush();
 	// _biasfield->Approximate(x, y, z, b, n);
 	_biasfield->WeightedLeastSquares(x, y, z, b, w, n);
-	std::cout << "done" << std::endl;
+	cout << "done" << endl;
 
 	delete []x;
 	delete []y;
@@ -165,8 +165,8 @@ void BiasCorrection::ApplyToImage(RealImage &image)
 {
 	int i, j, k;
 	double x, y, z, bias;
-	std::cerr<<"Applying bias ...";
-	//std::cerr<<_biasfield;
+	cerr<<"Applying bias ...";
+	//cerr<<_biasfield;
 
 	for (k = 0; k < image.GetZ(); k++) {
 		for (j = 0; j < image.GetY(); j++) {
@@ -184,7 +184,7 @@ void BiasCorrection::ApplyToImage(RealImage &image)
 		}
 	}
 
-	std::cerr<<"done."<<std::endl;
+	cerr<<"done."<<endl;
 }
 
 void BiasCorrection::ApplyToImage(GreyImage &image)
@@ -201,7 +201,7 @@ void BiasCorrection::ApplyToImage(GreyImage &image)
 				image.ImageToWorld(x, y, z);
 				bias = _biasfield->Bias(x, y, z);
 				if (image.Get(i, j, k) != _Padding) {
-					image(i, j, k) = round(image(i, j, k) / exp(bias/1000));
+					image(i, j, k) = static_cast<GreyPixel>(round(image(i, j, k) / exp(bias/1000)));
 				}
 			}
 		}

@@ -87,8 +87,8 @@ int main(int argc, char **argv)
 	unique_ptr<BaseImage> inputA(BaseImage::New(inputA_name));
 	unique_ptr<BaseImage> inputB(BaseImage::New(inputB_name));
 
-	int x, y, z, t;
-	double i, j, k;
+	int x, y, z, i, j, k, t;
+	double u, v, w;
 	vector<int> numvalues;
 	vector<double*> values;
 	vector<double> padding;
@@ -167,16 +167,11 @@ int main(int argc, char **argv)
 		for (z = 0; z < inputA->GetZ(); z++) {
 			for (y = 0; y < inputA->GetY(); y++) {
 				for (x = 0; x < inputA->GetX(); x++) {
-					i = x; j = y; k = z;
-					inputA->ImageToWorld(i,j,k);
-					inputB->WorldToImage(i,j,k);
-					i = round(i); j = round(j); k = round(k);
-
-					if (! (i >= 0 && i < inputB->GetX()
-							&& j >= 0 && j < inputB->GetY()
-							&& k >= 0 && k < inputB->GetZ()
-							&& t >= 0 && t < inputB->GetT()) ) continue;
-
+          u = x, v = y, w = z;
+					inputA->ImageToWorld(u, v, w);
+					inputB->WorldToImage(u, v, w);
+          i = iround(u), j = iround(v), k = iround(w);
+					if (!inputB->IsInside(i, j, k, t)) continue;
 
 					double val=inputB->GetAsDouble(i, j, k, t);
 					for(int s=0; s<setsvalues; s++){

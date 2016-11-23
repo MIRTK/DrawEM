@@ -23,10 +23,7 @@
 #include "mirtk/IOConfig.h"
 #include "mirtk/GenericImage.h"
 
-#include <map>
-
 using namespace mirtk;
-using namespace std;
 
 
 // =============================================================================
@@ -36,17 +33,16 @@ using namespace std;
 // -----------------------------------------------------------------------------
 void PrintHelp(const char *name)
 {
-	std::cout << std::endl;
-	std::cout << "Usage: " << name << " <input>" << std::endl;
-	std::cout << std::endl;
-	std::cout << "Description:" << std::endl;
- 	std::cout << "  Measures the volume of each label in the input image" << std::endl;
-	std::cout << std::endl;
-	std::cout << "Optional: " << std::endl;
-	std::cout << std::endl;
-	std::cout << "  -voxels    count the number of voxels instead" << std::endl;
-	PrintStandardOptions(std::cout);
-	std::cout << std::endl;
+	cout << endl;
+	cout << "Usage: " << name << " <input>" << endl;
+	cout << endl;
+	cout << "Description:" << endl;
+ 	cout << "  Measures the volume of each label in the input image" << endl;
+	cout << endl;
+	cout << "Optional arguments:" << endl;
+	cout << "  -voxels    Count the number of voxels instead. (default: off)" << endl;
+	PrintStandardOptions(cout);
+	cout << endl;
 }
 
 // =============================================================================
@@ -54,46 +50,40 @@ void PrintHelp(const char *name)
 // =============================================================================
 
 // -----------------------------------------------------------------------------
-
-
 int main(int argc, char **argv)
 {
-  REQUIRES_POSARGS(1);
+  EXPECTS_POSARGS(1);
 
   InitializeIOLibrary();
-  RealImage img(POSARG(1));
+  GreyImage labels(POSARG(1));
 
-  bool involume=true;
-    for (ALL_OPTIONS) {
-        if (OPTION("-voxels")){
-            involume=false;
-        }
-        else HANDLE_STANDARD_OR_UNKNOWN_OPTION();
+  bool voxel_count = false;
+  for (ALL_OPTIONS) {
+    HANDLE_BOOLEAN_OPTION("voxels", voxel_count);
+    else HANDLE_STANDARD_OR_UNKNOWN_OPTION();
+  }
+
+  UnorderedMap<int, int> hist;
+  const GreyPixel *label = labels.Data();
+  for (int vox = 0; vox < labels.NumberOfVoxels(); ++vox, ++label) {
+    if (*label != 0) {
+      auto bin = hist.find(static_cast<int>(*label));
+      if (bin == hist.end()) hist[*label] = 1;
+      else bin->second += 1;
     }
+  }
 
-  map<int, int> voxels;
-
-    for(int x = 0; x < img.GetX(); x++){
-		for(int y = 0; y < img.GetY(); y++){
-			for(int z = 0; z < img.GetZ(); z++){
-			    int label=img.Get(x, y, z, 0);
-			    if(label==0)continue;
-			    voxels[label]++;
-			}
-		}
+  if (voxel_count) {
+    for (const auto &bin : hist) {
+      cout << bin.first << " " << bin.second << "\n";
     }
-
-    double xvsize, yvsize, zvsize;
-    img.GetPixelSize(&xvsize,&yvsize,&zvsize); 
-    double vsize=xvsize* yvsize* zvsize;	
-
-    for( map<int,int>::iterator ii=voxels.begin(); ii!=voxels.end(); ++ii){
-		int label=(*ii).first;
-		if(label==0)continue;
-		double volume=(*ii).second ;
-		if(involume) volume=volume*vsize;
-	       std::cout << label << " " <<std::setprecision(8)<< volume << std::endl;
+  } else {
+    const double vol = labels.XSize() * labels.YSize() * labels.ZSize();
+    for (const auto &bin : hist) {
+      cout << bin.first << " " << setprecision(8) << bin.second * vol << "\n";
     }
-    
-    return 0;
+  }
+  cout.flush();
+
+  return 0;
 }

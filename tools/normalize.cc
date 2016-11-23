@@ -30,20 +30,20 @@ using namespace mirtk;
 
 void PrintHelp(const char *name)
 {
-  std::cout << "usage: " << name << " <target> <source> <output_source> [options]" << std::endl;
-  std::cout << "       " << name << " <input> <output> -equalize <padding>" << std::endl;
-  std::cout << std::endl;
-  std::cout << "Normalizes the intensity distribution of an image to be similar to" << std::endl;
-  std::cout << "the intensity distribution of a given reference image. Moreover," << std::endl;
-  std::cout << "this tool can be used to equalize the histograms of either a single" << std::endl;
-  std::cout << "given image or two images using the same transfer function." << std::endl;
-  std::cout << std::endl;
-  std::cout << "Options:" << std::endl;
-  std::cout << "  -Tp <value>   Target padding value" << std::endl;
-  std::cout << "  -Sp <value>   Source padding value" << std::endl;
-  std::cout << "  -piecewise    Use a piecewise linear function as suggested by Nyul et al." << std::endl;
-  std::cout << "  -equalize <padding> [<target_output>]   Equalize histograms before normalization." << std::endl;
-  PrintCommonOptions(std::cout);
+  cout << "usage: " << name << " <target> <source> <output_source> [options]" << endl;
+  cout << "       " << name << " <input> <output> -equalize <padding>" << endl;
+  cout << endl;
+  cout << "Normalizes the intensity distribution of an image to be similar to" << endl;
+  cout << "the intensity distribution of a given reference image. Moreover," << endl;
+  cout << "this tool can be used to equalize the histograms of either a single" << endl;
+  cout << "given image or two images using the same transfer function." << endl;
+  cout << endl;
+  cout << "Options:" << endl;
+  cout << "  -Tp <value>   Target padding value" << endl;
+  cout << "  -Sp <value>   Source padding value" << endl;
+  cout << "  -piecewise    Use a piecewise linear function as suggested by Nyul et al." << endl;
+  cout << "  -equalize <padding> [<target_output>]   Equalize histograms before normalization." << endl;
+  PrintCommonOptions(cout);
 }
 
 int main(int argc, char **argv)
@@ -101,14 +101,14 @@ int main(int argc, char **argv)
   // Read input image(s)
   RealImage target;
   if (target_name) {
-    if (verbose) std::cout << "Reading target image ... ", std::cout.flush();
+    if (verbose) cout << "Reading target image ... ", cout.flush();
     target.Read(target_name);
-    if (verbose) std::cout << "done" << std::endl;
+    if (verbose) cout << "done" << endl;
   }
 
-  if (verbose) std::cout << "Reading source image ... ", std::cout.flush();
+  if (verbose) cout << "Reading source image ... ", cout.flush();
   RealImage source(source_name);
-  if (verbose) std::cout << "done" << std::endl;
+  if (verbose) cout << "done" << endl;
 
   // Equalize histograms
   if (equalize) {
@@ -116,8 +116,8 @@ int main(int argc, char **argv)
     RealImage *reference = (target.IsEmpty() ? &source : &target);
 
     if (verbose) {
-      std::cout << "Equalize histogram" << ((reference == &target) ? "s" : "") << " ... ";
-      std::cout.flush();
+      cout << "Equalize histogram" << ((reference == &target) ? "s" : "") << " ... ";
+      cout.flush();
     }
 
     reference->GetMinMaxAsDouble(min, max);
@@ -138,7 +138,7 @@ int main(int argc, char **argv)
       histogram.BackProject(&source);
     }
 
-    if (verbose) std::cout << "done" << std::endl;
+    if (verbose) cout << "done" << endl;
   }
 
   // Stop if source image equalization is done only
@@ -147,7 +147,7 @@ int main(int argc, char **argv)
     return 0;
   }
 
-  if (verbose) std::cout << "Normalize histogram ... ";
+  if (verbose) cout << "Normalize histogram ... ";
 
   // Normalize histogram
   if (piecewise) {
@@ -157,6 +157,7 @@ int main(int argc, char **argv)
     source = nn.GetOutput();
   } else {
     double a, b, cov, var, x_avg, y_avg, x, y, z;
+    int u, v, w;
 
 	  int n = 0;
 	  x_avg = 0;
@@ -167,20 +168,20 @@ int main(int argc, char **argv)
       x = i; y = j; z = k;
       source.ImageToWorld(x,y,z);
       target.WorldToImage(x,y,z);
-      x = round(x); y = round(y); z = round(z);
-      if (x >= 0 && x < target.GetX() &&
-          y >= 0 && y < target.GetY() &&
-          z >= 0 && z < target.GetZ()) {
-        if ((source(i, j, k) > source_padding) && (target(x,y,z) > target_padding)) {
+      u = iround(x);
+      v = iround(y);
+      w = iround(z);
+      if (target.IsInside(u, v, w)) {
+        if ((source(i, j, k) > source_padding) && (target(u, v, w) > target_padding)) {
           n++;
           x_avg += source(i, j, k);
-          y_avg += target(x, y, z);
+          y_avg += target(u, v, w);
         }
       }
 	  }
 	  if (n == 0) {
-      std::cout << "failed" << std::endl;
-      std::cerr << EXECNAME << ": Number of samples should be larger than zero" << std::endl;
+      cout << "failed" << endl;
+      cerr << EXECNAME << ": Number of samples should be larger than zero" << endl;
       exit(1);
 	  }
 
@@ -192,12 +193,12 @@ int main(int argc, char **argv)
       x = i; y = j; z = k;
       source.ImageToWorld(x,y,z);
       target.WorldToImage(x,y,z);
-      x = round(x); y = round(y); z = round(z);
-      if (x >= 0 && x < target.GetX() &&
-          y >= 0 && y < target.GetY() &&
-          z >= 0 && z < target.GetZ()) {
-        if ((source(i, j, k) > source_padding) && (target(x, y, z) > target_padding)) {
-          cov += (source(i, j, k) - x_avg) * (target(x, y, z) - y_avg);
+      u = iround(x);
+      v = iround(y);
+      w = iround(z);
+      if (target.IsInside(u, v, w)) {
+        if ((source(i, j, k) > source_padding) && (target(u, v, w) > target_padding)) {
+          cov += (source(i, j, k) - x_avg) * (target(u, v, w) - y_avg);
           var += (source(i, j, k) - x_avg) * (source(i, j, k) - x_avg);
         }
       }
@@ -208,7 +209,7 @@ int main(int argc, char **argv)
 	  a = y_avg - b * x_avg;
 
     if (verbose) {
-      std::cout << "scaling = " << b << ", offset = " << b;
+      cout << "scaling = " << b << ", offset = " << b;
     }
 
 	  for (int k = 0; k < source.GetZ(); k++)
@@ -219,7 +220,7 @@ int main(int argc, char **argv)
       }
 	  }
 
-    if (verbose) std::cout << "done" << std::endl;
+    if (verbose) cout << "done" << endl;
   }
 
   // Write normalized image

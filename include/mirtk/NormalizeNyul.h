@@ -17,33 +17,42 @@
  */
 
 
-#ifndef MIRTKNORMALIZENYUL_H_
-#define MIRTKNORMALIZENYUL_H_
+#ifndef MIRTK_NORMALIZENYUL_H_
+#define MIRTK_NORMALIZENYUL_H_
 
-#include "mirtk/Image.h"
-//#include "mirtk/Registration.h"
-#include "mirtk/ImageHistogram1D.h"
+#include "mirtk/GenericImage.h"
 
 
 namespace mirtk {
 
-class NormalizeNyul{
 
+/**
+ * This filter implements the intensity normalization algorithm published in
+ *
+ * Nyul, L.G.; Udupa, J.K.; Xuan Zhang, "New variants of a method of MRI scale standardization",
+ * Medical Imaging, IEEE Transactions on , vol.19, no.2, pp.143-150, Feb 2000
+ * http://dx.doi.org/10.1109/42.836373 "
+ *
+ * Source code adapted from an implementation by Vladimir Fonov in EZminc (https://github.com/vfonov/EZminc)
+ */
+class NormalizeNyul
+{
 private:
 	RealImage _target;
 	RealImage _source;
-	int _source_padding;
-	int _target_padding;
+  double _source_padding;
+  double _target_padding;
 
 public:
 	NormalizeNyul(RealImage source, RealImage target);
 	void SetMask(RealImage source_mask, RealImage target_mask);
-	void SetPadding(int source_padding, int target_padding);
-	static void histogramImage(Histogram1D<RealPixel>* histogram, RealImage* image, double padding);
+	void SetPadding(double source_padding, double target_padding);
 	void Run();
 	RealImage GetOutput();
 	RealImage GetTarget();
 };
 
-}
-#endif
+
+} // namespace mirtk
+
+#endif // MIRTK_NORMALIZENYUL_H_

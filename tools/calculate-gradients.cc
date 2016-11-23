@@ -168,15 +168,16 @@ int main(int argc, char **argv)
 	output.Write(output_name);
 
 	if (sepBasename != NULL){
-		char buffer[250];
+    const size_t bufsz = 256;
+		char buffer[bufsz];
 
-		sprintf(buffer, "%s-x.nii.gz", sepBasename);
+		snprintf(buffer, bufsz, "%s-x.nii.gz", sepBasename);
 		gradX.Write(buffer);
 
-		sprintf(buffer, "%s-y.nii.gz", sepBasename);
+		snprintf(buffer, bufsz, "%s-y.nii.gz", sepBasename);
 		gradY.Write(buffer);
 
-		sprintf(buffer, "%s-z.nii.gz", sepBasename);
+		snprintf(buffer, bufsz, "%s-z.nii.gz", sepBasename);
 		gradZ.Write(buffer);
 
 	}

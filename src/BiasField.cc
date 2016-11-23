@@ -95,15 +95,15 @@ double ***BiasField::Allocate(double ***data, int x, int y, int z)
 	}
 
 	if ((data = new double **[z+8]) == NULL) {
-		std::cerr << "Allocate: malloc failed for " << x << " x " << y << " x ";
-		std::cerr << z << "\n";
+		cerr << "Allocate: malloc failed for " << x << " x " << y << " x ";
+		cerr << z << "\n";
 		exit(1);
 	}
 	data += 4;
 
 	if ((data[-4] = new double *[(z+8)*(y+8)]) == NULL) {
-		std::cerr << "Allocate: malloc failed for " << x << " x " << y << " x ";
-		std::cerr << z << "\n";
+		cerr << "Allocate: malloc failed for " << x << " x " << y << " x ";
+		cerr << z << "\n";
 		exit(1);
 	}
 	data[-4] += 4;
@@ -113,8 +113,8 @@ double ***BiasField::Allocate(double ***data, int x, int y, int z)
 	}
 
 	if ((data[-4][-4] = new double[(z+8)*(y+8)*(x+8)]) == NULL) {
-		std::cerr << "Allocate: malloc failed for " << x << " x " << y << " x ";
-		std::cerr << z << "\n";
+		cerr << "Allocate: malloc failed for " << x << " x " << y << " x ";
+		cerr << z << "\n";
 		exit(1);
 	}
 	data[-4][-4] += 4;

@@ -137,7 +137,7 @@ inline RealPixel ProbabilisticAtlas::GetValue(unsigned int channel)
 {
 	if (channel < _images.size()) return *_pointers[channel];
 	else {
-		std::cerr << "Channel identificator " << channel <<" out of range." <<std::endl;
+		cerr << "Channel identificator " << channel <<" out of range." <<endl;
 		exit(1);
 	}
 }
@@ -146,7 +146,7 @@ inline RealPixel ProbabilisticAtlas::GetValue(int x, int y, int z, unsigned int 
 {
 	if (channel < _images.size()) return _images[channel].Get(x,y,z);
 	else {
-		std::cerr << "Channel identificator " << channel <<" out of range." <<std::endl;
+		cerr << "Channel identificator " << channel <<" out of range." <<endl;
 		exit(1);
 	}
 }
@@ -155,7 +155,7 @@ inline void ProbabilisticAtlas::SetValue(unsigned int channel, RealPixel value)
 {
 	if (channel < _images.size()) *_pointers[channel] = value;
 	else {
-		std::cerr << "Channel identificator " << channel << " out of range." <<std::endl;
+		cerr << "Channel identificator " << channel << " out of range." <<endl;
 		exit(1);
 	}
 }
@@ -164,7 +164,7 @@ inline void ProbabilisticAtlas::SetValue(int x, int y, int z, unsigned int chann
 {
 	if (channel < _images.size()) _images[channel].Put( x, y, z, value);
 	else {
-		std::cerr << "Channel identificator " << channel <<" out of range." <<std::endl;
+		cerr << "Channel identificator " << channel <<" out of range." <<endl;
 		exit(1);
 	}
 }
