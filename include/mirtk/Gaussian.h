@@ -20,6 +20,7 @@
 #define _MIRTK_GAUSSIAN_H
 
 #include "mirtk/Object.h"
+#include "mirtk/Math.h"
 
 
 namespace mirtk {

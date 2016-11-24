@@ -17,7 +17,6 @@
  */
 
 #include "mirtk/Gaussian.h"
-#include "mirtk/Math.h"
 
 
 namespace mirtk {
