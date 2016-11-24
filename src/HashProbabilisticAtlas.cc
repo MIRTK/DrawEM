@@ -67,9 +67,8 @@ void HashProbabilisticAtlas::AddImage(ImageType image){
 		}
 	}
 	_images.push_back(new HashRealImage(image));
-	if(_has_background) SwapImages(_images.size()-2, _images.size()-1);
-	_number_of_maps = _images.size();
-
+	if(_has_background) SwapImages(static_cast<int>(_images.size())-2, static_cast<int>(_images.size())-1);
+	_number_of_maps = static_cast<int>(_images.size());
 }
 
 void HashProbabilisticAtlas::NormalizeAtlas(){
