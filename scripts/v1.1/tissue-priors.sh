@@ -55,29 +55,31 @@ done
 sdir=segmentations-data
 if [ $needtseg -eq 1 -a ! -f $sdir/tissue-initial-segmentations/$subj.nii.gz ];then
 
-echo "creating $subj tissue priors"
+    echo "creating $subj tissue priors"
 
-mkdir -p $sdir $sdir/template $sdir/tissue-posteriors $sdir/tissue-initial-segmentations || exit 1
-structures="csf gm wm outlier ventricles cerebstem dgm hwm lwm"
-for str in ${structures};do
-mkdir -p $sdir/template/$str $sdir/tissue-posteriors/$str || exit 1
-done
+    mkdir -p $sdir $sdir/template $sdir/tissue-posteriors $sdir/tissue-initial-segmentations || exit 1
+    structures="csf gm wm outlier ventricles cerebstem dgm hwm lwm"
+    for str in ${structures};do
+    mkdir -p $sdir/template/$str $sdir/tissue-posteriors/$str || exit 1
+    done
 
 
-strnum=0
-emsstructures=""
-emsposts=""
+    strnum=0
+    emsstructures=""
+    emsposts=""
 
-for str in ${structures};do
-emsposts="$emsposts -saveprob $strnum $sdir/tissue-posteriors/$str/$subj.nii.gz"
-strnum=$(($strnum+1))
+    for str in ${structures};do
+    emsposts="$emsposts -saveprob $strnum $sdir/tissue-posteriors/$str/$subj.nii.gz"
+    strnum=$(($strnum+1))
 
-strems=$sdir/template/$str/$subj.nii.gz
-run mirtk transform-image $DRAWEMDIR/atlases/$atlasname/atlas-9/structure$strnum/$age.nii.gz $strems -dofin $dof -target N4/$subj.nii.gz -interp Linear
-emsstructures="$emsstructures $strems"
-done
+    strems=$sdir/template/$str/$subj.nii.gz
+    run mirtk transform-image $DRAWEMDIR/atlases/$atlasname/atlas-9/structure$strnum/$age.nii.gz $strems -dofin $dof -target N4/$subj.nii.gz -interp Linear
+    emsstructures="$emsstructures $strems"
+    done
 
-mkdir -p logs
-run mirtk draw-em N4/$subj.nii.gz 9 $emsstructures $sdir/tissue-initial-segmentations/$subj.nii.gz -padding 0 -mrf $DRAWEMDIR/parameters/conn_tissues_ven_cstem_dgm_hwm_lwm.mrf -tissues 1 3 1 0 1 1 3 2 7 8 -hui -relaxtimes 2 $emsposts  1>logs/$subj-tissue-em 2>logs/$subj-tissue-em-err
+    mkdir -p logs
+    run mirtk draw-em N4/$subj.nii.gz 9 $emsstructures $sdir/tissue-initial-segmentations/$subj.nii.gz -padding 0 -mrf $DRAWEMDIR/parameters/conn_tissues_ven_cstem_dgm_hwm_lwm.mrf -tissues 1 3 1 0 1 1 3 2 7 8 -hui -relaxtimes 2 $emsposts  1>logs/$subj-tissue-em 2>logs/$subj-tissue-em-err
 
+    mkdir -p $sdir/gm-posteriors || exit 1
+    run mirtk calculate $sdir/tissue-posteriors/gm/$subj.nii.gz -mul 100 -out $sdir/gm-posteriors/$subj.nii.gz 
 fi

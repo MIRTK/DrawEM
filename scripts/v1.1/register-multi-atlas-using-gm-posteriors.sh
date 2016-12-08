@@ -33,8 +33,6 @@ run(){
 
 scriptdir=$(dirname "$BASH_SOURCE")
 sdir=segmentations-data
-mkdir -p $sdir/gm-posteriors || exit 1
-run mirtk calculate $sdir/tissue-posteriors/gm/$subj.nii.gz -mul 100 -out $sdir/gm-posteriors/$subj.nii.gz 
 
 mkdir -p dofs
 for i in {01..20};do
