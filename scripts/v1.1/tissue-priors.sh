@@ -41,8 +41,19 @@ if [ ! -f $dof ];then
   run mirtk register N4/$subj.nii.gz $DRAWEMDIR/atlases/$atlasname/T2/template-$age.nii.gz -dofout $dof -parin $DRAWEMDIR/parameters/ireg.cfg -threads $njobs
 fi
 
+needtseg=0
+for i in {01..20};do
+  atlas=ALBERT_$i
+  dof=dofs/$subj-$atlas-n.dof.gz
+
+  if [ ! -f $dof ];then
+    needtseg=1
+    break
+  fi
+done
+
 sdir=segmentations-data
-if [ ! -f $sdir/tissue-initial-segmentations/$subj.nii.gz ];then
+if [ $needtseg -eq 1 -a ! -f $sdir/tissue-initial-segmentations/$subj.nii.gz ];then
 
 echo "creating $subj tissue priors"
 
