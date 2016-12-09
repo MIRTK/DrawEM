@@ -35,7 +35,7 @@ rm -f $sdir/posteriors/*/$subj.nii.gz
 rm -f $sdir/template/*/$subj.nii.gz
 rm -f $sdir/tissue-initial-segmentations/$subj.nii.gz
 rm -f $sdir/tissue-posteriors/*/$subj.nii.gz
-rm -f $sdir/transformations/T2-$subj-ALBERT_*.nii.gz $sdir/transformations/$subj-ALBERT_*.nii.gz
+rm -f $sdir/transformations/T2-$subj-ALBERT_*.nii.gz $sdir/transformations/$subj-ALBERT_*.nii.gz $sdir/transformations/tissues-$subj-ALBERT_*.nii.gz
 rm -f segmentations/$subj-em.nii.gz segmentations/$subj-initial.nii.gz
 rm -f logs/$subj logs/$subj-err logs/$subj-em logs/$subj-em-err logs/$subj-tissue-em logs/$subj-tissue-em-err
 
