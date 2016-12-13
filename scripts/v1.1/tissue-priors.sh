@@ -44,9 +44,7 @@ fi
 needtseg=0
 for i in {01..20};do
   atlas=ALBERT_$i
-  dof=dofs/$subj-$atlas-n.dof.gz
-
-  if [ ! -f $dof ];then
+  if [ ! -f dofs/$subj-$atlas-n.dof.gz ];then
     needtseg=1
     break
   fi
