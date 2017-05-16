@@ -48,7 +48,7 @@ if [ ! -f N4/$subj.nii.gz ];then
   fi
 
   #bias correct
-  run N4 3 -i N4/${subj}_rescaled.nii.gz -x segmentations/${subj}_brain_mask.nii.gz -o "[N4/${subj}_corr.nii.gz,bias/$subj.nii.gz]" -c "[50x50x50,0.001]" -s 2 -b "[100,3]" -t "[0.15,0.01,200]"
+  run $DRAWEMDIR/ThirdParty/ITK/N4 3 -i N4/${subj}_rescaled.nii.gz -x segmentations/${subj}_brain_mask.nii.gz -o "[N4/${subj}_corr.nii.gz,bias/$subj.nii.gz]" -c "[50x50x50,0.001]" -s 2 -b "[100,3]" -t "[0.15,0.01,200]"
   run mirtk calculate N4/${subj}_corr.nii.gz -mul segmentations/${subj}_brain_mask.nii.gz -out N4/${subj}_corr.nii.gz 
   
   #rescale image
