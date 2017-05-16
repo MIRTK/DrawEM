@@ -24,11 +24,6 @@ outf=$2
 keepratio=0.05
 if [ $# -gt 2 ];then keepratio=$3;fi
 
-run(){
-  echo "$@"
-  "$@" || exit 1
-}
-
 if [ ! -f $outf ];then
 
 sdir=segmentations-data

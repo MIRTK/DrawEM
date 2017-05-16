@@ -32,11 +32,6 @@ scriptdir=$(dirname "$BASH_SOURCE")
 f=segmentations/$subj-initial.nii.gz
 
 
-run(){
-  echo "$@"
-  "$@" || exit 1
-}
-
 if [ ! -f segmentations/"$subj"_all_labels$suffix.nii.gz ];then
 # creating the all labels file (initial segmentation + cortical division)
 $scriptdir/postprocess-cortical.sh $subj

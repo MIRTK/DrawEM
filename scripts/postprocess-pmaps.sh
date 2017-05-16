@@ -23,12 +23,6 @@
 [ $# -eq 1 ] || { echo "usage: $(basename "$0") <subject>" 1>&2; exit 1; }
 subj=$1
 
-
-run(){
-  echo "$@"
-  "$@" || exit 1
-}
-
 rdir=posteriors
 sdir=segmentations-data
 
@@ -48,6 +42,11 @@ for ((n=0;n<${#all[*]};n++));do r=${all[$n]}; mkdir -p $rdir/seg$r || exit 1;don
 # out, csf
 cp $sdir/posteriors/csf/$subj.nii.gz $rdir/seg83/$subj.nii.gz || exit 1
 cp $sdir/posteriors/outlier/$subj.nii.gz $rdir/seg84/$subj.nii.gz || exit 1
+
+for tiss in csf gm wm;do 
+  mkdir -p $rdir/$tiss
+  cp $sdir/posteriors/gm/$subj.nii.gz $rdir/$tiss/$subj.nii.gz || exit 1
+done
 
 # cortical wm, gm
 addem=""

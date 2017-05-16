@@ -27,12 +27,6 @@ atlasname=$3
 njobs=1
 if [ $# -gt 3 ];then njobs=$4;fi
 
-run(){
-  echo "$@"
-  "$@" || exit 1
-}
-
-
 #registration
 dof=dofs/$subj-template-$age-n.dof.gz
 mkdir -p $(dirname "${dof}")

@@ -27,11 +27,6 @@ mkdir -p $sdir/corrections || exit 1
 
 subcorts=`cat $DRAWEMDIR/parameters/subcortical-all.csv`
 
-run(){
-  echo "$@"
-  "$@" || exit 1
-}
-
 if [ -f segmentations/${subj}_L_white.nii.gz -a -f segmentations/${subj}_R_white.nii.gz ];then
 
 # if small gm components exist inside the white surface..

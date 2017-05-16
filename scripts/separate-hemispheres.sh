@@ -22,11 +22,6 @@
 [ $# -eq 1 ] || { echo "usage: $(basename "$0") <subject>"; exit 1; }
 subj=$1
 
-run(){
-  echo "$@"
-  "$@" || exit 1
-}
-
 scriptdir=$(dirname "$BASH_SOURCE")
 
 
@@ -78,17 +73,16 @@ for h in L R;do
 
 	# fill holes
 	run mirtk fill-holes segmentations/${subj}_${h}_${surf}_unfilled.nii.gz segmentations/${subj}_${h}_${surf}.nii.gz
-
-        # clean up
-        rm segmentations/${subj}_${h}_${surf}_init.nii.gz segmentations/${subj}_${h}_${surf}_unfilled.nii.gz
     done
-    # clean up
-    rm segmentations/$subj-$h-hemisphere.nii.gz
 done
 
 # clean up
+for h in L R;do
+    for surf in white pial;do
+        rm segmentations/${subj}_${h}_${surf}_init.nii.gz segmentations/${subj}_${h}_${surf}_unfilled.nii.gz
+    done
+    rm segmentations/$subj-$h-hemisphere.nii.gz
+done
 rm segmentations/"$subj"_all_labels$suffix.nii.gz segmentations/"$subj"_labels$suffix.nii.gz segmentations/"$subj"_tissue_labels$suffix.nii.gz
 
 fi
-
-

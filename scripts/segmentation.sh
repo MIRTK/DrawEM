@@ -23,11 +23,6 @@
 [ $# -eq 1 ] || { echo "usage: $(basename "$0") <subject>"; exit 1; }
 subj=$1
 
-run()
-{
-  echo "$@"
-  "$@" || exit 1
-}
 
 if [ ! -f segmentations/$subj-initial.nii.gz ];then
 sdir=segmentations-data

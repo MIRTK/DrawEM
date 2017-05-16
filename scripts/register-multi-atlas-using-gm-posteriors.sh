@@ -26,12 +26,6 @@ age=$2
 njobs=1
 if [ $# -gt 2 ];then njobs=$3;fi
 
-run(){
-  echo "$@"
-  "$@" || exit 1
-}
-
-scriptdir=$(dirname "$BASH_SOURCE")
 sdir=segmentations-data
 
 mkdir -p dofs

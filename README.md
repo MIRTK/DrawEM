@@ -28,7 +28,7 @@ Run
 
 The segmentation pipeline can be run with the following script:
 
-pipelines/neonatal-pipeline-v1.1.sh 
+pipelines/neonatal-pipeline.sh 
 
 The script requires the T2 image and the age at scan of the subject to be segmented (as first and second argument respectively).
 Run the script without arguments for a detailed list of options.

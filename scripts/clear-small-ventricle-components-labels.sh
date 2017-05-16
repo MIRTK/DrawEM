@@ -26,11 +26,6 @@ scriptdir=$(dirname "$BASH_SOURCE")
 sdir=segmentations-data
 mkdir -p $sdir/corrections || exit 1
 
-run(){
-  echo "$@"
-  "$@" || exit 1
-}
-
 # cleaning up small ventricle components
 run mirtk padding segmentations/$subj-em.nii.gz segmentations/$subj-em.nii.gz $sdir/corrections/$subj-hwm-init.nii.gz 26 0 -invert
 run mirtk padding segmentations/$subj-initial.nii.gz segmentations/$subj-initial.nii.gz $sdir/corrections/$subj-ven-init.nii.gz 2 49 50 0 -invert 2 49 50 1
@@ -38,7 +33,8 @@ $scriptdir/clear-small-components.sh $sdir/corrections/$subj-ven-init.nii.gz $sd
 run mirtk calculate $sdir/corrections/$subj-ven-init.nii.gz -sub $sdir/corrections/$subj-ven.nii.gz -out $sdir/corrections/$subj-ven-diff.nii.gz
 
 # if small ventricle components are surrounded by hwm..
-run mirtk fill-holes $sdir/corrections/$subj-hwm-init.nii.gz $sdir/corrections/$subj-hwm-fillh.nii.gz
+#run mirtk fill-holes $sdir/corrections/$subj-hwm-init.nii.gz $sdir/corrections/$subj-hwm-fillh.nii.gz
+run mirtk fill-holes-nn-based $sdir/corrections/$subj-hwm-init.nii.gz $sdir/corrections/$subj-ven-diff.nii.gz $sdir/corrections/$subj-hwm-fillh.nii.gz
 run mirtk calculate $sdir/corrections/$subj-ven-diff.nii.gz -mul $sdir/corrections/$subj-hwm-fillh.nii.gz -out $sdir/corrections/$subj-ventohwm.nii.gz
 
 volcorr=`mirtk measure-volume $sdir/corrections/$subj-ventohwm.nii.gz`
