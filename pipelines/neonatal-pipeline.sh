@@ -66,6 +66,7 @@ datadir=`pwd`
 posteriors=0   # whether to output posterior probability maps
 threads=1
 verbose=1
+command="$@"
 
 atlasname=non-rigid-v2
 
@@ -103,7 +104,7 @@ Posteriors: $posteriors
 Cleanup:    $cleanup 
 Threads:    $threads
 
-$BASH_SOURCE $@
+$BASH_SOURCE $command
 ----------------------------"; }
 
 mkdir -p logs || exit 1
@@ -114,7 +115,7 @@ run()
   echo "$@"
   "$@"
   if [ ! $? -eq 0 ]; then
-    echo "failed"
+    echo "$@ : failed"
     exit 1
   fi
 }
@@ -126,7 +127,8 @@ run_script()
 {
   echo "$@"
   "$DRAWEMDIR/scripts/$@"
-  if [ $? -eq 0 ]; then
+  if [ ! $? -eq 0 ]; then
+    echo "$DRAWEMDIR/scripts/$@ : failed"
     exit 1
   fi
 }

@@ -29,7 +29,7 @@ if [ $# -gt 3 ];then njobs=$4;fi
 
 #registration
 dof=dofs/$subj-template-$age-n.dof.gz
-mkdir -p $(dirname "${dof}")
+mkdir -p dofs
 
 if [ ! -f $dof ];then 
   run mirtk register N4/$subj.nii.gz $DRAWEMDIR/atlases/$atlasname/T2/template-$age.nii.gz -dofout $dof -parin $DRAWEMDIR/parameters/ireg.cfg -threads $njobs
