@@ -29,7 +29,7 @@ if [ $# -gt 2 ];then njobs=$3;fi
 sdir=segmentations-data
 
 mkdir -p dofs
-for i in {01..20};do
+for i in 0{1..9} {10..20};do
   atlas=ALBERT_$i
   dof=dofs/$subj-$atlas-n.dof.gz
 

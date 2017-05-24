@@ -36,7 +36,7 @@ if [ ! -f $dof ];then
 fi
 
 needtseg=0
-for i in {01..20};do
+for i in 0{1..9} {10..20};do
   atlas=ALBERT_$i
   if [ ! -f dofs/$subj-$atlas-n.dof.gz ];then
     needtseg=1

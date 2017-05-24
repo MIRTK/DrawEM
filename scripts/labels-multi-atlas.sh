@@ -51,7 +51,7 @@ atlases=""
 num=0
 
 #for each atlas
-for atnum in {01..20};do
+for atnum in 0{1..9} {10..20};do
 atlas="ALBERT_"$atnum
 if [ ! -f dofs/$subj-$atlas-n.dof.gz ];then continue;fi
 
