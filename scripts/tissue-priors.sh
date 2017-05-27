@@ -32,7 +32,7 @@ dof=dofs/$subj-template-$age-n.dof.gz
 mkdir -p dofs
 
 if [ ! -f $dof ];then 
-  run mirtk register N4/$subj.nii.gz $DRAWEMDIR/atlases/$atlasname/T2/template-$age.nii.gz -dofout $dof -parin $DRAWEMDIR/parameters/ireg.cfg -threads $njobs
+  run mirtk register N4/$subj.nii.gz $DRAWEMDIR/atlases/$atlasname/T2/template-$age.nii.gz -dofout $dof -parin $DRAWEMDIR/parameters/ireg.cfg -threads $njobs -v 0
 fi
 
 needtseg=0

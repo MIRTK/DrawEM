@@ -34,7 +34,7 @@ for i in 0{1..9} {10..20};do
   dof=dofs/$subj-$atlas-n.dof.gz
 
   if [ ! -f $dof ];then
-    run mirtk register N4/$subj.nii.gz $DRAWEMDIR/atlases/ALBERTs/T2/$atlas.nii.gz $sdir/gm-posteriors/$subj.nii.gz $DRAWEMDIR/atlases/ALBERTs/gm-posteriors-v3/$atlas.nii.gz -parin $DRAWEMDIR/parameters/ireg-multichannel-structural.cfg  -dofout $dof -threads $njobs
+    run mirtk register N4/$subj.nii.gz $DRAWEMDIR/atlases/ALBERTs/T2/$atlas.nii.gz $sdir/gm-posteriors/$subj.nii.gz $DRAWEMDIR/atlases/ALBERTs/gm-posteriors-v3/$atlas.nii.gz -parin $DRAWEMDIR/parameters/ireg-multichannel-structural.cfg  -dofout $dof -threads $njobs -v 0
   fi
 
 done
