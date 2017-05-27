@@ -113,7 +113,7 @@ mkdir -p logs || exit 1
 run()
 {
   echo "$@"
-  "$@"
+  "$@" >/dev/null
   if [ ! $? -eq 0 ]; then
     echo "$@ : failed"
     exit 1
