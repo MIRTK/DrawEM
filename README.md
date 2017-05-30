@@ -18,10 +18,9 @@ See the [installation instructions](https://mirtk.github.io/install.html)
 for a step-by-step guide on how to install MIRTK.
 
 The segmentation pipeline further requires the following:
-- [FSL](http://fsl.fmrib.ox.ac.uk/fsl/fslwiki/) installed
 - The atlases required by Draw-EM need to be downloaded from [here](https://www.doc.ic.ac.uk/~am411/atlases-DrawEM.html) and extracted inside the Draw-EM directory.
-- The N4 bias field correction from ITK is included in the ThirdParty/ITK folder. If the executable does not work, you will need to compile ITK and replace the ThirdParty/ITK/N4 binary with the N4BiasFieldCorrectionImageFilter binary
-
+- [FSL](http://fsl.fmrib.ox.ac.uk/fsl/fslwiki/) installed
+- The N4BiasFieldCorrection from ANTS installed.
 
 Run
 ---
@@ -42,10 +41,6 @@ See the accompanying [license file](LICENSE.txt) for details. The license enable
 Draw-EM in both commercial and non-commercial applications, without restrictions on the
 licensing applied to the combined work.
 
-Draw-EM uses third-party software, namely the "ITK: The Insight Toolkit for Segmentation and Registration".
-ITK is distributed under the Apache License Version 2.
-Specifically, the N4 bias field correction by Tustison et al. is included (http://www.insight-journal.org/browse/publication/640).
-The covered file (N4) and license (LICENSE) can be found in ThirdParty/ITK.
 
 
 Citation and acknowledgements
