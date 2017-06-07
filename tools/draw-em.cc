@@ -577,8 +577,8 @@ int main(int argc, char **argv)
 
 	clock_t end = clock();
 	int elapsed_secs = round( double(end - begin) / CLOCKS_PER_SEC);
-	int elapsed_mins = elapsed_secs/60;
-	elapsed_secs%=elapsed_mins;
+	int elapsed_mins = round(elapsed_secs/60);
+	elapsed_secs = round(elapsed_secs%60);
 	std::cout<<"elapsed time: "<<elapsed_mins<<" min "<<elapsed_secs<<" sec"<<std::endl;
 
 	return 0;
