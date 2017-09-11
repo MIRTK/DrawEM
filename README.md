@@ -13,7 +13,7 @@ Installation
 ------------
 
 See installation of the dhcp branch.
-- Additional atlases are required for the fetal segmentation which need to be downloaded from [here](https://www.doc.ic.ac.uk/~am411/atlases-DrawEM.html) and extracted inside the Draw-EM directory.
+- Additional atlases are required for the fetal segmentation which need to be downloaded from [here](https://biomedic.doc.ic.ac.uk/brain-development/downloads/dHCP/fetal-atlas-DrawEM.zip) and extracted inside the Draw-EM directory.
 
 
 Run
