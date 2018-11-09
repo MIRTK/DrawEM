@@ -94,12 +94,13 @@ if [[ "$T2" == *nii ]];then
 else
   cp $T2 $datadir/T2/$subj.nii.gz
 fi
+
+if [ "$mask" != "" ];then
+  mkdir -p $datadir/segmentations
+  cp $mask $datadir/segmentations/${subj}_brain_mask.nii.gz
+fi
 cd $datadir
 
-if [[ "$mask" != "" ]];then
-  mkdir segmentations
-  cp $mask segmentations/${subj}_brain_mask.nii.gz
-fi
 
 version=`git -C "$DRAWEMDIR" branch | grep \* | cut -d ' ' -f2`
 gitversion=`git -C "$DRAWEMDIR" rev-parse HEAD`
