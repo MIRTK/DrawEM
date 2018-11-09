@@ -30,6 +30,7 @@ Arguments:
   scan_age                      Number: Subject age in weeks. This is used to select the appropriate template for the initial registration. 
 			        If the age is <28w or >44w, it will be set to 28w or 44w respectively.
 Options:
+  -m / -mask <mask.nii.gz>      Use a pre-computed binary brain mask instead of calculating one
   -d / -data-dir  <directory>   The directory used to run the script and output the files. 
   -c / -cleanup  <0/1>          Whether cleanup of temporary files is required (default: 1)
   -p / -save-posteriors  <0/1>  Whether the structures' posteriors are required (default: 0)
@@ -67,11 +68,13 @@ posteriors=0   # whether to output posterior probability maps
 threads=1
 verbose=1
 command="$@"
+mask=""
 
 atlasname=fetal
 
 while [ $# -gt 0 ]; do
   case "$3" in
+    -m|-mask)  shift; mask=$3; ;;
     -c|-cleanup)  shift; cleanup=$3; ;;
     -d|-data-dir)  shift; datadir=$3; ;;
     -p|-save-posteriors) shift; posteriors=$3; ;;
@@ -92,6 +95,11 @@ else
   cp $T2 $datadir/T2/$subj.nii.gz
 fi
 cd $datadir
+
+if [[ "$mask" != "" ]];then
+  mkdir segmentations
+  cp $mask segmentations/${subj}_brain_mask.nii.gz
+fi
 
 version=`git -C "$DRAWEMDIR" branch | grep \* | cut -d ' ' -f2`
 gitversion=`git -C "$DRAWEMDIR" rev-parse HEAD`
