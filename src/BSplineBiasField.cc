@@ -130,17 +130,17 @@ BSplineBiasField::BSplineBiasField(const GreyImage &image, double dx, double dy,
 
 	// Initialize control point dimensions
 	if (x2 > x1) {
-		_x = round((x2 - x1) / dx) + 1;
+		_x = iround((x2 - x1) / dx) + 1;
 	} else {
 		_x = 1;
 	}
 	if (y2 > y1) {
-		_y = round((y2 - y1) / dy) + 1;
+		_y = iround((y2 - y1) / dy) + 1;
 	} else {
 		_y = 1;
 	}
 	if (z2 > z1) {
-		_z = round((z2 - z1) / dz) + 1;
+		_z = iround((z2 - z1) / dz) + 1;
 	} else {
 		_z = 1;
 	}
@@ -432,9 +432,9 @@ double BSplineBiasField::FFD1(double x, double y, double z) const
 	// Calculate offset
 	i = (_x + 8) * (_y + 4);
 	x = 0;
-	S = round(LUTSIZE*s);
-	T = round(LUTSIZE*t);
-	U = round(LUTSIZE*u);
+	S = iround(LUTSIZE*s);
+	T = iround(LUTSIZE*t);
+	U = iround(LUTSIZE*u);
 	data = &(_data[n-1][m-1][l-1]);
 	for (k = 0; k < 4; k++) {
 		B_K = this->LookupTable[U][k];
@@ -483,9 +483,9 @@ double BSplineBiasField::FFD2(double x, double y, double z) const
 	// Calculate offset
 	i = (_x + 8) * (_y + 4);
 	x = 0;
-	S = round(LUTSIZE*s);
-	T = round(LUTSIZE*t);
-	U = round(LUTSIZE*u);
+	S = iround(LUTSIZE*s);
+	T = iround(LUTSIZE*t);
+	U = iround(LUTSIZE*u);
 	data = &(_data[n-1][m-1][l-1]);
 	for (k = 0; k < 4; k++) {
 		B_K = this->LookupTable[U][k];

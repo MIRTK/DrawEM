@@ -45,15 +45,14 @@ template <class VoxelType> void ImageHistogram1D<VoxelType>::Evaluate(GenericIma
 
 template <class VoxelType> void ImageHistogram1D<VoxelType>::BackProject(GenericImage<VoxelType> *image)
 {  
-	VoxelType value;
+	double value;
 	int i,j,k,l;
 	for (l = 0; l < image->GetT(); l++){
 		for (k = 0; k < image->GetZ(); k++){
 			for (j = 0; j < image->GetY(); j++){
 				for (i = 0; i < image->GetX(); i++){
 					value = image->GetAsDouble(i, j, k, l);
-					value = this->ValToBin(value);
-					value = this->_bins[(int)round(value)];
+					value = this->BinToVal(this->ValToBin(value));
 					image->PutAsDouble(i,j,k,l,value);
 				}
 			}
@@ -63,15 +62,14 @@ template <class VoxelType> void ImageHistogram1D<VoxelType>::BackProject(Generic
 
 template <class VoxelType> void ImageHistogram1D<VoxelType>::Equalize(VoxelType min,VoxelType max)
 {
-	int i;
-	double count = 0,current;
-	for(i=0;i<this->_nbins;i++){
-        current = this->BinToPDF(i);
-		this->_bins[i] = (count+current/2.0)*(max - min) + min;
-        count += current;
+	double count = 0, current;
+	for(int i = 0; i < this->_nbins; ++i) {
+    current = this->BinToPDF(i);
+		this->_bins[i] = static_cast<VoxelType>((count + current/2.0) * (max - min) + min);
+    count += current;
 	}
-    this->_emin = min;
-    this->_emax = max;
+  this->_emin = min;
+  this->_emax = max;
 }
 
 template class ImageHistogram1D<unsigned char>;

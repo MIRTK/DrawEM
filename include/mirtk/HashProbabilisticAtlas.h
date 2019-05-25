@@ -154,7 +154,7 @@ inline void HashProbabilisticAtlas::Next(){
 inline RealPixel HashProbabilisticAtlas::GetValue(unsigned int mapnr){
 	if (mapnr < _images.size()) return _images[mapnr]->Get(_position);
 	else {
-		std::cerr << "map identificator " << mapnr <<" out of range." <<std::endl;
+		cerr << "map identificator " << mapnr <<" out of range." <<endl;
 		exit(1);
 	}
 }
@@ -162,7 +162,7 @@ inline RealPixel HashProbabilisticAtlas::GetValue(unsigned int mapnr){
 inline RealPixel HashProbabilisticAtlas::GetValue(int x, int y, int z, unsigned int mapnr){
 	if (mapnr < _images.size()) return _images[mapnr]->Get(x,y,z);
 	else {
-		std::cerr << "map identificator " << mapnr <<" out of range." <<std::endl;
+		cerr << "map identificator " << mapnr <<" out of range." <<endl;
 		exit(1);
 	}
 }
@@ -170,7 +170,7 @@ inline RealPixel HashProbabilisticAtlas::GetValue(int x, int y, int z, unsigned 
 inline void HashProbabilisticAtlas::SetValue(unsigned int mapnr, RealPixel value){
 	if (mapnr < _images.size()) _images[mapnr]->Put(_position, value);
 	else {
-		std::cerr << "map identificator " << mapnr << " out of range." <<std::endl;
+		cerr << "map identificator " << mapnr << " out of range." <<endl;
 		exit(1);
 	}
 }
@@ -178,7 +178,7 @@ inline void HashProbabilisticAtlas::SetValue(unsigned int mapnr, RealPixel value
 inline void HashProbabilisticAtlas::SetValue(int x, int y, int z, unsigned int mapnr, RealPixel value){
 	if (mapnr < _images.size()) _images[mapnr]->Put(x,y,z, value);
 	else {
-		std::cerr << "map identificator " << mapnr <<" out of range." <<std::endl;
+		cerr << "map identificator " << mapnr <<" out of range." <<endl;
 		exit(1);
 	}
 }
@@ -204,7 +204,7 @@ inline void HashProbabilisticAtlas::AddBackground(ImageType image){
 inline HashRealImage HashProbabilisticAtlas::GetImage(unsigned int mapnr) const{
     if (mapnr < _images.size()) return *_images[mapnr];
     else {
-        std::cerr << "map identificator " << mapnr <<" out of range." <<std::endl;
+        cerr << "map identificator " << mapnr <<" out of range." <<endl;
         exit(1);
     }
 }
@@ -213,7 +213,7 @@ inline HashRealImage::DataIterator HashProbabilisticAtlas::Begin(unsigned int ma
 {
     if (mapnr < _images.size()) return _images[mapnr]->Begin();
     else {
-        std::cerr << "map identificator " << mapnr <<" out of range." <<std::endl;
+        cerr << "map identificator " << mapnr <<" out of range." <<endl;
         exit(1);
     }
 }
@@ -221,7 +221,7 @@ inline HashRealImage::DataIterator HashProbabilisticAtlas::End(unsigned int mapn
 {
     if (mapnr < _images.size()) return _images[mapnr]->End();
     else {
-        std::cerr << "map identificator " << mapnr <<" out of range." <<std::endl;
+        cerr << "map identificator " << mapnr <<" out of range." <<endl;
         exit(1);
     }
 }

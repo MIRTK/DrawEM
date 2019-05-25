@@ -239,7 +239,7 @@ inline double BiasField::Get(int index) const
 	int i, j, k;
 
 	if (index >= _x*_y*_z) {
-		std::cerr << "BiasField::Get: No such dof" << std::endl;
+		cerr << "BiasField::Get: No such dof" << endl;
 		exit(1);
 	}
 	i = index/(_y*_z);
@@ -251,7 +251,7 @@ inline double BiasField::Get(int index) const
 inline double BiasField::Get(int i, int j, int k) const
 {
 	if ((i < 0) || (i >= _x) || (j < 0) || (j >= _y) || (k < 0) || (k >= _z)) {
-		std::cerr << "BiasField::Get: No such dof" << std::endl;
+		cerr << "BiasField::Get: No such dof" << endl;
 		exit(1);
 	}
 	return _data[k][j][i];
@@ -263,7 +263,7 @@ inline void BiasField::Put(int index, double x)
 	int i, j, k;
 
 	if (index >= _x*_y*_z) {
-		std::cerr << "BiasField::Put: No such dof" << std::endl;
+		cerr << "BiasField::Put: No such dof" << endl;
 		exit(1);
 	}
 	i = index/(_y*_z);
@@ -275,7 +275,7 @@ inline void BiasField::Put(int index, double x)
 inline void BiasField::Put(int i, int j, int k, double x)
 {
 	if ((i < 0) || (i >= _x) || (j < 0) || (j >= _y) || (k < 0) || (k >= _z)) {
-		std::cerr << "BiasField::Put: No such dof" << std::endl;
+		cerr << "BiasField::Put: No such dof" << endl;
 		exit(1);
 	}
 	_data[k][j][i] = x;
@@ -338,9 +338,9 @@ inline void BiasField::PutBoundingBox(double x1, double y1, double z1, double x2
 
 	// Initialize control point spacing
 
-	_x = round((x2-x1)/_dx) +1;
-	_y = round((y2-y1)/_dy) +1;
-	_z = round((z2-z1)/_dz) +1;
+	_x = iround((x2-x1)/_dx) +1;
+	_y = iround((y2-y1)/_dy) +1;
+	_z = iround((z2-z1)/_dz) +1;
 	_dx = (x2 - x1) / (_x - 1);
 	_dy = (y2 - y1) / (_y - 1);
 	if (z2 > z1) {

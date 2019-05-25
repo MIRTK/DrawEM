@@ -129,8 +129,8 @@ void DrawEM::RStep(double rf)
 
 
     int per = 0;
-    double* numerator = new double[_number_of_tissues];
-    double values[_number_of_tissues];
+    Array<double> numerator(_number_of_tissues);
+    Array<double> values(_number_of_tissues);
 
     for (int i=0; i< _number_of_voxels; i++){
         if (i*10.0/_number_of_voxels > per) {
@@ -181,7 +181,6 @@ void DrawEM::RStep(double rf)
         _atlas.Next();
         filteredAtlas.Next();
     }
-    delete[] numerator;
 }
 
 
@@ -225,8 +224,8 @@ int DrawEM::AddPartialVolumeClass(int classA, int classB, int huiclass)
         return -1;
     }
 
-    double* mi = new double[_number_of_tissues+1];
-    double* sigma = new double[_number_of_tissues+1];
+    Array<double> mi(_number_of_tissues+1);
+    Array<double> sigma(_number_of_tissues+1);
 
     mi[_number_of_tissues] = 0;
     sigma[_number_of_tissues] = 0;
@@ -284,19 +283,14 @@ int DrawEM::AddPartialVolumeClass(int classA, int classB, int huiclass)
         _output.Next();
     }
 
-    delete[] _mi;
-    delete[] _sigma;
-
     _number_of_tissues++;
-    _mi = new double[_number_of_tissues];
-    _sigma = new double[_number_of_tissues];
+    _mi.resize(_number_of_tissues);
+    _sigma.resize(_number_of_tissues);
     for( int k = 0; k < _number_of_tissues; ++k)
     {
         _mi[k] = mi[k];
         _sigma[k] = sigma[k];
     }
-    delete[] mi;
-    delete[] sigma;
 
     _atlas.AddImage(pvclass);
 
@@ -393,7 +387,7 @@ int DrawEM::AddPartialVolumeClass(int classA, int classB, int huiclass)
         //mine
         //pv_position = _number_of_tissues - 1;
     }
-    pv_classes.insert(make_pair(pv_position, pv_connections.size() ) );
+    pv_classes.insert(make_pair(pv_position, static_cast<int>(pv_connections.size()) ) );
 
     pv_connections.push_back( make_pair(classA, classB) );
     pv_fc.push_back(gamma);
@@ -402,19 +396,16 @@ int DrawEM::AddPartialVolumeClass(int classA, int classB, int huiclass)
     _connectivity.Print();
 
 
-    int *pretissuelabels=new int[_number_of_tissues-1];
+    Array<int> pretissuelabels(_number_of_tissues-1);
     for(int i=0;i<_number_of_tissues-1;i++){
         pretissuelabels[i]=tissuelabels[i];
     }
 
-    delete tissuelabels;
-    tissuelabels=new int[_number_of_tissues];
+    tissuelabels.resize(_number_of_tissues);
     for(int i=0;i<_number_of_tissues-1;i++){
         tissuelabels[i]=pretissuelabels[i];
     }
     tissuelabels[_number_of_tissues-1]=huiclass;
-
-
 
     return pv_position;
 }
@@ -553,8 +544,7 @@ void DrawEM::EStepMRF()
 
     int i, k;
     double x;
-    Gaussian* G = new Gaussian[_number_of_tissues];
-
+    Array<Gaussian> G(_number_of_tissues);
     for (k = 0; k < _number_of_tissues; k++) {
         G[k].Initialise( _mi[k], _sigma[k]);
     }
@@ -567,7 +557,7 @@ void DrawEM::EStepMRF()
     RealPixel *ptr = _input.GetPointerToVoxels();
     BytePixel *pm = _mask.GetPointerToVoxels();
     int per = 0;
-    double* numerator = new double[_number_of_tissues];
+    Array<double> numerator(_number_of_tissues);
     double denominator=0, temp=0;
     bool bMRF = _number_of_tissues == _connectivity.Rows();
 
@@ -584,7 +574,7 @@ void DrawEM::EStepMRF()
 
 
             x = *ptr;
-            double MRFenergies[_number_of_tissues];
+            Array<double> MRFenergies(_number_of_tissues);
             double denominatorMRF = .0;
 
             for (k = 0; k < _number_of_tissues; k++) {
@@ -670,9 +660,6 @@ void DrawEM::EStepMRF()
         _atlas.Next();
         _output.Next();
     }
-    delete[] numerator;
-    delete[] G;
-
 }
 
 
@@ -839,16 +826,16 @@ void DrawEM::huiPVCorrection(bool changePosterior){
     cc.Run();
 
 
-    int csfneighborswm[csfcomps];
-    int csfneighbors[csfcomps];
-    int csfneighborslven[csfcomps];
-    int csfneighborsrven[csfcomps];
+    Array<int> csfneighborswm(csfcomps);
+    Array<int> csfneighbors(csfcomps);
+    Array<int> csfneighborslven(csfcomps);
+    Array<int> csfneighborsrven(csfcomps);
     for (int i=0;i<csfcomps;i++){
         csfneighborswm[i]=0;csfneighbors[i]=0;csfneighborsrven[i]=0;csfneighborslven[i]=0;
     }
 
 
-    int wmvol[wmcomps];
+    Array<int> wmvol(wmcomps);
     for(int i=0;i<wmcomps;i++) wmvol[i]=0;
 
 

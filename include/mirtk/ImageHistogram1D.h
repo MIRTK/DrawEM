@@ -37,7 +37,7 @@ protected:
 
 public:
 	/// Evaluate the histogram from a given image with padding value
-	virtual void Evaluate(GenericImage<VoxelType> *, VoxelType padding = -10000);
+	virtual void Evaluate(GenericImage<VoxelType> *, VoxelType padding = voxel_limits<VoxelType>::min_value);
 	/// Histogram Equalization
 	virtual void Equalize(VoxelType min,VoxelType max);
 	/// Back project the equalized histogram to image

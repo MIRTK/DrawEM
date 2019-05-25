@@ -76,7 +76,7 @@ int main(int argc, char **argv){
 	// structures
 	int numStructuresToDo= atoi(POSARG(a)); a++;
 	string *names = new string[numStructuresToDo];
-	int values[numStructuresToDo];
+	Array<int> values(numStructuresToDo);
 	for(int j = 0; j < numStructuresToDo; j++){
 		values[j] = atoi(POSARG(a)); a++;
 	}

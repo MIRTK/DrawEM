@@ -83,8 +83,8 @@ double getMRFenergyTerm(int x, int y, int z, int k)
 
 
 void MRFStep(){
-	double mrfterms[n];
-	double numerator[n];
+	Array<double> mrfterms(n);
+	Array<double> numerator(n);
 	double denominator;
         for(int x = 0; x < maxx; x++){
           for(int y = 0; y < maxy; y++){

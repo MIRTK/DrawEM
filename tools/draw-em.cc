@@ -566,7 +566,7 @@ int main(int argc, char **argv)
 		bias.Write(output_biasfield);
 	}
 
-	for( unsigned int i = 0; i < ss; ++i ){
+	for (int i = 0; i < ss; ++i) {
 		std::cout<<"saving probability map of structure "<<savesegsnr[i]<<" to "<<savesegs[i]<<std::endl;
 		classification->WriteProbMap(savesegsnr[i],savesegs[i].c_str());
 	}
@@ -576,7 +576,7 @@ int main(int argc, char **argv)
 
 
 	clock_t end = clock();
-	int elapsed_secs = round( double(end - begin) / CLOCKS_PER_SEC);
+	int elapsed_secs = iround( double(end - begin) / CLOCKS_PER_SEC);
 	int elapsed_mins = elapsed_secs/60;
 	elapsed_secs%=elapsed_mins;
 	std::cout<<"elapsed time: "<<elapsed_mins<<" min "<<elapsed_secs<<" sec"<<std::endl;

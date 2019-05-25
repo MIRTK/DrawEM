@@ -22,31 +22,29 @@
 // queue::push/pop
 
 #include "mirtk/GenericImage.h"
-#include "mirtk/Image.h"
 #include "mirtk/Dilation.h"
 #include "mirtk/Erosion.h"
-#include "mirtk/Point.h"
+#include "mirtk/Vector3D.h"
+#include "mirtk/Queue.h"
 #include "mirtk/GaussianBlurring.h"
-#include <algorithm>
-#include <queue>
 
-using namespace std;
 namespace mirtk {
 
 class MeanShift
 {
+  typedef Vector3D<int> Voxel;
 
 	int _nBins;
 	int _padding;
 	GreyImage _image;
-	queue<Point> _q;
+	Queue<Voxel> _q;
 	GreyImage _map, _orig_image;
 	GreyImage *_brain;
 	GreyImage *_output;
 	GreyPixel _imin, _imax;
 	double _limit1, _limit2, _limit, _treshold;
 	double _bin_width;
-	double * _density;
+	Array<double> _density;
 	int _clusterSize;
 public:
 	double _bg,_wm,_gm,_split1,_split2;
@@ -57,7 +55,7 @@ public:
 	MeanShift(GreyImage& image, int padding = -1, int nBins = 256);
 	~MeanShift();
 	void SetOutput( GreyImage *_output);
-	double ValueToBin(double value);
+	int ValueToBin(double value);
 	double BinToValue(int bin);
 	void AddPoint(int x, int y, int z);
 	void AddPoint(int x, int y, int z, int label);

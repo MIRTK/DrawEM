@@ -23,6 +23,7 @@
 
 #include "mirtk/Image.h"
 #include "mirtk/Object.h"
+#include "mirtk/Array.h"
 #include "mirtk/HashProbabilisticAtlas.h"
 #include "mirtk/Gaussian.h"
 #include "mirtk/Histogram1D.h"
@@ -48,7 +49,7 @@ protected:
 	RealImage _brain;
 
 	/// weights image
-    RealImage _weights;
+  RealImage _weights;
 
 	/// image estimate
 	RealImage _estimate;
@@ -76,11 +77,11 @@ protected:
 	int _number_of_voxels;
 
 	/// Gaussian distribution parameters for each tissue type
-    Gaussian *_G;
-	double *_mi;
-	double *_sigma;
+  Array<Gaussian> _G;
+	Array<double> _mi;
+	Array<double> _sigma;
 	/// mixing coefficients for GMM
-	double *_c;
+	Array<double> _c;
 
 	/// Likelihood
 	double _f;
@@ -92,14 +93,14 @@ protected:
 	bool _has_background;
 
     /// superlabels
-	int *_super;
+	Array<int> _super;
 	bool _superlabels;
 
-    /// whether a mask is set
-    bool _mask_set;
+  /// whether a mask is set
+  bool _mask_set;
 
-    /// whether initial posteriors is set
-    bool _posteriors_set;
+  /// whether initial posteriors is set
+  bool _posteriors_set;
 
 public:
 	/// Input mask

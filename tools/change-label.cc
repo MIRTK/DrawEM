@@ -71,9 +71,9 @@ int main(int argc, char **argv)
 	img.Read(POSARG(1));
 	mask.Read(POSARG(2));
 
-	int N=atoi(POSARG(3));
-	int labels[N];
-	RealImage *probs = new RealImage[N];
+	const int N=atoi(POSARG(3));
+	Array<int> labels(N);
+	Array<RealImage> probs(N);
 
 	int a=4;
 	for(int i=0;i<N;i++){
@@ -86,7 +86,7 @@ int main(int argc, char **argv)
 
 	bool calcprobs=false;
 	RealImage prob;
-	string *outputprobs = new string[N];
+  Array<string> outputprobs(N);
 	if(a < NUM_POSARGS){
 		calcprobs=true;
 		prob.Read(POSARG(a)); a++;
@@ -97,7 +97,7 @@ int main(int argc, char **argv)
 	}
 
 
-
+  Array<double> vals(N);
 	for (x = 0; x < img.GetX(); x++) {
 		for (y = 0; y < img.GetY(); y++) {
 			for (z = 0; z < img.GetZ(); z++) {
@@ -106,8 +106,7 @@ int main(int argc, char **argv)
 
 				double maxval=0.0, sum=0.0, newprob=0.0;
 				int maxlabel=0;
-				double vals[N];
-
+        
 				for(int i=0;i<N;i++){
 					vals[i]=probs[i].Get(x,y,z);
 					if(vals[i]>maxval){
@@ -136,9 +135,6 @@ int main(int argc, char **argv)
 	if(calcprobs){
 		for(int i=0;i<N;i++) probs[i].Write(outputprobs[i].c_str());
 	}
-
-	delete[] probs;
-	delete[] outputprobs;
 
 	return 0;
 }

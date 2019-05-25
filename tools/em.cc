@@ -158,7 +158,7 @@ int main(int argc, char **argv)
 	segmentation.Write(output_name);
 
 
-	for( unsigned int i = 0; i < ss; ++i ){
+	for (int i = 0; i < ss; ++i) {
 		std::cout<<"saving probability map of structure "<<savesegsnr[i]<<" to "<<savesegs[i]<<std::endl;
 		classification->WriteProbMap(savesegsnr[i],savesegs[i].c_str());
 	}

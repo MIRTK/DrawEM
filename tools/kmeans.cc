@@ -126,7 +126,7 @@ int main(int argc, char **argv){
 	}
 
 	int i=0;
-	double * intensities=new double[numintensities];
+	Array<double> intensities(numintensities);
 	double sumintensities=0;
 	for(int x = 0; x < input.GetX(); x++){
 		for(int y = 0; y < input.GetY(); y++){
@@ -140,7 +140,7 @@ int main(int argc, char **argv){
 		}
 	}
 
-	kmeans km(intensities,numintensities,k,iterations,replicates);
+	kmeans km(intensities.data(),numintensities,k,iterations,replicates);
 	int *intensitiesCentroids=km.getPointClusters();
 
 
@@ -164,10 +164,9 @@ int main(int argc, char **argv){
 
 	if (probsBase != NULL){
 		double *centroids=km.getCentroids();
-		double *vars=new double[k];
-		double *denom=new double[k];
-		Gaussian *G=new Gaussian[k];
-
+		Array<double> vars(k);
+    Array<double> denom(k);
+		Array<Gaussian> G(k);
 
 		for (i=0;i<k;i++){ 
 			denom[i]=0;
@@ -183,13 +182,14 @@ int main(int argc, char **argv){
 		}
 
 
-		RealImage *probs = new RealImage[k];
+		Array<RealImage> probs(k);
 		for (int i = 0; i < k; i++){
 			probs[i].Initialize (input.GetImageAttributes());
 			G[i].Initialise (centroids[i], vars[i]);
 		}
 
-		double val, probval[k];
+    double val;
+    Array<double> probval(k);
 		for(int x = 0; x < input.GetX(); x++){
 			for(int y = 0; y < input.GetY(); y++){
 				for(int z = 0; z < input.GetZ(); z++){
@@ -205,9 +205,7 @@ int main(int argc, char **argv){
 							probval[i]/=sumprob;
 							probs[i].Put(x,y,z,0,probval[i]);
 						}
-
 					}
-
 				}
 			}
 		}
@@ -225,11 +223,6 @@ int main(int argc, char **argv){
 			probs[i].Write((ss.str()).c_str());
 			std::cout<<"c["<<i<<"]="<<centroids[i]<<" , "<<vars[i]<<std::endl;
 		}
-
-		delete[] probs;
-		delete[] vars;
-		delete[] G;
-		delete[] intensities;
 		delete[] centroids;
 	}
 

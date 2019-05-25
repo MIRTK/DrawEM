@@ -16,16 +16,19 @@
  * limitations under the License.
  */
 
-
 #include "mirtk/Gaussian.h"
+
 
 namespace mirtk {
 
-void Gaussian::Initialise(const double &mi, const double &sigma)
+
+// ----------------------------------------------------------------------------
+void Gaussian::Initialise(double mean, double var)
 {
-	_mi = mi;
-	_sigma = sigma;
-	_norm = 1.0 / (sqrt(sigma) * sqrt(M_PI*2.0));
+	_mean = mean;
+	_var  = var;
+	_norm = 1. / (sqrt(_var) * sqrt(2.*pi));
 }
 
-}
+
+} // namespace std

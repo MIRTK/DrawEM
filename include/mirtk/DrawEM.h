@@ -81,7 +81,7 @@ protected:
     RealImage **_MRF_inter;
 
     /// the tissue class of each label
-    int *tissuelabels;
+    Array<int> tissuelabels;
     int csflabel,wmlabel,gmlabel,outlabel;
 
 private:
@@ -178,14 +178,16 @@ inline void DrawEM::setMRFstrength(double mrfw){mrfweight=mrfw;}
 inline void DrawEM::setMRFInterAtlas(RealImage **&atlas){	_MRF_inter=atlas; intermrf=true;}
 inline void DrawEM::setBeta(double b){beta=b;}
 inline void DrawEM::setBetaInter(double b){betainter=b;}
-inline void DrawEM::setTissueLabels(int num,int *atisslabels){
-    tissuelabels=new int[num];
-    for(int i=0;i<num;i++)  tissuelabels[i]=atisslabels[i];
+
+inline void DrawEM::setTissueLabels(int num,int *atisslabels)
+{
+  tissuelabels.resize(num);
+  for (int i = 0; i < num; i++) {
+    tissuelabels[i] = atisslabels[i];
+  }
 }
 
-}
 
-
-
+} // namespace mirtk
 
 #endif /* DrawEM_H_ */
