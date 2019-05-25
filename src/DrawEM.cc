@@ -840,7 +840,7 @@ void DrawEM::huiPVCorrection(bool changePosterior){
 
 
 
-
+    int comp;
     for( int x = 0; x < _input.GetX(); ++x)
     {
         for( int y = 0; y < _input.GetY(); ++y)
@@ -848,8 +848,8 @@ void DrawEM::huiPVCorrection(bool changePosterior){
             for( int z = 0; z < _input.GetZ(); ++z)
             {
 
-                int comp=scc.Get(x,y,z)-1;
-                wmvol[comp]++;
+                comp=scc.Get(x,y,z)-1;
+                if (comp >= 0) wmvol[comp]++;
 
                 comp= csfscc.Get(x,y,z)-1;
 
