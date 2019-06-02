@@ -25,3 +25,6 @@ if (NOT COMMAND mirtk_configure_module)
 endif ()
 
 mirtk_configure_module()
+
+SUBDIRS(ThirdParty/ANTs)
+INCLUDE(Atlases.cmake)
