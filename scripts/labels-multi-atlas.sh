@@ -114,6 +114,8 @@ for str in ${tissues};do let splitnum=splitnum+1; splitstr=$splitstr" $splitnum"
 for str in ${tissues};do splitstr=$splitstr" $sdir/labels/$str/$subj.nii.gz"; done
 run mirtk split-labels $num $transformedc $transformedw  $splitnum $splitstr 
 
+#remove CC from WM
+mirtk calculate $sdir/labels/wm/$subj.nii.gz -sub $sdir/labels/seg48/$subj.nii.gz -clamp-below 0 -out $sdir/labels/wm/$subj.nii.gz
 
 #create MAD
 if [ ! -f $sdir/MADs/$subj.nii.gz ];then 
