@@ -55,6 +55,7 @@ Draw-EM in both commercial and non-commercial applications, without restrictions
 licensing applied to the combined work.
 
 ## Releases 
+- v1.2.1: Corpus Callosum segmentation improvement
 - v1.2: dHCP segmentation pipeline, method improvements described in [2]: multi-channel registration, modelling of hyper and hypo-intensities.
 - v1.1: initial code release, method described in [1].
 
