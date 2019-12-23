@@ -39,6 +39,7 @@ basis_project (
     #<dependency>
   OPTIONAL_DEPENDS
     TBB{tbb}
+    ITK
     #<optional-dependency>
   TOOLS_DEPENDS
     MIRTK{IO}

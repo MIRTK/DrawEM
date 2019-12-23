@@ -26,5 +26,5 @@ endif ()
 
 mirtk_configure_module()
 
-SUBDIRS(ThirdParty/ANTs)
-INCLUDE(Atlases.cmake)
+add_subdirectory(ThirdParty/ANTs)
+include(Atlases.cmake)

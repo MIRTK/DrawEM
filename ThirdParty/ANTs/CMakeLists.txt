@@ -9,6 +9,9 @@ PROJECT( N4 )
 IF(NOT ITK_DIR)
   INCLUDE(External_ITK.cmake)
   SET(External_ITK 1)
+  MESSAGE(STATUS "Build ITK as external project for build of DrawEM::N4")
+ELSE()
+  MESSAGE(STATUS "Use system-wide ITK installation for build of DrawEM::N4")
 ENDIF()
 
 # Set up ITK
