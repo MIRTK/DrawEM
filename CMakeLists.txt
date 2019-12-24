@@ -26,5 +26,9 @@ endif ()
 
 mirtk_configure_module()
 
-add_subdirectory(ThirdParty/ANTs)
+option(DrawEM_BUILD_N4 "Whether to build ANTs N4 from sources included in DrawEM" ON)
+if (DrawEM_BUILD_N4)
+  add_subdirectory(ThirdParty/ANTs)
+endif()
+
 include(Atlases.cmake)
