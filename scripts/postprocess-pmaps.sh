@@ -45,7 +45,7 @@ cp $sdir/posteriors/outlier/$subj.nii.gz $rdir/seg84/$subj.nii.gz || exit 1
 
 for tiss in csf gm wm;do 
   mkdir -p $rdir/$tiss
-  cp $sdir/posteriors/gm/$subj.nii.gz $rdir/$tiss/$subj.nii.gz || exit 1
+  cp $sdir/posteriors/$tiss/$subj.nii.gz $rdir/$tiss/$subj.nii.gz || exit 1
 done
 
 # cortical wm, gm
