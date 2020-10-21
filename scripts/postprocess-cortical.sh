@@ -29,34 +29,26 @@ run(){
   "$@" || exit 1
 }
 
-corts=(`cat $DRAWEMDIR/parameters/cortical.csv`)
-#wmcorts=(`cat $DRAWEMDIR/parameters/cortical-wm.csv`)
-numcorts=${#corts[*]}
+for tissue in gm wm;do
+  corts=(`cat $DRAWEMDIR/parameters/cortical-$tissue.csv`)
+  numcorts=${#corts[*]}
 
-mkdir -p $sdir/cortical || exit 1
-for ((n=0;n<$numcorts;n++));do 
-  r=${corts[$n]}; 
-  mkdir -p $sdir/labels/seg$r-extended || exit 1
+  mkdir -p $sdir/cortical-$tissue || exit 1
+  for ((n=0;n<$numcorts;n++));do 
+    r=${corts[$n]}; 
+    mkdir -p $sdir/labels/seg$r-extended || exit 1
+  done
+
+  #max prob of cortical structures + mrf regularization
+  segnum=0; labels=""; structs="";
+  for ((n=0;n<$numcorts;n++));do 
+    let segnum++
+    r=${corts[$n]};
+    labels="$labels $sdir/labels/seg$r/$subj.nii.gz "; 
+    structs="$structs $sdir/labels/seg$r-extended/$subj.nii.gz "; 
+    segnumbers="$segnumbers 1 $segnum $r" 
+  done
+
+  run mirtk em-hard-segmentation $segnum $labels $sdir/cortical-$tissue/$subj.nii.gz -mrftimes 1 -posteriors $structs
+  run mirtk padding $sdir/cortical-$tissue/$subj.nii.gz $sdir/cortical-$tissue/$subj.nii.gz $sdir/cortical-$tissue/$subj.nii.gz $segnumbers
 done
-
-
-#max prob of cortical structures + mrf regularization
-segnum=0; labels=""; structs="";
-for ((n=0;n<$numcorts;n++));do 
-  let segnum++
-  r=${corts[$n]};
-  #w=${wmcorts[$n]};
-  #merge wm,gm probs - we'll split them later using the segmentation posteriors 
-  #run mirtk calculate $sdir/labels/seg$w/$subj.nii.gz -add $sdir/labels/seg$r/$subj.nii.gz -out $sdir/labels/seg$r-extended/$subj.nii.gz;
-  #labels="$labels $sdir/labels/seg$r-extended/$subj.nii.gz "; 
-  labels="$labels $sdir/labels/seg$r/$subj.nii.gz "; 
-  structs="$structs $sdir/labels/seg$r-extended/$subj.nii.gz "; 
-  segnumbers="$segnumbers 1 $segnum $r" 
-done
-
-run mirtk em-hard-segmentation $segnum $labels $sdir/cortical/$subj.nii.gz -mrftimes 1 -posteriors $structs
-run mirtk padding $sdir/cortical/$subj.nii.gz $sdir/cortical/$subj.nii.gz $sdir/cortical/$subj.nii.gz $segnumbers
-
-
-
-

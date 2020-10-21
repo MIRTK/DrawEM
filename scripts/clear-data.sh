@@ -28,7 +28,7 @@ sdir=segmentations-data
 rm -f $sdir/MADs/$subj.nii.gz $sdir/MADs/$subj-grad.nii.gz $sdir/MADs/$subj-subspace.nii.gz
 rm -f $sdir/atlas-weights/$subj-ALBERT_*.nii.gz
 rm -f $sdir/corrections/$subj-gmtochange.nii.gz $sdir/corrections/$subj-ventohwm.nii.gz
-rm -f $sdir/cortical/$subj.nii.gz
+rm -f $sdir/cortical-wm/$subj.nii.gz $sdir/cortical-gm/$subj.nii.gz
 rm -f $sdir/gm-posteriors/$subj.nii.gz
 rm -f $sdir/labels/*/$subj.nii.gz
 rm -f $sdir/posteriors/*/$subj.nii.gz
@@ -42,7 +42,8 @@ rm -f logs/$subj logs/$subj-err logs/$subj-em logs/$subj-em-err logs/$subj-tissu
 #may fail if other files present, which is ok
 # rmdir $sdir/atlas-weights                    2> /dev/null
 # rmdir $sdir/corrections                      2> /dev/null
-# rmdir $sdir/cortical                         2> /dev/null
+# rmdir $sdir/cortical-wm                      2> /dev/null
+# rmdir $sdir/cortical-gm                      2> /dev/null
 # rmdir $sdir/gm-posteriors                    2> /dev/null
 # rmdir $sdir/labels/*                         2> /dev/null
 # rmdir $sdir/labels                           2> /dev/null
