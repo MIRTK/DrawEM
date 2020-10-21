@@ -26,11 +26,12 @@ subj=$1
 sdir=segmentations-data
 
 corts=`cat $DRAWEMDIR/parameters/cortical.csv`
-wmcorts=`cat $DRAWEMDIR/parameters/cortical-wm.csv`
 subcorts=`cat $DRAWEMDIR/parameters/subcortical-all.csv`
 all=`cat $DRAWEMDIR/parameters/all-labels.csv `
 # the order is that in the atlases tissues
-tissues="csf gm wm outlier hwm lwm"
+tissues="csf gm wm outlier"
+#TODO
+# tissues="csf gm wm outlier hwm lwm"
 
 run(){
   echo "$@"
@@ -39,7 +40,7 @@ run(){
 
 if [ ! -f $sdir/MADs/$subj-subspace.nii.gz ];then
 
-mkdir -p $sdir/MADs $sdir/cortical $sdir/transformations $sdir/atlas-weights  || exit 1 
+mkdir -p $sdir/MADs $sdir/transformations $sdir/atlas-weights  || exit 1 
 for r in ${all};do mkdir -p $sdir/labels/seg$r || exit 1; done
 for str in ${tissues};do mkdir -p $sdir/labels/$str || exit 1; done
 
@@ -51,24 +52,25 @@ atlases=""
 num=0
 
 #for each atlas
-for atnum in 0{1..9} {10..20};do
-atlas="ALBERT_"$atnum
+for atnum in {01..10};do
+atlas=M-CRIB_P$atnum
+echo dofs/$subj-$atlas-n.dof.gz
 if [ ! -f dofs/$subj-$atlas-n.dof.gz ];then continue;fi
 
 #transform atlas labels
 if [ ! -f $sdir/transformations/$subj-$atlas.nii.gz ];then 
 ms=$sdir/template/$str/$subj.nii.gz
-run mirtk transform-image $DRAWEMDIR/atlases/ALBERTs/segmentations-v3/$atlas.nii.gz $sdir/transformations/$subj-$atlas.nii.gz -target N4/$subj.nii.gz -dofin dofs/$subj-$atlas-n.dof.gz -interp NN 
+run mirtk transform-image $DRAWEMDIR/atlases/M-CRIB_2.0/segmentations/$atlas.nii.gz $sdir/transformations/$subj-$atlas.nii.gz -target N4/$subj.nii.gz -dofin dofs/$subj-$atlas-n.dof.gz -interp NN 
 fi
 if [ ! -f $sdir/transformations/tissues-$subj-$atlas.nii.gz ];then 
 ms=$sdir/template/$str/$subj.nii.gz
-run mirtk transform-image $DRAWEMDIR/atlases/ALBERTs/tissues-v3/$atlas.nii.gz $sdir/transformations/tissues-$subj-$atlas.nii.gz -target N4/$subj.nii.gz -dofin dofs/$subj-$atlas-n.dof.gz -interp NN 
+run mirtk transform-image $DRAWEMDIR/atlases/M-CRIB_2.0/tissues/$atlas.nii.gz $sdir/transformations/tissues-$subj-$atlas.nii.gz -target N4/$subj.nii.gz -dofin dofs/$subj-$atlas-n.dof.gz -interp NN 
 fi
 
 #transform atlases
 if [ ! -f $sdir/transformations/T2-$subj-$atlas.nii.gz ];then 
 ms=$sdir/template/$str/$subj.nii.gz
-run mirtk transform-image $DRAWEMDIR/atlases/ALBERTs/T2/$atlas.nii.gz $sdir/transformations/T2-$subj-$atlas.nii.gz -target N4/$subj.nii.gz -dofin dofs/$subj-$atlas-n.dof.gz -interp BSpline 
+run mirtk transform-image $DRAWEMDIR/atlases/M-CRIB_2.0/T2/$atlas.nii.gz $sdir/transformations/T2-$subj-$atlas.nii.gz -target N4/$subj.nii.gz -dofin dofs/$subj-$atlas-n.dof.gz -interp BSpline 
 fi
 
 #weight atlas locally
@@ -112,10 +114,7 @@ splitnum=0
 splitstr=""; 
 for str in ${tissues};do let splitnum=splitnum+1; splitstr=$splitstr" $splitnum"; done
 for str in ${tissues};do splitstr=$splitstr" $sdir/labels/$str/$subj.nii.gz"; done
-run mirtk split-labels $num $transformedc $transformedw  $splitnum $splitstr 
-
-#remove CC from WM
-mirtk calculate $sdir/labels/wm/$subj.nii.gz -sub $sdir/labels/seg48/$subj.nii.gz -clamp-below 0 -out $sdir/labels/wm/$subj.nii.gz
+run mirtk split-labels $num $transformedc $transformedw  $splitnum $splitstr
 
 #create MAD
 if [ ! -f $sdir/MADs/$subj.nii.gz ];then 
