@@ -47,5 +47,6 @@ add_drawem_command(em-hard-segmentation)
 add_drawem_command(kmeans)
 add_drawem_command(normalize)
 add_drawem_command(split-labels)
+add_drawem_command(label-connectivity)
 
 mirtk_add_executable(neonatal-segmentation)
