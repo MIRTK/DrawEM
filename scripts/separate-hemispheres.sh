@@ -45,7 +45,6 @@ run mirtk calculate segmentations/"$subj"_labels$suffix.nii.gz -mul 0 -out segme
 run mirtk padding segmentations/$subj-empty.nii.gz segmentations/"$subj"_labels$suffix.nii.gz segmentations/$subj-L-hemisphere.nii.gz $numleft `echo $left` 1
 run mirtk padding segmentations/$subj-empty.nii.gz segmentations/"$subj"_labels$suffix.nii.gz segmentations/$subj-R-hemisphere.nii.gz $numright `echo $right` 1
 run mirtk padding segmentations/$subj-empty.nii.gz segmentations/"$subj"_labels$suffix.nii.gz segmentations/$subj-both-hemisphere.nii.gz $numboth `echo $both` 1
-run mirtk padding segmentations/$subj-both-hemisphere.nii.gz segmentations/"$subj"_all_labels$suffix.nii.gz segmentations/$subj-both-hemisphere.nii.gz 85 1
 
 # compute a cutting plane based on dmap 
 run mirtk calculate-distance-map segmentations/$subj-L-hemisphere.nii.gz segmentations/$subj-L-hemisphere-dmap.nii.gz
