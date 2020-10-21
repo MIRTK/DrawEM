@@ -1,5 +1,3 @@
-Unknown
-0 0 0 0 255
 Left-Cerebral-White-Matter
 2 245 245 245 255
 Left-Lateral-Ventricle
