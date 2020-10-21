@@ -1,87 +1,101 @@
-1	Hippocampus left
-2	Hippocampus right
-3	Amygdala left
-4	Amygdala right
-5	Anterior temporal lobe, medial part left GM
-6	Anterior temporal lobe, medial part right GM
-7	Anterior temporal lobe, lateral part left GM
-8	Anterior temporal lobe, lateral part right GM
-9	Gyri parahippocampalis et ambiens anterior part left GM
-10	Gyri parahippocampalis et ambiens anterior part right GM
-11	Superior temporal gyrus, middle part left GM
-12	Superior temporal gyrus, middle part right GM
-13	Medial and inferior temporal gyri anterior part left GM
-14	Medial and inferior temporal gyri anterior part right GM
-15	Lateral occipitotemporal gyrus, gyrus fusiformis anterior part left GM
-16	Lateral occipitotemporal gyrus, gyrus fusiformis anterior part right GM
-17	Cerebellum left
-18	Cerebellum right
-19	Brainstem, spans the midline
-20	Insula right GM
-21	Insula left GM
-22	Occipital lobe right GM
-23	Occipital lobe left GM
-24	Gyri parahippocampalis et ambiens posterior part right GM
-25	Gyri parahippocampalis et ambiens posterior part left GM
-26	Lateral occipitotemporal gyrus, gyrus fusiformis posterior part right GM
-27	Lateral occipitotemporal gyrus, gyrus fusiformis posterior part left GM
-28	Medial and inferior temporal gyri posterior part right GM
-29	Medial and inferior temporal gyri posterior part left GM
-30	Superior temporal gyrus, posterior part right GM
-31	Superior temporal gyrus, posterior part left GM
-32	Cingulate gyrus, anterior part right GM
-33	Cingulate gyrus, anterior part left GM
-34	Cingulate gyrus, posterior part right GM
-35	Cingulate gyrus, posterior part left GM
-36	Frontal lobe right GM
-37	Frontal lobe left GM
-38	Parietal lobe right GM
-39	Parietal lobe left GM
-40	Caudate nucleus right
-41	Caudate nucleus left
-42	Thalamus right, high intensity part in T2
-43	Thalamus left, high intensity part in T2
-44	Subthalamic nucleus right
-45	Subthalamic nucleus left 
-46	Lentiform Nucleus right
-47	Lentiform Nucleus left
-48	Corpus Callosum
-49	Lateral Ventricle left
-50	Lateral Ventricle right
-51	Anterior temporal lobe, medial part left WM
-52	Anterior temporal lobe, medial part right WM
-53	Anterior temporal lobe, lateral part left WM
-54	Anterior temporal lobe, lateral part right WM
-55	Gyri parahippocampalis et ambiens anterior part left WM
-56	Gyri parahippocampalis et ambiens anterior part right WM
-57	Superior temporal gyrus, middle part left WM
-58	Superior temporal gyrus, middle part right WM
-59	Medial and inferior temporal gyri anterior part left WM
-60	Medial and inferior temporal gyri anterior part right WM
-61	Lateral occipitotemporal gyrus, gyrus fusiformis anterior part left WM
-62	Lateral occipitotemporal gyrus, gyrus fusiformis anterior part right WM
-63	Insula right WM
-64	Insula left WM
-65	Occipital lobe right WM
-66	Occipital lobe left WM
-67	Gyri parahippocampalis et ambiens posterior part right WM
-68	Gyri parahippocampalis et ambiens posterior part left WM
-69	Lateral occipitotemporal gyrus, gyrus fusiformis posterior part right WM
-70	Lateral occipitotemporal gyrus, gyrus fusiformis posterior part left WM
-71	Medial and inferior temporal gyri posterior part right WM
-72	Medial and inferior temporal gyri posterior part left WM
-73	Superior temporal gyrus, posterior part right WM
-74	Superior temporal gyrus, posterior part left WM
-75	Cingulate gyrus, anterior part right WM
-76	Cingulate gyrus, anterior part left WM
-77	Cingulate gyrus, posterior part right WM
-78	Cingulate gyrus, posterior part left WM
-79	Frontal lobe right WM
-80	Frontal lobe left WM
-81	Parietal lobe right WM
-82	Parietal lobe left WM
-83	CSF
-84	Extra-cranial background
-85	Intra-cranial background
-86	Thalamus right, low intensity part in T2
-87	Thalamus left, low intensity part in T2
+2	Left-Cerebral-White-Matter
+4	Left-Lateral-Ventricle
+9	Left-Thalamus
+11	Left-Caudate
+12	Left-Putamen
+13	Left-Pallidum
+14	3rd-Ventricle
+15	4th-Ventricle
+17	Left-Hippocampus
+18	Left-Amygdala
+24	CSF
+26	Left-Accumbens-area
+28	Left-VentralDC
+41	Right-Cerebral-White-Matter
+43	Right-Lateral-Ventricle
+48	Right-Thalamus
+50	Right-Caudate
+51	Right-Putamen
+52	Right-Pallidum
+53	Right-Hippocampus
+54	Right-Amygdala
+58	Right-Accumbens-area
+60	Right-VentralDC
+75	Cerebellar_vermis_superior_posterior
+76	Cerebellar_vermis_anterior
+90	Cerebellar_vermis_inferior_posterior
+91	LH_Cerebellar_hemisphere
+93	RH_Cerebellar_hemisphere
+170	brainstem
+192	Corpus_Callosum
+1000	ctx-lh-unknown
+1001	ctx-lh-bankssts
+1002	ctx-lh-caudalanteriorcingulate
+1003	ctx-lh-caudalmiddlefrontal
+1005	ctx-lh-cuneus
+1006	ctx-lh-entorhinal
+1007	ctx-lh-fusiform
+1008	ctx-lh-inferiorparietal
+1009	ctx-lh-inferiortemporal
+1010	ctx-lh-isthmuscingulate
+1011	ctx-lh-lateraloccipital
+1012	ctx-lh-lateralorbitofrontal
+1013	ctx-lh-lingual
+1014	ctx-lh-medialorbitofrontal
+1015	ctx-lh-middletemporal
+1016	ctx-lh-parahippocampal
+1017	ctx-lh-paracentral
+1018	ctx-lh-parsopercularis
+1019	ctx-lh-parsorbitalis
+1020	ctx-lh-parstriangularis
+1021	ctx-lh-pericalcarine
+1022	ctx-lh-postcentral
+1023	ctx-lh-posteriorcingulate
+1024	ctx-lh-precentral
+1025	ctx-lh-precuneus
+1026	ctx-lh-rostralanteriorcingulate
+1027	ctx-lh-rostralmiddlefrontal
+1028	ctx-lh-superiorfrontal
+1029	ctx-lh-superiorparietal
+1030	ctx-lh-superiortemporal
+1031	ctx-lh-supramarginal
+1032	ctx-lh-frontalpole
+1033	ctx-lh-temporalpole
+1034	ctx-lh-transversetemporal
+1035	ctx-lh-insula
+2000	ctx-rh-unknown
+2001	ctx-rh-bankssts
+2002	ctx-rh-caudalanteriorcingulate
+2003	ctx-rh-caudalmiddlefrontal
+2005	ctx-rh-cuneus
+2006	ctx-rh-entorhinal
+2007	ctx-rh-fusiform
+2008	ctx-rh-inferiorparietal
+2009	ctx-rh-inferiortemporal
+2010	ctx-rh-isthmuscingulate
+2011	ctx-rh-lateraloccipital
+2012	ctx-rh-lateralorbitofrontal
+2013	ctx-rh-lingual
+2014	ctx-rh-medialorbitofrontal
+2015	ctx-rh-middletemporal
+2016	ctx-rh-parahippocampal
+2017	ctx-rh-paracentral
+2018	ctx-rh-parsopercularis
+2019	ctx-rh-parsorbitalis
+2020	ctx-rh-parstriangularis
+2021	ctx-rh-pericalcarine
+2022	ctx-rh-postcentral
+2023	ctx-rh-posteriorcingulate
+2024	ctx-rh-precentral
+2025	ctx-rh-precuneus
+2026	ctx-rh-rostralanteriorcingulate
+2027	ctx-rh-rostralmiddlefrontal
+2028	ctx-rh-superiorfrontal
+2029	ctx-rh-superiorparietal
+2030	ctx-rh-superiortemporal
+2031	ctx-rh-supramarginal
+2032	ctx-rh-frontalpole
+2033	ctx-rh-temporalpole
+2034	ctx-rh-transversetemporal
+2035	ctx-rh-insula
+4000	Extra-cranial background
