@@ -1,100 +1,202 @@
-L_Hippocampus
-1 220 216 20 255
-R_Hippocampus
-2 220 216 20 255
-L_Amygdala
-3 103 255 255 255
-R_Amygdala
-4 103 255 255 255
-L_Anterior_temporal_lobe_medial
-5 70 20 170 255
-R_Anterior_temporal_lobe_medial
-6 70 20 170 255
-L_Anterior_temporal_lobe_lateral
-7 220 60 220 255
-R_Anterior_temporal_lobe_lateral
-8 220 60 220 255
-L_Gyri_parahippocampalis_et_ambiens_anterior
-9 65 100 20 255
-R_Gyri_parahippocampalis_et_ambiens_anterior
-10 65 100 20 255
-L_Superior_temporal_gyrus_middle
-11 140 220 220 255
-R_Superior_temporal_gyrus_middle
-12 140 220 220 255
-L_Medial_and_inferior_temporal_gyri_anterior
-13 220 220 100 255
-R_Medial_and_inferior_temporal_gyri_anterior
-14 220 220 100 255
-L_Lateral_occipitotemporal_gyrus_gyrus_fusiformis_anterior
-15 60 20 140 255
-R_Lateral_occipitotemporal_gyrus_gyrus_fusiformis_anterior
-16 60 20 140 255
-L_Cerebellum
-17 230 148 34 255
-R_Cerebellum
-18 230 148 34 255
-Brainstem_spans_the_midline
-19 119 159 176 255
-R_Insula
-20 255 192 32 255
-L_Insula
-21 255 192 32 255
-R_Occipital_lobe
-22 20 30 140 255
-L_Occipital_lobe
-23 20 30 140 255
-R_Gyri_parahippocampalis_et_ambiens_posterior
-24 235 35 195 255
-L_Gyri_parahippocampalis_et_ambiens_posterior
-25 235 35 195 255
-R_Lateral_occipitotemporal_gyrus_gyrus_fusiformis_posterior
-26 5 35 115 255
-L_Lateral_occipitotemporal_gyrus_gyrus_fusiformis_posterior
-27 5 35 115 255
-R_Medial_and_inferior_temporal_gyri_posterior
-28 160 100 50 255
-L_Medial_and_inferior_temporal_gyri_posterior
-29 160 100 50 255
-R_Superior_temporal_gyrus_posterior
-30 223 220 60 255
-L_Superior_temporal_gyrus_posterior
-31 223 220 60 255
-R_Cingulate_gyrus_anterior
-32 125 100 160 255
-L_Cingulate_gyrus_anterior
-33 125 100 160 255
-R_Cingulate_gyrus_posterior
-34 220 180 220 255
-L_Cingulate_gyrus_posterior
-35 220 180 220 255
-R_Frontal_lobe
-36 75 50 125 255
-L_Frontal_lobe
-37 75 50 125 255
-R_Parietal_lobe
-38 20 180 140 255
-L_Parietal_lobe
-39 20 180 140 255
-R_Caudate_nucleus
-40 122 186 220 255
-L_Caudate_nucleus
-41 122 186 220 255
-R_Thalamus
-42 0 118 14 255
-L_Thalamus
-43 0 118 14 255
-R_Subthalamic_nucleus
-44 236 13 176 255
-L_Subthalamic_nucleus
-45 236 13 176 255
-R_Lentiform_Nucleus
-46 42 42 255 255
-L_Lentiform_Nucleus
-47 255 42 255 255
+Unknown
+0 0 0 0 255
+Left-Cerebral-White-Matter
+2 245 245 245 255
+Left-Lateral-Ventricle
+4 120 18 134 255
+Left-Thalamus
+9 0 118 14 255
+Left-Caudate
+11 122 186 220 255
+Left-Putamen
+12 236 13 176 255
+Left-Pallidum
+13 12 48 255 255
+3rd-Ventricle
+14 204 182 142 255
+4th-Ventricle
+15 42 204 164 255
+Left-Hippocampus
+17 220 216 20 255
+Left-Amygdala
+18 103 255 255 255
+CSF
+24 60 60 60 255
+Left-Accumbens-area
+26 255 165 0 255
+Left-VentralDC
+28 165 42 42 255
+Right-Cerebral-White-Matter
+41 0 225 0 255
+Right-Lateral-Ventricle
+43 120 18 134 255
+Right-Thalamus
+48 0 118 14 255
+Right-Caudate
+50 122 186 220 255
+Right-Putamen
+51 236 13 176 255
+Right-Pallidum
+52 13 48 255 255
+Right-Hippocampus
+53 220 216 20 255
+Right-Amygdala
+54 103 255 255 255
+Right-Accumbens-area
+58 255 165 0 255
+Right-VentralDC
+60 165 42 100 255
+Cerebellar_vermis_superior_posterior
+75 205 40 168 255
+Cerebellar_vermis_anterior
+76 210 139 3 255
+Cerebellar_vermis_inferior_posterior
+90 255 10 177 255
+LH_Cerebellar_hemisphere
+91 50 80 120 255
+RH_Cerebellar_hemisphere
+93 60 90 130 255
+brainstem
+170 119 159 176 255
 Corpus_Callosum
-48 250 255 50 255
-L_Lateral_Ventricle
-49 121 17 136 255
-R_Lateral_Ventricle
-50 121 17 136 255
+192 250 255 50 255
+ctx-lh-unknown
+1000 25 5 25 255
+ctx-lh-bankssts
+1001 25 100 40 255
+ctx-lh-caudalanteriorcingulate
+1002 125 100 160 255
+ctx-lh-caudalmiddlefrontal
+1003 100 25 0 255
+ctx-lh-cuneus
+1005 220 20 100 255
+ctx-lh-entorhinal
+1006 220 20 10 255
+ctx-lh-fusiform
+1007 180 220 140 255
+ctx-lh-inferiorparietal
+1008 220 60 220 255
+ctx-lh-inferiortemporal
+1009 180 40 120 255
+ctx-lh-isthmuscingulate
+1010 140 20 140 255
+ctx-lh-lateraloccipital
+1011 20 30 140 255
+ctx-lh-lateralorbitofrontal
+1012 35 75 50 255
+ctx-lh-lingual
+1013 225 140 140 255
+ctx-lh-medialorbitofrontal
+1014 200 35 75 255
+ctx-lh-middletemporal
+1015 160 100 50 255
+ctx-lh-parahippocampal
+1016 20 220 60 255
+ctx-lh-paracentral
+1017 60 220 60 255
+ctx-lh-parsopercularis
+1018 220 180 140 255
+ctx-lh-parsorbitalis
+1019 90 200 90 255
+ctx-lh-parstriangularis
+1020 220 60 20 255
+ctx-lh-pericalcarine
+1021 120 100 60 255
+ctx-lh-postcentral
+1022 220 20 20 255
+ctx-lh-posteriorcingulate
+1023 220 180 220 255
+ctx-lh-precentral
+1024 60 20 220 255
+ctx-lh-precuneus
+1025 160 140 180 255
+ctx-lh-rostralanteriorcingulate
+1026 80 20 140 255
+ctx-lh-rostralmiddlefrontal
+1027 75 50 125 255
+ctx-lh-superiorfrontal
+1028 20 220 160 255
+ctx-lh-superiorparietal
+1029 20 180 140 255
+ctx-lh-superiortemporal
+1030 140 220 220 255
+ctx-lh-supramarginal
+1031 80 160 20 255
+ctx-lh-frontalpole
+1032 100 0 100 255
+ctx-lh-temporalpole
+1033 70 70 70 255
+ctx-lh-transversetemporal
+1034 150 150 200 255
+ctx-lh-insula
+1035 255 192 32 255
+ctx-rh-unknown
+2000 25 5 25 255
+ctx-rh-bankssts
+2001 25 100 40 255
+ctx-rh-caudalanteriorcingulate
+2002 125 100 160 255
+ctx-rh-caudalmiddlefrontal
+2003 100 25 0 255
+ctx-rh-cuneus
+2005 220 20 100 255
+ctx-rh-entorhinal
+2006 220 20 10 255
+ctx-rh-fusiform
+2007 180 220 140 255
+ctx-rh-inferiorparietal
+2008 220 60 220 255
+ctx-rh-inferiortemporal
+2009 180 40 120 255
+ctx-rh-isthmuscingulate
+2010 140 20 140 255
+ctx-rh-lateraloccipital
+2011 20 30 140 255
+ctx-rh-lateralorbitofrontal
+2012 35 75 50 255
+ctx-rh-lingual
+2013 225 140 140 255
+ctx-rh-medialorbitofrontal
+2014 200 35 75 255
+ctx-rh-middletemporal
+2015 160 100 50 255
+ctx-rh-parahippocampal
+2016 20 220 60 255
+ctx-rh-paracentral
+2017 60 220 60 255
+ctx-rh-parsopercularis
+2018 220 180 140 255
+ctx-rh-parsorbitalis
+2019 90 200 90 255
+ctx-rh-parstriangularis
+2020 220 60 20 255
+ctx-rh-pericalcarine
+2021 120 100 60 255
+ctx-rh-postcentral
+2022 220 20 20 255
+ctx-rh-posteriorcingulate
+2023 220 180 220 255
+ctx-rh-precentral
+2024 60 20 220 255
+ctx-rh-precuneus
+2025 160 140 180 255
+ctx-rh-rostralanteriorcingulate
+2026 80 20 140 255
+ctx-rh-rostralmiddlefrontal
+2027 75 50 125 255
+ctx-rh-superiorfrontal
+2028 20 220 160 255
+ctx-rh-superiorparietal
+2029 20 180 140 255
+ctx-rh-superiortemporal
+2030 140 220 220 255
+ctx-rh-supramarginal
+2031 80 160 20 255
+ctx-rh-frontalpole
+2032 100 0 100 255
+ctx-rh-temporalpole
+2033 70 70 70 255
+ctx-rh-transversetemporal
+2034 150 150 200 255
+ctx-rh-insula
+2035 255 192 32 255
