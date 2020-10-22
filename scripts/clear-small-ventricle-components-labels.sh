@@ -27,8 +27,10 @@ sdir=segmentations-data
 mkdir -p $sdir/corrections || exit 1
 
 # cleaning up small ventricle components
-run mirtk padding segmentations/$subj-em.nii.gz segmentations/$subj-em.nii.gz $sdir/corrections/$subj-hwm-init.nii.gz 26 0 -invert
-run mirtk padding segmentations/$subj-initial.nii.gz segmentations/$subj-initial.nii.gz $sdir/corrections/$subj-ven-init.nii.gz 2 49 50 0 -invert 2 49 50 1
+high_wm_em_label=$((`echo $SUBCORTICAL |wc -w` + $HIGH_WM_TISSUE))
+num_ventricles=`echo $VENTRICLES|wc -w`
+run mirtk padding segmentations/$subj-em.nii.gz segmentations/$subj-em.nii.gz $sdir/corrections/$subj-hwm-init.nii.gz $high_wm_em_label 0 -invert
+run mirtk padding segmentations/$subj-initial.nii.gz segmentations/$subj-initial.nii.gz $sdir/corrections/$subj-ven-init.nii.gz $num_ventricles $VENTRICLES 0 -invert $num_ventricles $VENTRICLES 1
 $scriptdir/clear-small-components.sh $sdir/corrections/$subj-ven-init.nii.gz $sdir/corrections/$subj-ven.nii.gz
 run mirtk calculate $sdir/corrections/$subj-ven-init.nii.gz -sub $sdir/corrections/$subj-ven.nii.gz -out $sdir/corrections/$subj-ven-diff.nii.gz
 
@@ -39,18 +41,25 @@ run mirtk calculate $sdir/corrections/$subj-ven-diff.nii.gz -mul $sdir/correctio
 
 volcorr=`mirtk measure-volume $sdir/corrections/$subj-ventohwm.nii.gz`
 if [ "$volcorr" != "" ];then 
-# ..redistribute small ventricle components' probability into hwm/wm
-run mirtk calculate $sdir/posteriors/seg49/$subj.nii.gz -add $sdir/posteriors/seg50/$subj.nii.gz -mul $sdir/corrections/$subj-ventohwm.nii.gz -out $sdir/corrections/$subj-ventohwm-prob.nii.gz
-run mirtk calculate $sdir/corrections/$subj-ventohwm-prob.nii.gz -add $sdir/posteriors/hwm/$subj.nii.gz -out $sdir/posteriors/hwm/$subj.nii.gz
-run mirtk calculate $sdir/corrections/$subj-ventohwm-prob.nii.gz -add $sdir/posteriors/wm/$subj.nii.gz -out $sdir/posteriors/wm/$subj.nii.gz
-run mirtk padding $sdir/posteriors/seg49/$subj.nii.gz $sdir/corrections/$subj-ventohwm.nii.gz $sdir/posteriors/seg49/$subj.nii.gz 1 0
-run mirtk padding $sdir/posteriors/seg50/$subj.nii.gz $sdir/corrections/$subj-ventohwm.nii.gz $sdir/posteriors/seg50/$subj.nii.gz 1 0
+    # ..redistribute small ventricle components' probability into hwm/wm
+    addem=""
+    for label in $VENTRICLES;do
+        addem=$addem"-add $sdir/posteriors/seg$label/$subj.nii.gz ";
+    done
+    addem=`echo $addem|sed -e 's:^-add::g'`
+    run mirtk calculate $addem -mul $sdir/corrections/$subj-ventohwm.nii.gz -out $sdir/corrections/$subj-ventohwm-prob.nii.gz
+    for tissue in hwm wm;do
+        run mirtk calculate $sdir/corrections/$subj-ventohwm-prob.nii.gz -add $sdir/posteriors/$tissue/$subj.nii.gz -out $sdir/posteriors/$tissue/$subj.nii.gz
+    done
+    for label in $VENTRICLES;do
+        run mirtk padding $sdir/posteriors/seg$label/$subj.nii.gz $sdir/corrections/$subj-ventohwm.nii.gz $sdir/posteriors/seg$label/$subj.nii.gz 1 0
+    done
 
-# ..fix the segmentation too
-run mirtk padding segmentations/$subj-initial.nii.gz $sdir/corrections/$subj-ventohwm.nii.gz segmentations/$subj-initial.nii.gz 1 $CORTICAL_WM_LABEL
+    # ..fix the segmentation too
+    run mirtk padding segmentations/$subj-initial.nii.gz $sdir/corrections/$subj-ventohwm.nii.gz segmentations/$subj-initial.nii.gz 1 $CORTICAL_WM_LABEL
 
-# clean up
-rm $sdir/corrections/$subj-ventohwm-prob.nii.gz
+    # clean up
+    rm $sdir/corrections/$subj-ventohwm-prob.nii.gz
 fi
 
 # clean up

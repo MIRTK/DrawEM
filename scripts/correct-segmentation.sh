@@ -24,11 +24,14 @@ subj=$1
 
 scriptdir=$(dirname "$BASH_SOURCE")
 
-#TODO
-# correct for small ventricle components
-# $scriptdir/clear-small-ventricle-components-labels.sh $subj
-# correct holes in the segmentation of the hemispheres
-$scriptdir/correct-hemisphere-holes.sh $subj
+if [ $HIGH_WM_VENTRICLE_CORRECTION -eq 1 ];then
+    # correct for small ventricle components
+    $scriptdir/clear-small-ventricle-components-labels.sh $subj
+fi
+if [ $HEMISPHERE_HOLE_CORRECTION -eq 1 ];then
+    # correct holes in the segmentation of the hemispheres
+    $scriptdir/correct-hemisphere-holes.sh $subj
+fi
 
 
 
