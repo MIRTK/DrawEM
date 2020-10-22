@@ -30,7 +30,8 @@ Arguments:
   scan_age                      Number: Subject age in weeks. This is used to select the appropriate template for the initial registration. 
 			        If the age is <28w or >44w, it will be set to 28w or 44w respectively.
 Options:
-  -d / -data-dir  <directory>   The directory used to run the script and output the files. 
+  -a / -atlas  <atlasname>      Atlas used for the segmentation, options: `echo $atlases|sed -e 's: :, :g'` (default: ALBERT)
+  -d / -data-dir  <directory>   The directory used to run the script and output the files.
   -c / -cleanup  <0/1>          Whether cleanup of temporary files is required (default: 1)
   -p / -save-posteriors  <0/1>  Whether the structures' posteriors are required (default: 0)
   -t / -threads  <number>       Number of threads (CPU cores) allowed for the registration to run in parallel (default: 1)
@@ -47,6 +48,11 @@ if [ -n "$DRAWEMDIR" ]; then
 else
   export DRAWEMDIR="$(cd "$(dirname "$BASH_SOURCE")"/.. && pwd)"
 fi
+
+atlases=""
+for d in `find $DRAWEMDIR/parameters/* -maxdepth 1 -type d`;do
+  atlases="$atlases "`basename $d`;
+done
 
 [ $# -ge 2 ] || { usage; }
 T2=$1
@@ -66,12 +72,14 @@ posteriors=0   # whether to output posterior probability maps
 threads=1
 verbose=1
 command="$@"
+atlasname=ALBERT
 
 while [ $# -gt 0 ]; do
   case "$3" in
     -c|-cleanup)  shift; cleanup=$3; ;;
     -d|-data-dir)  shift; datadir=$3; ;;
     -p|-save-posteriors) shift; posteriors=$3; ;;
+    -a|-atlas)  shift; atlasname=$3; ;; 
     -t|-threads)  shift; threads=$3; ;; 
     -v|-verbose)  shift; verbose=$3; ;; 
     -h|-help|--help) usage; ;;
@@ -80,6 +88,12 @@ while [ $# -gt 0 ]; do
   esac
   shift
 done
+
+atlas_OK=0
+for atlas in $atlases;do
+  if [ "$atlas" == "$atlasname" ];then atlas_OK=1; break; fi;
+done
+if [ $atlas_OK -eq 0 ];then echo "Unknown atlas: $atlasname" >&2; usage; fi
 
 mkdir -p $datadir/T2 
 if [[ "$T2" == *nii ]];then 
@@ -130,7 +144,8 @@ run_script()
 }
 
 # load configuration
-. $DRAWEMDIR/parameters/config_M-CRIB_2.0.sh
+export ATLAS_NAME=$atlasname
+. $DRAWEMDIR/parameters/$ATLAS/config.sh
 
 rm -f logs/$subj logs/$subj-err
 run_script preprocess.sh        $subj
