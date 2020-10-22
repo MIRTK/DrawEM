@@ -62,7 +62,7 @@ done
 
 
 # segmentation
-run mirtk draw-em N4/$subj.nii.gz $num $structs segmentations/$subj-em.nii.gz -padding 0 -mrf $DRAWEMDIR/parameters/connectivities_M-CRIB_2.0.mrf -tissues $tissues_parameter -hui -postpenalty $sdir/MADs/$subj-subspace.nii.gz $saveposts 1>logs/$subj-em 2>logs/$subj-em-err
+run mirtk draw-em N4/$subj.nii.gz $num $structs segmentations/$subj-em.nii.gz -padding 0 -mrf $CONNECTIVITIES -tissues $tissues_parameter -hui -postpenalty $sdir/MADs/$subj-subspace.nii.gz $saveposts 1>logs/$subj-em 2>logs/$subj-em-err
 
 # add posterior probability of sub-tissues to tissues
 atlas_tissues_arr=($ATLAS_TISSUES)
