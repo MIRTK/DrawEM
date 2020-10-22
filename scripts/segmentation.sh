@@ -27,11 +27,6 @@ subj=$1
 if [ ! -f segmentations/$subj-initial.nii.gz ];then
 sdir=segmentations-data
 
-tissues="outlier csf gm wm"
-#TODO
-# tissues="outlier csf gm wm hwm lwm"
-
-
 mkdir -p segmentations $sdir/posteriors logs || exit 1;
 for r in ${SUBCORTICAL};do mkdir -p $sdir/posteriors/seg$r || exit 1; done
 for str in ${tissues};do mkdir -p $sdir/posteriors/$str || exit 1; done
@@ -47,7 +42,17 @@ saveposts="$saveposts -saveprob $num $post ";
 num=$(($num+1)); 
 done
 # tissues
-for str in ${tissues};do
+tissue_num=$num
+tissues_parameter=""
+for group in ${ATLAS_TISSUES_GROUPING};do
+    tissues_parameter="$tissues_parameter $group"
+    for ((group_i=0; group_i<$group; group_i++));do
+        tissues_parameter="$tissues_parameter $tissue_num"
+        tissue_num=$(($tissue_num+1))
+    done
+done
+
+for str in ${ATLAS_TISSUES};do
 structs="$structs $sdir/labels/$str/$subj.nii.gz";
 post=$sdir/posteriors/$str/$subj.nii.gz
 posts="$posts $post "
@@ -57,12 +62,23 @@ done
 
 
 # segmentation
-#TODO
-run mirtk draw-em N4/$subj.nii.gz $num $structs segmentations/$subj-em.nii.gz -padding 0 -mrf $DRAWEMDIR/parameters/connectivities_M-CRIB_2.0.mrf -tissues 1 27 1 28 1 29 1 30  -hui -postpenalty $sdir/MADs/$subj-subspace.nii.gz $saveposts 1>logs/$subj-em 2>logs/$subj-em-err
+run mirtk draw-em N4/$subj.nii.gz $num $structs segmentations/$subj-em.nii.gz -padding 0 -mrf $DRAWEMDIR/parameters/connectivities_M-CRIB_2.0.mrf -tissues $tissues_parameter -hui -postpenalty $sdir/MADs/$subj-subspace.nii.gz $saveposts 1>logs/$subj-em 2>logs/$subj-em-err
 
-# add hwm and lwm posterior probability to wm
-#TODO
-# run mirtk calculate $sdir/posteriors/hwm/$subj.nii.gz -add $sdir/posteriors/lwm/$subj.nii.gz -add $sdir/posteriors/wm/$subj.nii.gz -out $sdir/posteriors/wm/$subj.nii.gz
+# add posterior probability of sub-tissues to tissues
+atlas_tissues_arr=($ATLAS_TISSUES)
+tissue_num=0
+for group in ${ATLAS_TISSUES_GROUPING};do
+    addem=""
+    out=$sdir/posteriors/${atlas_tissues_arr[$tissue_num]}/$subj.nii.gz
+    for ((group_i=0; group_i<$group; group_i++));do
+        addem=$addem"-add $sdir/posteriors/${atlas_tissues_arr[$tissue_num]}/$subj.nii.gz ";
+        tissue_num=$(($tissue_num+1))
+    done
+    if [ $group -gt 1 ];then
+        addem=`echo $addem|sed -e 's:^-add::g'`
+        run mirtk calculate $addem -out $out
+    fi
+done
 
 # posteriors [0,1] -> [0,100]
 for post in ${posts};do

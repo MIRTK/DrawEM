@@ -25,21 +25,11 @@ subj=$1
 
 sdir=segmentations-data
 
-# the order is that in the atlases tissues
-tissues="csf gm wm outlier"
-#TODO
-# tissues="csf gm wm outlier hwm lwm"
-
-run(){
-  echo "$@"
-  "$@" || exit 1
-}
-
 if [ ! -f $sdir/MADs/$subj-subspace.nii.gz ];then
 
 mkdir -p $sdir/MADs $sdir/transformations $sdir/atlas-weights  || exit 1 
 for r in ${ALL_LABELS};do mkdir -p $sdir/labels/seg$r || exit 1; done
-for str in ${tissues};do mkdir -p $sdir/labels/$str || exit 1; done
+for str in ${ATLAS_TISSUES};do mkdir -p $sdir/labels/$str || exit 1; done
 
 sigma=10000
 run mirtk convert-image N4/$subj.nii.gz $sdir/atlas-weights/$subj-normalized.nii.gz -rescale 0 200 -double 
@@ -101,8 +91,8 @@ run mirtk split-labels $num $transformed $transformedw  $splitnum $splitstr
 
 splitnum=0
 splitstr=""; 
-for str in ${tissues};do let splitnum=splitnum+1; splitstr=$splitstr" $splitnum"; done
-for str in ${tissues};do splitstr=$splitstr" $sdir/labels/$str/$subj.nii.gz"; done
+for str in ${ATLAS_TISSUES};do let splitnum=splitnum+1; splitstr=$splitstr" $splitnum"; done
+for str in ${ATLAS_TISSUES};do splitstr=$splitstr" $sdir/labels/$str/$subj.nii.gz"; done
 run mirtk split-labels $num $transformedc $transformedw  $splitnum $splitstr
 
 #create MAD
