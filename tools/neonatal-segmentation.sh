@@ -33,7 +33,6 @@ Options:
   -d / -data-dir  <directory>   The directory used to run the script and output the files. 
   -c / -cleanup  <0/1>          Whether cleanup of temporary files is required (default: 1)
   -p / -save-posteriors  <0/1>  Whether the structures' posteriors are required (default: 0)
-  -atlas  <atlasname>           Atlas used for the tissue priors (default: non-rigid-v2)
   -t / -threads  <number>       Number of threads (CPU cores) allowed for the registration to run in parallel (default: 1)
   -v / -verbose  <0/1>          Whether the script progress is reported (default: 1)
   -h / -help / --help           Print usage.
@@ -68,14 +67,11 @@ threads=1
 verbose=1
 command="$@"
 
-atlasname=non-rigid-v2
-
 while [ $# -gt 0 ]; do
   case "$3" in
     -c|-cleanup)  shift; cleanup=$3; ;;
     -d|-data-dir)  shift; datadir=$3; ;;
     -p|-save-posteriors) shift; posteriors=$3; ;;
-    -atlas)  shift; atlasname=$3; ;; 
     -t|-threads)  shift; threads=$3; ;; 
     -v|-verbose)  shift; verbose=$3; ;; 
     -h|-help|--help) usage; ;;
@@ -139,7 +135,7 @@ run_script()
 rm -f logs/$subj logs/$subj-err
 run_script preprocess.sh        $subj
 # phase 1 tissue segmentation
-run_script tissue-priors.sh     $subj $age $atlasname $threads
+run_script tissue-priors.sh     $subj $age $threads
 # registration using gm posterior + image
 run_script register-multi-atlas-using-gm-posteriors.sh $subj $age $threads
 # structural segmentation

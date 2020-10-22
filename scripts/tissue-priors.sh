@@ -23,7 +23,6 @@
 [ $# -ge 3 ] || { echo "usage: $(basename "$0") <subject> <age> <atlas_name> [<#jobs>]" 1>&2; exit 1; }
 subj=$1
 age=$2
-atlasname=$3
 njobs=1
 if [ $# -gt 3 ];then njobs=$4;fi
 
@@ -32,7 +31,7 @@ dof=dofs/$subj-template-$age-n.dof.gz
 mkdir -p dofs
 
 if [ ! -f $dof ];then 
-  run mirtk register N4/$subj.nii.gz $DRAWEMDIR/atlases/$atlasname/T2/template-$age.nii.gz -dofout $dof -parin $DRAWEMDIR/parameters/ireg.cfg -threads $njobs -v 0
+  run mirtk register N4/$subj.nii.gz $DRAWEMDIR/atlases/non-rigid-v2/T2/template-$age.nii.gz -dofout $dof -parin $DRAWEMDIR/parameters/ireg.cfg -threads $njobs -v 0
 fi
 
 needtseg=0
@@ -65,7 +64,7 @@ if [ $needtseg -eq 1 -a ! -f $sdir/tissue-initial-segmentations/$subj.nii.gz ];t
     strnum=$(($strnum+1))
 
     strems=$sdir/template/$str/$subj.nii.gz
-    run mirtk transform-image $DRAWEMDIR/atlases/$atlasname/atlas-9/structure$strnum/$age.nii.gz $strems -dofin $dof -target N4/$subj.nii.gz -interp Linear
+    run mirtk transform-image $DRAWEMDIR/atlases/non-rigid-v2/atlas-9/structure$strnum/$age.nii.gz $strems -dofin $dof -target N4/$subj.nii.gz -interp Linear
     emsstructures="$emsstructures $strems"
     done
 
