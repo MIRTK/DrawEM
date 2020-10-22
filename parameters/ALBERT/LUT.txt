@@ -1,0 +1,100 @@
+L_Hippocampus
+1 220 216 20 255
+R_Hippocampus
+2 220 216 20 255
+L_Amygdala
+3 103 255 255 255
+R_Amygdala
+4 103 255 255 255
+L_Anterior_temporal_lobe_medial
+5 70 20 170 255
+R_Anterior_temporal_lobe_medial
+6 70 20 170 255
+L_Anterior_temporal_lobe_lateral
+7 220 60 220 255
+R_Anterior_temporal_lobe_lateral
+8 220 60 220 255
+L_Gyri_parahippocampalis_et_ambiens_anterior
+9 65 100 20 255
+R_Gyri_parahippocampalis_et_ambiens_anterior
+10 65 100 20 255
+L_Superior_temporal_gyrus_middle
+11 140 220 220 255
+R_Superior_temporal_gyrus_middle
+12 140 220 220 255
+L_Medial_and_inferior_temporal_gyri_anterior
+13 220 220 100 255
+R_Medial_and_inferior_temporal_gyri_anterior
+14 220 220 100 255
+L_Lateral_occipitotemporal_gyrus_gyrus_fusiformis_anterior
+15 60 20 140 255
+R_Lateral_occipitotemporal_gyrus_gyrus_fusiformis_anterior
+16 60 20 140 255
+L_Cerebellum
+17 230 148 34 255
+R_Cerebellum
+18 230 148 34 255
+Brainstem_spans_the_midline
+19 119 159 176 255
+R_Insula
+20 255 192 32 255
+L_Insula
+21 255 192 32 255
+R_Occipital_lobe
+22 20 30 140 255
+L_Occipital_lobe
+23 20 30 140 255
+R_Gyri_parahippocampalis_et_ambiens_posterior
+24 235 35 195 255
+L_Gyri_parahippocampalis_et_ambiens_posterior
+25 235 35 195 255
+R_Lateral_occipitotemporal_gyrus_gyrus_fusiformis_posterior
+26 5 35 115 255
+L_Lateral_occipitotemporal_gyrus_gyrus_fusiformis_posterior
+27 5 35 115 255
+R_Medial_and_inferior_temporal_gyri_posterior
+28 160 100 50 255
+L_Medial_and_inferior_temporal_gyri_posterior
+29 160 100 50 255
+R_Superior_temporal_gyrus_posterior
+30 223 220 60 255
+L_Superior_temporal_gyrus_posterior
+31 223 220 60 255
+R_Cingulate_gyrus_anterior
+32 125 100 160 255
+L_Cingulate_gyrus_anterior
+33 125 100 160 255
+R_Cingulate_gyrus_posterior
+34 220 180 220 255
+L_Cingulate_gyrus_posterior
+35 220 180 220 255
+R_Frontal_lobe
+36 75 50 125 255
+L_Frontal_lobe
+37 75 50 125 255
+R_Parietal_lobe
+38 20 180 140 255
+L_Parietal_lobe
+39 20 180 140 255
+R_Caudate_nucleus
+40 122 186 220 255
+L_Caudate_nucleus
+41 122 186 220 255
+R_Thalamus
+42 0 118 14 255
+L_Thalamus
+43 0 118 14 255
+R_Subthalamic_nucleus
+44 236 13 176 255
+L_Subthalamic_nucleus
+45 236 13 176 255
+R_Lentiform_Nucleus
+46 42 42 255 255
+L_Lentiform_Nucleus
+47 255 42 255 255
+Corpus_Callosum
+48 250 255 50 255
+L_Lateral_Ventricle
+49 121 17 136 255
+R_Lateral_Ventricle
+50 121 17 136 255
