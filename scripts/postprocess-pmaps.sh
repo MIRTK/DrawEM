@@ -43,7 +43,8 @@ done
 
 for tissue in gm wm;do 
     # cortical wm, gm
-    cortical_labels=${!CORTICAL_${tissue^^}}
+    cortical_var=CORTICAL_${tissue^^}
+    cortical_labels=(${!cortical_var})
 
     addem=""
     for ((n=0;n<${#cortical_labels[*]};n++));do

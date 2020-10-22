@@ -30,8 +30,8 @@ run(){
 }
 
 for tissue in gm wm;do
-  cortical_labels=${!CORTICAL_${tissue^^}}
-  numcorts=${#cortical_labels[*]}
+  cortical_var=CORTICAL_${tissue^^}
+  cortical_labels=(${!cortical_var})
 
   mkdir -p $sdir/cortical-$tissue || exit 1
   for ((n=0;n<${#cortical_labels[*]};n++));do 
