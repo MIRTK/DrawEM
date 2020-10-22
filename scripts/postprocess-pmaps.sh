@@ -29,9 +29,12 @@ sdir=segmentations-data
 mkdir -p $sdir/posteriors/temp || exit 1
 for ((n=0;n<${#ALL_LABELS[*]};n++));do r=${ALL_LABELS[$n]}; mkdir -p $rdir/seg$r || exit 1;done
 
-
-# out, csf
-cp $sdir/posteriors/csf/$subj.nii.gz $rdir/seg24/$subj.nii.gz || exit 1
+if [ "$CSF_LABEL" != "" ];then
+    cp $sdir/posteriors/csf/$subj.nii.gz $rdir/seg$CSF_LABEL/$subj.nii.gz || exit 1
+fi
+if [ "$OUTLIER_LABEL" != "" ];then
+    cp $sdir/posteriors/outlier/$subj.nii.gz $rdir/seg$OUTLIER_LABEL/$subj.nii.gz || exit 1
+fi
 
 for tissue in csf gm wm;do 
   mkdir -p $rdir/$tissue
