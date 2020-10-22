@@ -69,7 +69,7 @@ rm -f $sdir/atlas-weights/$subj-$atlas-normalized.nii.gz
 fi
 done
 
-rm -f $sdir/atlas-weights/$subj-normalized.nii.gz	
+rm -f $sdir/atlas-weights/$subj-normalized.nii.gz
 
 
 #split labels
@@ -94,6 +94,19 @@ splitstr="";
 for str in ${ATLAS_TISSUES};do let splitnum=splitnum+1; splitstr=$splitstr" $splitnum"; done
 for str in ${ATLAS_TISSUES};do splitstr=$splitstr" $sdir/labels/$str/$subj.nii.gz"; done
 run mirtk split-labels $num $transformedc $transformedw  $splitnum $splitstr
+
+if [ "$ATLAS_NAME" == "ALBERT" ];then
+    #remove CC from WM
+    mirtk calculate $sdir/labels/wm/$subj.nii.gz -sub $sdir/labels/seg48/$subj.nii.gz -clamp-below 0 -out $sdir/labels/wm/$subj.nii.gz
+    # in ALBERTs cortical labels cover both WM and GM, copy cortical GM structures as WM structures too
+    cortical_wm_arr=($CORTICAL_WM)
+    cortical_gm_arr=($CORTICAL_GM)
+    for ((n=0;n<${#cortical_gm_arr[*]};n++));do
+        gm_structure=${cortical_gm_arr[$n]};
+        wm_structure=${cortical_wm_arr[$n]};
+        cp $sdir/labels/seg$gm_structure/$subj.nii.gz $sdir/labels/seg$wm_structure/$subj.nii.gz
+    done
+fi
 
 #create MAD
 if [ ! -f $sdir/MADs/$subj.nii.gz ];then 
