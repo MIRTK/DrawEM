@@ -29,14 +29,13 @@ if [ $# -gt 2 ];then njobs=$3;fi
 sdir=segmentations-data
 
 mkdir -p dofs
-for i in {01..10};do
-  atlas=M-CRIB_P$i
+for atlas in ${ATLASES};do
   dof=dofs/$subj-$atlas-n.dof.gz
 
   if [ ! -f $dof ];then
-    run mirtk register N4/$subj.nii.gz $DRAWEMDIR/atlases/M-CRIB_2.0/T2/$atlas.nii.gz -parin $DRAWEMDIR/parameters/ireg.cfg  -dofout $dof -threads $njobs -v 0
+    run mirtk register N4/$subj.nii.gz $ATLAS_T2_DIR/$atlas.nii.gz -parin $DRAWEMDIR/parameters/ireg.cfg  -dofout $dof -threads $njobs -v 0
   	#TODO
-  	# run mirtk register N4/$subj.nii.gz $DRAWEMDIR/atlases/M-CRIB_2.0/T2/$atlas.nii.gz $sdir/gm-posteriors/$subj.nii.gz $DRAWEMDIR/atlases/M-CRIB_2.0/gm-posteriors/$atlas.nii.gz -parin $DRAWEMDIR/parameters/ireg-multichannel-structural.cfg  -dofout $dof -threads $njobs -v 0
+  	# run mirtk register N4/$subj.nii.gz $ATLAS_T2_DIR/$atlas.nii.gz $sdir/gm-posteriors/$subj.nii.gz $ATLAS_GM_POSTERIORS_DIR/$atlas.nii.gz -parin $DRAWEMDIR/parameters/ireg-multichannel-structural.cfg  -dofout $dof -threads $njobs -v 0
   fi
 
 done

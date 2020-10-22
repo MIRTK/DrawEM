@@ -44,30 +44,24 @@ for str in ${tissues};do mkdir -p $sdir/labels/$str || exit 1; done
 sigma=10000
 run mirtk convert-image N4/$subj.nii.gz $sdir/atlas-weights/$subj-normalized.nii.gz -rescale 0 200 -double 
 
-
-atlases=""
-num=0
-
 #for each atlas
-for atnum in {01..10};do
-atlas=M-CRIB_P$atnum
-echo dofs/$subj-$atlas-n.dof.gz
+for atlas in ${ATLASES};do
 if [ ! -f dofs/$subj-$atlas-n.dof.gz ];then continue;fi
 
 #transform atlas labels
 if [ ! -f $sdir/transformations/$subj-$atlas.nii.gz ];then 
 ms=$sdir/template/$str/$subj.nii.gz
-run mirtk transform-image $DRAWEMDIR/atlases/M-CRIB_2.0/segmentations/$atlas.nii.gz $sdir/transformations/$subj-$atlas.nii.gz -target N4/$subj.nii.gz -dofin dofs/$subj-$atlas-n.dof.gz -interp NN 
+run mirtk transform-image $ATLAS_SEGMENTATIONS_DIR/$atlas.nii.gz $sdir/transformations/$subj-$atlas.nii.gz -target N4/$subj.nii.gz -dofin dofs/$subj-$atlas-n.dof.gz -interp NN 
 fi
 if [ ! -f $sdir/transformations/tissues-$subj-$atlas.nii.gz ];then 
 ms=$sdir/template/$str/$subj.nii.gz
-run mirtk transform-image $DRAWEMDIR/atlases/M-CRIB_2.0/tissues/$atlas.nii.gz $sdir/transformations/tissues-$subj-$atlas.nii.gz -target N4/$subj.nii.gz -dofin dofs/$subj-$atlas-n.dof.gz -interp NN 
+run mirtk transform-image $ATLAS_TISSUES_DIR/$atlas.nii.gz $sdir/transformations/tissues-$subj-$atlas.nii.gz -target N4/$subj.nii.gz -dofin dofs/$subj-$atlas-n.dof.gz -interp NN 
 fi
 
 #transform atlases
 if [ ! -f $sdir/transformations/T2-$subj-$atlas.nii.gz ];then 
 ms=$sdir/template/$str/$subj.nii.gz
-run mirtk transform-image $DRAWEMDIR/atlases/M-CRIB_2.0/T2/$atlas.nii.gz $sdir/transformations/T2-$subj-$atlas.nii.gz -target N4/$subj.nii.gz -dofin dofs/$subj-$atlas-n.dof.gz -interp BSpline 
+run mirtk transform-image $ATLAS_T2_DIR/$atlas.nii.gz $sdir/transformations/T2-$subj-$atlas.nii.gz -target N4/$subj.nii.gz -dofin dofs/$subj-$atlas-n.dof.gz -interp BSpline 
 fi
 
 #weight atlas locally
@@ -83,9 +77,6 @@ run mirtk calculate $sdir/atlas-weights/$subj-$atlas.nii.gz -exp -out $sdir/atla
 run mirtk calculate-filtering $sdir/atlas-weights/$subj-$atlas.nii.gz -kernel 3 -median $sdir/atlas-weights/$subj-$atlas.nii.gz  
 rm -f $sdir/atlas-weights/$subj-$atlas-normalized.nii.gz
 fi
-
-atlases="$atlases $atlas"
-num=$(($num+1))
 done
 
 rm -f $sdir/atlas-weights/$subj-normalized.nii.gz	
@@ -95,12 +86,13 @@ rm -f $sdir/atlas-weights/$subj-normalized.nii.gz
 transformed=""
 transformedc=""
 transformedw=""
-for atlas in ${atlases};do 
+for atlas in ${ATLASES};do 
 transformed="$transformed $sdir/transformations/$subj-$atlas.nii.gz";
 transformedc="$transformedc $sdir/transformations/tissues-$subj-$atlas.nii.gz";
 transformedw="$transformedw $sdir/atlas-weights/$subj-$atlas.nii.gz";
 done
 
+num=`echo $ATLASES | wc -w`
 splitnum=0
 splitstr=""; 
 for r in ${SUBCORTICAL} ${CORTICAL};do let splitnum=splitnum+1; splitstr=$splitstr" $r"; done
