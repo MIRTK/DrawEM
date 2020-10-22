@@ -134,10 +134,8 @@ run_script()
 
 rm -f logs/$subj logs/$subj-err
 run_script preprocess.sh        $subj
-# phase 1 tissue segmentation
-run_script tissue-priors.sh     $subj $age $threads
-# registration using gm posterior + image
-run_script register-multi-atlas-using-gm-posteriors.sh $subj $age $threads
+# registration of atlases
+run_script register-multi-atlas.sh $subj $age $threads
 # structural segmentation
 run_script labels-multi-atlas.sh   $subj
 run_script segmentation.sh      $subj
