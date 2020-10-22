@@ -26,26 +26,8 @@ age=$2
 njobs=1
 if [ $# -gt 3 ];then njobs=$4;fi
 
-#registration
-dof=dofs/$subj-template-$age-n.dof.gz
-mkdir -p dofs
-
-if [ ! -f $dof ];then 
-  run mirtk register N4/$subj.nii.gz $DRAWEMDIR/atlases/non-rigid-v2/T2/template-$age.nii.gz -dofout $dof -parin $DRAWEMDIR/parameters/ireg.cfg -threads $njobs -v 0
-fi
-
-needtseg=0
-for i in {01..10};do
-  atlas=M-CRIB_P$i
-  if [ ! -f dofs/$subj-$atlas-n.dof.gz ];then
-    needtseg=1
-    break
-  fi
-done
-
 sdir=segmentations-data
 if [ $needtseg -eq 1 -a ! -f $sdir/tissue-initial-segmentations/$subj.nii.gz ];then
-
     echo "creating $subj tissue priors"
 
     mkdir -p $sdir $sdir/template $sdir/tissue-posteriors $sdir/tissue-initial-segmentations || exit 1
@@ -53,7 +35,6 @@ if [ $needtseg -eq 1 -a ! -f $sdir/tissue-initial-segmentations/$subj.nii.gz ];t
     for str in ${structures};do
     mkdir -p $sdir/template/$str $sdir/tissue-posteriors/$str || exit 1
     done
-
 
     strnum=0
     emsstructures=""
@@ -64,7 +45,7 @@ if [ $needtseg -eq 1 -a ! -f $sdir/tissue-initial-segmentations/$subj.nii.gz ];t
     strnum=$(($strnum+1))
 
     strems=$sdir/template/$str/$subj.nii.gz
-    run mirtk transform-image $DRAWEMDIR/atlases/non-rigid-v2/atlas-9/structure$strnum/$age.nii.gz $strems -dofin $dof -target N4/$subj.nii.gz -interp Linear
+    run mirtk transform-image $DRAWEMDIR/atlases/non-rigid-v2/atlas-9/structure$strnum/$age.nii.gz $strems -dofin dofs/$subj-template-$age-n.dof.gz -target N4/$subj.nii.gz -interp Linear
     emsstructures="$emsstructures $strems"
     done
 

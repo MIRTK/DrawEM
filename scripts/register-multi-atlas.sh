@@ -26,18 +26,34 @@ age=$2
 njobs=1
 if [ $# -gt 2 ];then njobs=$3;fi
 
+sdir=segmentations-data
+mkdir -p dofs
 
-if [ $MULTICHANNEL_REGISTRATION -eq 1 ];then
-    SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-    $SCRIPT_DIR/tissue-priors.sh $subj $age $njobs
+# registration of atlas template
+template_dof=dofs/$subj-template-$age-n.dof.gz
+if [ ! -f $template_dof ];then
+  run mirtk register N4/$subj.nii.gz $DRAWEMDIR/atlases/non-rigid-v2/T2/template-$age.nii.gz -dofout $template_dof -parin $DRAWEMDIR/parameters/ireg.cfg -threads $njobs -v 0
 fi
 
-sdir=segmentations-data
+# initial tissue segmentation if we do multi-channel registration
+if [ $MULTICHANNEL_REGISTRATION -eq 1 ];then
+    need_tissue_seg=0
+    for atlas in {ATLASES};do
+      if [ ! -f dofs/$subj-$atlas-n.dof.gz ];then
+        need_tissue_seg=1
+        break
+      fi
+    done
 
-mkdir -p dofs
+    if [ $need_tissue_seg -eq 1 ];then
+        SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+        $SCRIPT_DIR/tissue-priors.sh $subj $age $njobs
+    fi
+fi
+
+# registration of multiple atlases
 for atlas in ${ATLASES};do
   dof=dofs/$subj-$atlas-n.dof.gz
-
   if [ ! -f $dof ];then
     if [ $MULTICHANNEL_REGISTRATION -eq 1 ];then
         run mirtk register N4/$subj.nii.gz $ATLAS_T2_DIR/$atlas.nii.gz $sdir/gm-posteriors/$subj.nii.gz $ATLAS_GM_POSTERIORS_DIR/$atlas.nii.gz -parin $DRAWEMDIR/parameters/ireg-multichannel-structural.cfg  -dofout $dof -threads $njobs -v 0
@@ -45,6 +61,5 @@ for atlas in ${ATLASES};do
         run mirtk register N4/$subj.nii.gz $ATLAS_T2_DIR/$atlas.nii.gz -parin $DRAWEMDIR/parameters/ireg.cfg  -dofout $dof -threads $njobs -v 0
     fi
   fi
-
 done
 
