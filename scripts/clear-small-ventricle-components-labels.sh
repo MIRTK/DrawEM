@@ -47,7 +47,7 @@ run mirtk padding $sdir/posteriors/seg49/$subj.nii.gz $sdir/corrections/$subj-ve
 run mirtk padding $sdir/posteriors/seg50/$subj.nii.gz $sdir/corrections/$subj-ventohwm.nii.gz $sdir/posteriors/seg50/$subj.nii.gz 1 0
 
 # ..fix the segmentation too
-run mirtk padding segmentations/$subj-initial.nii.gz $sdir/corrections/$subj-ventohwm.nii.gz segmentations/$subj-initial.nii.gz 1 2000
+run mirtk padding segmentations/$subj-initial.nii.gz $sdir/corrections/$subj-ventohwm.nii.gz segmentations/$subj-initial.nii.gz 1 $CORTICAL_WM_LABEL
 
 # clean up
 rm $sdir/corrections/$subj-ventohwm-prob.nii.gz

@@ -31,7 +31,7 @@ if [ -f segmentations/${subj}_L_white.nii.gz -a -f segmentations/${subj}_R_white
 run mirtk calculate segmentations/$subj-initial.nii.gz -mul 0 -out $sdir/corrections/$subj-gmtochange.nii.gz
 for h in L R;do
 run mirtk calculate segmentations/${subj}_${h}_white.nii.gz -mul segmentations/$subj-initial.nii.gz  -out $sdir/corrections/$subj-gmmask.nii.gz
-run mirtk padding $sdir/corrections/$subj-gmtochange.nii.gz $sdir/corrections/$subj-gmmask.nii.gz $sdir/corrections/$subj-gmtochange.nii.gz 1000 1
+run mirtk padding $sdir/corrections/$subj-gmtochange.nii.gz $sdir/corrections/$subj-gmmask.nii.gz $sdir/corrections/$subj-gmtochange.nii.gz $CORTICAL_GM_LABEL 1
 done
 rm $sdir/corrections/$subj-gmmask.nii.gz
 
@@ -40,7 +40,7 @@ if [ "$volcorr" != "" ];then
 
 # ..redistribute small components' probability into wm/dgm
 num=1;
-inprobs="$sdir/posteriors/wm/$subj.nii.gz 2000"
+inprobs="$sdir/posteriors/wm/$subj.nii.gz $CORTICAL_WM_LABEL"
 outprobs="$sdir/posteriors/wm/$subj.nii.gz"
 for r in ${SUBCORTICAL}; do
 inprobs="$inprobs $sdir/posteriors/seg$r/$subj.nii.gz $r"

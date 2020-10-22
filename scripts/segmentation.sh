@@ -85,6 +85,5 @@ for post in ${posts};do
 run mirtk calculate $post -mul 100 -out $post 
 done
 
-# set whole wm to 2000 and whole gm to 1000 and final label numbers for the rest (subcortical, csf, out)
 run mirtk padding segmentations/$subj-em.nii.gz segmentations/$subj-em.nii.gz segmentations/$subj-initial.nii.gz $EM_LABELS_TO_ALL_LABELS
 fi
