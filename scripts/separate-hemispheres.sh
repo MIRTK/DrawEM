@@ -31,20 +31,11 @@ if [ ! -f segmentations/${subj}_L_white.nii.gz -o ! -f segmentations/${subj}_R_w
 suffix=-sephemi
 $scriptdir/postprocess.sh $subj $suffix
 
-
-# structures for the left, right hemisphere and those that extend to both
-left=`cat $DRAWEMDIR/parameters/structures-left.csv`
-right=`cat $DRAWEMDIR/parameters/structures-right.csv`
-both=`cat $DRAWEMDIR/parameters/structures-both.csv`
-numleft=`echo $left|wc -w`
-numright=`echo $right|wc -w`
-numboth=`echo $both|wc -w`
-
 # left, right, both hemispheres
 run mirtk calculate segmentations/"$subj"_labels$suffix.nii.gz -mul 0 -out segmentations/$subj-empty.nii.gz
-run mirtk padding segmentations/$subj-empty.nii.gz segmentations/"$subj"_labels$suffix.nii.gz segmentations/$subj-L-hemisphere.nii.gz $numleft `echo $left` 1
-run mirtk padding segmentations/$subj-empty.nii.gz segmentations/"$subj"_labels$suffix.nii.gz segmentations/$subj-R-hemisphere.nii.gz $numright `echo $right` 1
-run mirtk padding segmentations/$subj-empty.nii.gz segmentations/"$subj"_labels$suffix.nii.gz segmentations/$subj-both-hemisphere.nii.gz $numboth `echo $both` 1
+run mirtk padding segmentations/$subj-empty.nii.gz segmentations/"$subj"_labels$suffix.nii.gz segmentations/$subj-L-hemisphere.nii.gz `echo $LEFT_HEMI_LABELS|wc -w` `echo $LEFT_HEMI_LABELS` 1
+run mirtk padding segmentations/$subj-empty.nii.gz segmentations/"$subj"_labels$suffix.nii.gz segmentations/$subj-R-hemisphere.nii.gz `echo $RIGHT_HEMI_LABELS|wc -w` `echo $RIGHT_HEMI_LABELS` 1
+run mirtk padding segmentations/$subj-empty.nii.gz segmentations/"$subj"_labels$suffix.nii.gz segmentations/$subj-both-hemisphere.nii.gz `echo $BOTH_HEMI_LABELS|wc -w` `echo $BOTH_HEMI_LABELS` 1
 
 # compute a cutting plane based on dmap 
 run mirtk calculate-distance-map segmentations/$subj-L-hemisphere.nii.gz segmentations/$subj-L-hemisphere-dmap.nii.gz
@@ -65,9 +56,9 @@ for h in L R;do
     for surf in white pial;do
 	# left, right wm+dgm / gm+wm+cgm
 	rmlabels=rmlabels$surf
-        run mirtk padding segmentations/$subj-$h-hemisphere.nii.gz segmentations/"$subj"_tissue_labels$suffix.nii.gz segmentations/${subj}_${h}_${surf}_init.nii.gz ${!rmlabels} 0
+    run mirtk padding segmentations/$subj-$h-hemisphere.nii.gz segmentations/"$subj"_tissue_labels$suffix.nii.gz segmentations/${subj}_${h}_${surf}_init.nii.gz ${!rmlabels} 0
 
-        # keep only connected components with volume > 5% volume of first component	
+    # keep only connected components with volume > 5% volume of first component	
 	$scriptdir/clear-small-components.sh segmentations/${subj}_${h}_${surf}_init.nii.gz segmentations/${subj}_${h}_${surf}_unfilled.nii.gz
 
 	# fill holes

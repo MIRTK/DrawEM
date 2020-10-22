@@ -133,6 +133,9 @@ run_script()
   fi
 }
 
+# load configuration
+. $DRAWEMDIR/parameters/config_M-CRIB_2.0.sh
+
 rm -f logs/$subj logs/$subj-err
 run_script preprocess.sh        $subj
 # phase 1 tissue segmentation

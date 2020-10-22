@@ -26,14 +26,8 @@ subj=$1
 rdir=posteriors
 sdir=segmentations-data
 
-
-subcorts=(`cat $DRAWEMDIR/parameters/subcortical-all.csv`)
-all=(`cat $DRAWEMDIR/parameters/all-labels.csv `)
-numsubcorts=${#subcorts[*]}
-
-
 mkdir -p $sdir/posteriors/temp || exit 1
-for ((n=0;n<${#all[*]};n++));do r=${all[$n]}; mkdir -p $rdir/seg$r || exit 1;done
+for ((n=0;n<${#ALL_LABELS[*]};n++));do r=${ALL_LABELS[$n]}; mkdir -p $rdir/seg$r || exit 1;done
 
 
 # out, csf
@@ -46,26 +40,25 @@ done
 
 for tissue in gm wm;do 
     # cortical wm, gm
-    corts=(`cat $DRAWEMDIR/parameters/cortical-$tissue.csv`)
-    numcorts=${#corts[*]}
+    cortical_labels=${!CORTICAL_${tissue^^}}
 
     addem=""
-    for ((n=0;n<$numcorts;n++));do
-        r=${corts[$n]};
+    for ((n=0;n<${#cortical_labels[*]};n++));do
+        r=${cortical_labels[$n]};
         addem=$addem"-add $sdir/labels/seg$r-extended/$subj.nii.gz ";
     done
     addem=`echo $addem|sed -e 's:^-add::g'`
     run mirtk calculate $addem -out $sdir/posteriors/temp/$subj-$tissue.nii.gz
 
-    for ((n=0;n<$numcorts;n++));do 
-        r=${corts[$n]};
+    for ((n=0;n<${#cortical_labels[*]};n++));do 
+        r=${cortical_labels[$n]};
         run mirtk calculate $sdir/labels/seg$r-extended/$subj.nii.gz -div-with-zero $sdir/posteriors/temp/$subj-$tissue.nii.gz -mul $sdir/posteriors/$tissue/$subj.nii.gz -out $rdir/seg$r/$subj.nii.gz   
     done 
     rm $sdir/posteriors/temp/$subj-$tissue.nii.gz
 done
 
 # subcortical
-for ((n=0;n<$numsubcorts;n++));do 
-    r=${subcorts[$n]};
+for ((n=0;n<${#SUBCORTICAL[*]};n++));do 
+    r=${SUBCORTICAL[$n]};
     cp $sdir/posteriors/seg$r/$subj.nii.gz $rdir/seg$r/$subj.nii.gz || exit 1
 done 

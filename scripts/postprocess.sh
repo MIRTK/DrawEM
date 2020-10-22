@@ -46,11 +46,11 @@ fi
 
 if [ ! -f segmentations/"$subj"_labels$suffix.nii.gz ];then
 # creating the labels file
-run mirtk padding segmentations/"$subj"_all_labels$suffix.nii.gz segmentations/"$subj"_all_labels$suffix.nii.gz segmentations/"$subj"_labels$suffix.nii.gz $DRAWEMDIR/parameters/all-labels-to-labels.csv  
+run mirtk padding segmentations/"$subj"_all_labels$suffix.nii.gz segmentations/"$subj"_all_labels$suffix.nii.gz segmentations/"$subj"_labels$suffix.nii.gz $ALL_LABELS_TO_LABELS
 fi
 
 if [ ! -f segmentations/"$subj"_tissue_labels$suffix.nii.gz ];then
 # creating the tissue labels labels
-run mirtk padding segmentations/"$subj"_all_labels$suffix.nii.gz segmentations/"$subj"_all_labels$suffix.nii.gz segmentations/"$subj"_tissue_labels$suffix.nii.gz $DRAWEMDIR/parameters/all-labels-to-tissue-labels.csv  
+run mirtk padding segmentations/"$subj"_all_labels$suffix.nii.gz segmentations/"$subj"_all_labels$suffix.nii.gz segmentations/"$subj"_tissue_labels$suffix.nii.gz $ALL_LABELS_TO_TISSUE_LABELS
 fi
 

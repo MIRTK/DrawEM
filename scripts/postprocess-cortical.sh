@@ -30,20 +30,20 @@ run(){
 }
 
 for tissue in gm wm;do
-  corts=(`cat $DRAWEMDIR/parameters/cortical-$tissue.csv`)
-  numcorts=${#corts[*]}
+  cortical_labels=${!CORTICAL_${tissue^^}}
+  numcorts=${#cortical_labels[*]}
 
   mkdir -p $sdir/cortical-$tissue || exit 1
-  for ((n=0;n<$numcorts;n++));do 
-    r=${corts[$n]}; 
+  for ((n=0;n<${#cortical_labels[*]};n++));do 
+    r=${cortical_labels[$n]}; 
     mkdir -p $sdir/labels/seg$r-extended || exit 1
   done
 
   #max prob of cortical structures + mrf regularization
   segnum=0; labels=""; structs="";
-  for ((n=0;n<$numcorts;n++));do 
+  for ((n=0;n<${#cortical_labels[*]};n++));do 
     let segnum++
-    r=${corts[$n]};
+    r=${cortical_labels[$n]};
     labels="$labels $sdir/labels/seg$r/$subj.nii.gz "; 
     structs="$structs $sdir/labels/seg$r-extended/$subj.nii.gz "; 
     segnumbers="$segnumbers 1 $segnum $r" 

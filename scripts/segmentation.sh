@@ -27,20 +27,19 @@ subj=$1
 if [ ! -f segmentations/$subj-initial.nii.gz ];then
 sdir=segmentations-data
 
-subcorts=`cat $DRAWEMDIR/parameters/subcortical-all.csv`
 tissues="outlier csf gm wm"
 #TODO
 # tissues="outlier csf gm wm hwm lwm"
 
 
 mkdir -p segmentations $sdir/posteriors logs || exit 1;
-for r in ${subcorts};do mkdir -p $sdir/posteriors/seg$r || exit 1; done
+for r in ${SUBCORTICAL};do mkdir -p $sdir/posteriors/seg$r || exit 1; done
 for str in ${tissues};do mkdir -p $sdir/posteriors/$str || exit 1; done
 
 
 structs=""; saveposts=""; posts=""; num=0;
 # subcortical
-for r in ${subcorts};do 
+for r in ${SUBCORTICAL};do 
 structs="$structs $sdir/labels/seg$r/$subj.nii.gz";
 post=$sdir/posteriors/seg$r/$subj.nii.gz
 posts="$posts $post "
@@ -59,7 +58,7 @@ done
 
 # segmentation
 #TODO
-run mirtk draw-em N4/$subj.nii.gz $num $structs segmentations/$subj-em.nii.gz -padding 0 -mrf $DRAWEMDIR/parameters/connectivities.mrf -tissues 1 27 1 28 1 29 1 30  -hui -postpenalty $sdir/MADs/$subj-subspace.nii.gz $saveposts 1>logs/$subj-em 2>logs/$subj-em-err
+run mirtk draw-em N4/$subj.nii.gz $num $structs segmentations/$subj-em.nii.gz -padding 0 -mrf $DRAWEMDIR/parameters/connectivities_M-CRIB_2.0.mrf -tissues 1 27 1 28 1 29 1 30  -hui -postpenalty $sdir/MADs/$subj-subspace.nii.gz $saveposts 1>logs/$subj-em 2>logs/$subj-em-err
 
 # add hwm and lwm posterior probability to wm
 #TODO
@@ -71,5 +70,5 @@ run mirtk calculate $post -mul 100 -out $post
 done
 
 # set whole wm to 2000 and whole gm to 1000 and final label numbers for the rest (subcortical, csf, out)
-run mirtk padding segmentations/$subj-em.nii.gz segmentations/$subj-em.nii.gz segmentations/$subj-initial.nii.gz $DRAWEMDIR/parameters/seg-numbers.csv
+run mirtk padding segmentations/$subj-em.nii.gz segmentations/$subj-em.nii.gz segmentations/$subj-initial.nii.gz $EM_LABELS_TO_ALL_LABELS
 fi

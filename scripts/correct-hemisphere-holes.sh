@@ -25,8 +25,6 @@ subj=$1
 sdir=segmentations-data
 mkdir -p $sdir/corrections || exit 1
 
-subcorts=`cat $DRAWEMDIR/parameters/subcortical-all.csv`
-
 if [ -f segmentations/${subj}_L_white.nii.gz -a -f segmentations/${subj}_R_white.nii.gz ];then
 
 # if small gm components exist inside the white surface..
@@ -44,7 +42,7 @@ if [ "$volcorr" != "" ];then
 num=1;
 inprobs="$sdir/posteriors/wm/$subj.nii.gz 2000"
 outprobs="$sdir/posteriors/wm/$subj.nii.gz"
-for r in ${subcorts}; do
+for r in ${SUBCORTICAL}; do
 inprobs="$inprobs $sdir/posteriors/seg$r/$subj.nii.gz $r"
 outprobs="$outprobs $sdir/posteriors/seg$r/$subj.nii.gz"
 let num=num+1
