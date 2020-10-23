@@ -9,4 +9,4 @@ if [ "$atlas_exists" == "" ];then
 fi
 # load configuration
 export ATLAS_NAME=$atlasname
-. $DRAWEMDIR/parameters/$ATLAS_NAME/config.sh
+. $DRAWEMDIR/parameters/$ATLAS_NAME/configuration.sh
