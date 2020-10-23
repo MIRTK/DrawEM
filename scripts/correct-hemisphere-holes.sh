@@ -42,7 +42,7 @@ if [ "$volcorr" != "" ];then
 num=1;
 inprobs="$sdir/posteriors/wm/$subj.nii.gz $CORTICAL_WM_LABEL"
 outprobs="$sdir/posteriors/wm/$subj.nii.gz"
-for r in ${SUBCORTICAL}; do
+for r in ${NONCORTICAL}; do
 inprobs="$inprobs $sdir/posteriors/seg$r/$subj.nii.gz $r"
 outprobs="$outprobs $sdir/posteriors/seg$r/$subj.nii.gz"
 let num=num+1

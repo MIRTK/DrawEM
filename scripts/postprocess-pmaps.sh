@@ -62,7 +62,7 @@ for tissue in gm wm;do
 done
 
 # subcortical
-for ((n=0;n<${#SUBCORTICAL[*]};n++));do 
-    r=${SUBCORTICAL[$n]};
+for ((n=0;n<${#NONCORTICAL[*]};n++));do 
+    r=${NONCORTICAL[$n]};
     cp $sdir/posteriors/seg$r/$subj.nii.gz $rdir/seg$r/$subj.nii.gz || exit 1
 done 

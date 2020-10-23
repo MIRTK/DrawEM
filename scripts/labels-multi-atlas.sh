@@ -85,8 +85,8 @@ done
 num=`echo $ATLASES | wc -w`
 splitnum=0
 splitstr=""; 
-for r in ${SUBCORTICAL} ${CORTICAL};do let splitnum=splitnum+1; splitstr=$splitstr" $r"; done
-for r in ${SUBCORTICAL} ${CORTICAL};do splitstr=$splitstr" $sdir/labels/seg$r/$subj.nii.gz"; done
+for r in ${NONCORTICAL} ${CORTICAL};do let splitnum=splitnum+1; splitstr=$splitstr" $r"; done
+for r in ${NONCORTICAL} ${CORTICAL};do splitstr=$splitstr" $sdir/labels/seg$r/$subj.nii.gz"; done
 run mirtk split-labels $num $transformed $transformedw  $splitnum $splitstr 
 
 splitnum=0
@@ -122,7 +122,7 @@ rm -f $sdir/MADs/$subj-cur.nii.gz
 fi
 
 #create posterior penalty
-str=""; for i in ${SUBCORTICAL};do str="$str-add $sdir/labels/seg$i/$subj.nii.gz "; done
+str=""; for i in ${NONCORTICAL};do str="$str-add $sdir/labels/seg$i/$subj.nii.gz "; done
 str=`echo $str| sed -e 's:^\-add ::g'`
 run mirtk calculate $str -div 100 -mul $sdir/MADs/$subj.nii.gz -out $sdir/MADs/$subj-subspace.nii.gz 
 

@@ -28,13 +28,13 @@ if [ ! -f segmentations/$subj-initial.nii.gz ];then
 sdir=segmentations-data
 
 mkdir -p segmentations $sdir/posteriors logs || exit 1;
-for r in ${SUBCORTICAL};do mkdir -p $sdir/posteriors/seg$r || exit 1; done
+for r in ${NONCORTICAL};do mkdir -p $sdir/posteriors/seg$r || exit 1; done
 for str in ${ATLAS_TISSUES};do mkdir -p $sdir/posteriors/$str || exit 1; done
 
 
 structs=""; saveposts=""; posts=""; num=0;
 # subcortical
-for r in ${SUBCORTICAL};do 
+for r in ${NONCORTICAL};do 
 structs="$structs $sdir/labels/seg$r/$subj.nii.gz";
 post=$sdir/posteriors/seg$r/$subj.nii.gz
 posts="$posts $post "

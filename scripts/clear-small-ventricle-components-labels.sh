@@ -27,7 +27,7 @@ sdir=segmentations-data
 mkdir -p $sdir/corrections || exit 1
 
 # cleaning up small ventricle components
-high_wm_em_label=$((`echo $SUBCORTICAL |wc -w` + $HIGH_WM_TISSUE))
+high_wm_em_label=$((`echo $NONCORTICAL |wc -w` + $HIGH_WM_TISSUE))
 num_ventricles=`echo $VENTRICLES|wc -w`
 run mirtk padding segmentations/$subj-em.nii.gz segmentations/$subj-em.nii.gz $sdir/corrections/$subj-hwm-init.nii.gz $high_wm_em_label 0 -invert
 run mirtk padding segmentations/$subj-initial.nii.gz segmentations/$subj-initial.nii.gz $sdir/corrections/$subj-ven-init.nii.gz $num_ventricles $VENTRICLES 0 -invert $num_ventricles $VENTRICLES 1
