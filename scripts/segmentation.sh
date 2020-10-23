@@ -29,7 +29,7 @@ sdir=segmentations-data
 
 mkdir -p segmentations $sdir/posteriors logs || exit 1;
 for r in ${SUBCORTICAL};do mkdir -p $sdir/posteriors/seg$r || exit 1; done
-for str in ${tissues};do mkdir -p $sdir/posteriors/$str || exit 1; done
+for str in ${ATLAS_TISSUES};do mkdir -p $sdir/posteriors/$str || exit 1; done
 
 
 structs=""; saveposts=""; posts=""; num=0;
