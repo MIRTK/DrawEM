@@ -26,17 +26,13 @@ subj=$1
 rdir=posteriors
 sdir=segmentations-data
 
-mkdir -p $sdir/posteriors/temp || exit 1
-for ((n=0;n<${#ALL_LABELS[*]};n++));do r=${ALL_LABELS[$n]}; mkdir -p $rdir/seg$r || exit 1;done
+mkdir -p $sdir/posteriors/temp|| exit 1
+for label in $ALL_LABELS;do mkdir -p $rdir/seg$label || exit 1;done
 
-if [ "$CSF_LABEL" != "" ];then
-    cp $sdir/posteriors/csf/$subj.nii.gz $rdir/seg$CSF_LABEL/$subj.nii.gz || exit 1
-fi
-if [ "$OUTLIER_LABEL" != "" ];then
-    cp $sdir/posteriors/outlier/$subj.nii.gz $rdir/seg$OUTLIER_LABEL/$subj.nii.gz || exit 1
-fi
+cp $sdir/posteriors/csf/$subj.nii.gz $rdir/seg$CSF_LABEL/$subj.nii.gz || exit 1
+cp $sdir/posteriors/outlier/$subj.nii.gz $rdir/seg$OUTLIER_LABEL/$subj.nii.gz || exit 1
 
-for tissue in csf gm wm;do 
+for tissue in $ATLAS_TISSUES;do 
   mkdir -p $rdir/$tissue
   cp $sdir/posteriors/$tissue/$subj.nii.gz $rdir/$tissue/$subj.nii.gz || exit 1
 done
