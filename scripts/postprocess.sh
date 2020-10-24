@@ -35,10 +35,10 @@ f=segmentations/$subj-initial.nii.gz
 if [ ! -f segmentations/"$subj"_all_labels$suffix.nii.gz ];then
 # creating the all labels file (initial segmentation + cortical division)
 $scriptdir/postprocess-cortical.sh $subj
-run mirtk padding $sdir/cortical-wm/$subj.nii.gz $f $sdir/cortical-wm/$subj.nii.gz $CORTICAL_WM_LABEL 0 -invert 
-run mirtk padding $sdir/cortical-gm/$subj.nii.gz $f $sdir/cortical-gm/$subj.nii.gz $CORTICAL_GM_LABEL 0 -invert 
+run mirtk padding $sdir/cortical-wm/$subj.nii.gz $f $sdir/cortical-wm/$subj.nii.gz $SUPER_WM_LABEL 0 -invert 
+run mirtk padding $sdir/cortical-gm/$subj.nii.gz $f $sdir/cortical-gm/$subj.nii.gz $SUPER_GM_LABEL 0 -invert 
 
-run mirtk padding $f $f segmentations/"$subj"_all_labels_ini$suffix.nii.gz 2 $CORTICAL_GM_LABEL $CORTICAL_WM_LABEL 0
+run mirtk padding $f $f segmentations/"$subj"_all_labels_ini$suffix.nii.gz 2 $SUPER_GM_LABEL $SUPER_WM_LABEL 0
 run mirtk calculate segmentations/"$subj"_all_labels_ini$suffix.nii.gz -add $sdir/cortical-gm/$subj.nii.gz -add $sdir/cortical-wm/$subj.nii.gz -out segmentations/"$subj"_all_labels$suffix.nii.gz
 # cleanup
 rm segmentations/"$subj"_all_labels_ini$suffix.nii.gz

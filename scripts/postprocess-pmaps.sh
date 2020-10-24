@@ -32,7 +32,7 @@ for label in $ALL_LABELS;do mkdir -p $rdir/seg$label || exit 1;done
 cp $sdir/posteriors/csf/$subj.nii.gz $rdir/seg$CSF_LABEL/$subj.nii.gz || exit 1
 cp $sdir/posteriors/outlier/$subj.nii.gz $rdir/seg$OUTLIER_LABEL/$subj.nii.gz || exit 1
 
-for tissue in $ATLAS_TISSUES;do 
+for tissue in outlier csf gm wm;do 
   mkdir -p $rdir/$tissue
   cp $sdir/posteriors/$tissue/$subj.nii.gz $rdir/$tissue/$subj.nii.gz || exit 1
 done
@@ -40,25 +40,22 @@ done
 for tissue in gm wm;do 
     # cortical wm, gm
     cortical_var=CORTICAL_${tissue^^}
-    cortical_labels=(${!cortical_var})
+    cortical_labels=${!cortical_var}
 
     addem=""
-    for ((n=0;n<${#cortical_labels[*]};n++));do
-        r=${cortical_labels[$n]};
-        addem=$addem"-add $sdir/labels/seg$r-extended/$subj.nii.gz ";
+    for label in $cortical_labels;do 
+        addem=$addem"-add $sdir/labels/seg$label-extended/$subj.nii.gz ";
     done
     addem=`echo $addem|sed -e 's:^-add::g'`
-    run mirtk calculate $addem -out $sdir/posteriors/temp/$subj-$tissue.nii.gz
+    run mirtk calculate $addem -out $sdir/posteriors/temp/$subj-$tissue-sum.nii.gz
 
-    for ((n=0;n<${#cortical_labels[*]};n++));do 
-        r=${cortical_labels[$n]};
-        run mirtk calculate $sdir/labels/seg$r-extended/$subj.nii.gz -div-with-zero $sdir/posteriors/temp/$subj-$tissue.nii.gz -mul $sdir/posteriors/$tissue/$subj.nii.gz -out $rdir/seg$r/$subj.nii.gz   
+    for label in $cortical_labels;do 
+        run mirtk calculate $sdir/labels/seg$label-extended/$subj.nii.gz -div-with-zero $sdir/posteriors/temp/$subj-$tissue-sum.nii.gz -mul $sdir/posteriors/$tissue/$subj.nii.gz -out $rdir/seg$label/$subj.nii.gz   
     done 
-    rm $sdir/posteriors/temp/$subj-$tissue.nii.gz
+    rm $sdir/posteriors/temp/$subj-$tissue-sum.nii.gz
 done
 
 # subcortical
-for ((n=0;n<${#NONCORTICAL[*]};n++));do 
-    r=${NONCORTICAL[$n]};
-    cp $sdir/posteriors/seg$r/$subj.nii.gz $rdir/seg$r/$subj.nii.gz || exit 1
+for label in $NONCORTICAL;do 
+    cp $sdir/posteriors/seg$label/$subj.nii.gz $rdir/seg$label/$subj.nii.gz || exit 1
 done 

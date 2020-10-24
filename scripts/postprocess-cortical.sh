@@ -31,22 +31,20 @@ run(){
 
 for tissue in gm wm;do
   cortical_var=CORTICAL_${tissue^^}
-  cortical_labels=(${!cortical_var})
+  cortical_labels=${!cortical_var}
 
   mkdir -p $sdir/cortical-$tissue || exit 1
-  for ((n=0;n<${#cortical_labels[*]};n++));do 
-    r=${cortical_labels[$n]}; 
-    mkdir -p $sdir/labels/seg$r-extended || exit 1
+  for label in $cortical_labels;do 
+    mkdir -p $sdir/labels/seg$label-extended || exit 1
   done
 
   #max prob of cortical structures + mrf regularization
   segnum=0; labels=""; structs="";
-  for ((n=0;n<${#cortical_labels[*]};n++));do 
+  for label in $cortical_labels;do 
     let segnum++
-    r=${cortical_labels[$n]};
-    labels="$labels $sdir/labels/seg$r/$subj.nii.gz "; 
-    structs="$structs $sdir/labels/seg$r-extended/$subj.nii.gz "; 
-    segnumbers="$segnumbers 1 $segnum $r" 
+    labels="$labels $sdir/labels/seg$label/$subj.nii.gz "
+    structs="$structs $sdir/labels/seg$label-extended/$subj.nii.gz "
+    segnumbers="$segnumbers 1 $segnum $label" 
   done
 
   run mirtk em-hard-segmentation $segnum $labels $sdir/cortical-$tissue/$subj.nii.gz -mrftimes 1 -posteriors $structs

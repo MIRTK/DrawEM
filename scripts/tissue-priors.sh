@@ -27,7 +27,7 @@ njobs=1
 if [ $# -gt 3 ];then njobs=$4;fi
 
 sdir=segmentations-data
-if [ $needtseg -eq 1 -a ! -f $sdir/tissue-initial-segmentations/$subj.nii.gz ];then
+if [ -f $sdir/tissue-initial-segmentations/$subj.nii.gz ];then
     echo "creating $subj tissue priors"
 
     mkdir -p $sdir $sdir/template $sdir/tissue-posteriors $sdir/tissue-initial-segmentations || exit 1

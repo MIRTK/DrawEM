@@ -32,6 +32,3 @@ if [ $HEMISPHERE_HOLE_CORRECTION -eq 1 ];then
     # correct holes in the segmentation of the hemispheres
     $scriptdir/correct-hemisphere-holes.sh $subj
 fi
-
-
-
