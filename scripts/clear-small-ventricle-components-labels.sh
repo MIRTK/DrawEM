@@ -27,7 +27,12 @@ sdir=segmentations-data
 mkdir -p $sdir/corrections || exit 1
 
 # cleaning up small ventricle components
-high_wm_em_label=$((`echo $NONCORTICAL |wc -w` + $HIGH_WM_TISSUE))
+high_wm_em_label=0
+for label in $NONCORTICAL $OUTLIER_TISSUES $CSF_TISSUES $GM_TISSUES $WM_TISSUES;do
+    if [ $label == $HIGH_WM_TISSUE ];then break; fi
+    let high_wm_em_label++
+done
+
 num_ventricles=`echo $VENTRICLES|wc -w`
 run mirtk padding segmentations/$subj-em.nii.gz segmentations/$subj-em.nii.gz $sdir/corrections/$subj-hwm-init.nii.gz $high_wm_em_label 0 -invert
 run mirtk padding segmentations/$subj-initial.nii.gz segmentations/$subj-initial.nii.gz $sdir/corrections/$subj-ven-init.nii.gz $num_ventricles $VENTRICLES 0 -invert $num_ventricles $VENTRICLES 1
@@ -35,7 +40,6 @@ $scriptdir/clear-small-components.sh $sdir/corrections/$subj-ven-init.nii.gz $sd
 run mirtk calculate $sdir/corrections/$subj-ven-init.nii.gz -sub $sdir/corrections/$subj-ven.nii.gz -out $sdir/corrections/$subj-ven-diff.nii.gz
 
 # if small ventricle components are surrounded by hwm..
-#run mirtk fill-holes $sdir/corrections/$subj-hwm-init.nii.gz $sdir/corrections/$subj-hwm-fillh.nii.gz
 run mirtk fill-holes-nn-based $sdir/corrections/$subj-hwm-init.nii.gz $sdir/corrections/$subj-ven-diff.nii.gz $sdir/corrections/$subj-hwm-fillh.nii.gz
 run mirtk calculate $sdir/corrections/$subj-ven-diff.nii.gz -mul $sdir/corrections/$subj-hwm-fillh.nii.gz -out $sdir/corrections/$subj-ventohwm.nii.gz
 
@@ -56,7 +60,7 @@ if [ "$volcorr" != "" ];then
     done
 
     # ..fix the segmentation too
-    run mirtk padding segmentations/$subj-initial.nii.gz $sdir/corrections/$subj-ventohwm.nii.gz segmentations/$subj-initial.nii.gz 1 $CORTICAL_WM_LABEL
+    run mirtk padding segmentations/$subj-initial.nii.gz $sdir/corrections/$subj-ventohwm.nii.gz segmentations/$subj-initial.nii.gz 1 $SUPER_WM_LABEL
 
     # clean up
     rm $sdir/corrections/$subj-ventohwm-prob.nii.gz
@@ -64,5 +68,3 @@ fi
 
 # clean up
 rm $sdir/corrections/$subj-ven.nii.gz $sdir/corrections/$subj-ven-diff.nii.gz $sdir/corrections/$subj-hwm-init.nii.gz $sdir/corrections/$subj-hwm-fillh.nii.gz $sdir/corrections/$subj-ven-init.nii.gz
-
-
