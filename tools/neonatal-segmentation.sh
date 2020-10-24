@@ -114,20 +114,6 @@ $BASH_SOURCE $command
 
 mkdir -p logs || exit 1
 
-# log function
-run()
-{
-  echo "$@"
-  "$@"
-  if [ ! $? -eq 0 ]; then
-    echo "$@ : failed"
-    exit 1
-  fi
-}
-
-# make run function global
-typeset -fx run
-
 run_script()
 {
   echo "$@"
