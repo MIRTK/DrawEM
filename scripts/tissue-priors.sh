@@ -27,31 +27,67 @@ njobs=1
 if [ $# -gt 2 ];then njobs=$3;fi
 
 sdir=segmentations-data
-if [ ! -f $sdir/tissue-initial-segmentations/$subj.nii.gz ];then
+
+structures=""; save_posteriors=""; posteriors=""; num=-1;
+tissues_parameter=""
+
+add_structure()
+{
+    structure=$1
+    mkdir -p $sdir/tissue-posteriors/$structure || exit 1
+    num=$(($num+1))
+    structures="$structures $sdir/template/$structure/$subj.nii.gz"
+    posterior=$sdir/tissue-posteriors/$structure/$subj.nii.gz
+    posteriors="$posteriors $posterior "
+    save_posteriors="$save_posteriors -saveprob $num $posterior "
+}
+
+add_tissue(){
+    tissue_var=$1
+    tissue_labels=${!tissue_var}
+    num_subtissues=`echo $tissue_labels |wc -w`
+    tissues_parameter="$tissues_parameter $num_subtissues"
+    for subtissue in $tissue_labels;do
+        add_structure $subtissue;
+        tissues_parameter="$tissues_parameter $num"
+    done
+}
+
+if [ ! -f $sdir/gm-posteriors/$subj.nii.gz  ];then
     echo "creating $subj tissue priors"
 
-    mkdir -p $sdir $sdir/template $sdir/tissue-posteriors $sdir/tissue-initial-segmentations || exit 1
-    structures="csf gm wm outlier ventricles cerebstem dgm hwm lwm"
-    for str in ${structures};do
-    mkdir -p $sdir/template/$str $sdir/tissue-posteriors/$str || exit 1
+    [ $age -lt $TEMPLATE_MAX_AGE ] || { age=$TEMPLATE_MAX_AGE; }
+    [ $age -gt $TEMPLATE_MIN_AGE ] || { age=$TEMPLATE_MIN_AGE; }
+
+    # registration of atlas template
+    template_dof=dofs/$subj-tissue-atlas-$age-n.dof.gz
+    if [ ! -f $template_dof ];then
+        run mirtk register N4/$subj.nii.gz $TISSUE_ATLAS_T2_DIR/template-$age.nii.gz -dofout $template_dof -parin $DRAWEMDIR/parameters/ireg.cfg -threads $njobs -v 0
+    fi
+
+    mkdir -p $sdir/tissue-initial-segmentations $sdir/gm-posteriors || exit 1
+    for tissue in ${TISSUE_ATLAS_TISSUES};do
+        mkdir -p $sdir/template/$tissue || exit 1
+        run mirtk transform-image $TISSUE_ATLAS_TISSUES_DIR/$tissue/$age.nii.gz $sdir/template/$tissue/$subj.nii.gz -dofin $template_dof -target N4/$subj.nii.gz -interp Linear
     done
 
-    strnum=0
-    emsstructures=""
-    emsposts=""
-
-    for str in ${structures};do
-    emsposts="$emsposts -saveprob $strnum $sdir/tissue-posteriors/$str/$subj.nii.gz"
-    strnum=$(($strnum+1))
-
-    strems=$sdir/template/$str/$subj.nii.gz
-    run mirtk transform-image $DRAWEMDIR/atlases/non-rigid-v2/atlas-9/structure$strnum/$age.nii.gz $strems -dofin dofs/$subj-template-$age-n.dof.gz -target N4/$subj.nii.gz -interp Linear
-    emsstructures="$emsstructures $strems"
+    # subcortical
+    for r in ${TISSUE_ATLAS_NONCORTICAL};do
+        add_structure $r
     done
+    # tissues
+    add_tissue TISSUE_ATLAS_OUTLIER_TISSUES
+    add_tissue TISSUE_ATLAS_CSF_TISSUES
+    add_tissue TISSUE_ATLAS_GM_TISSUES
+    add_tissue TISSUE_ATLAS_WM_TISSUES
 
-    mkdir -p logs
-    run mirtk draw-em N4/$subj.nii.gz 9 $emsstructures $sdir/tissue-initial-segmentations/$subj.nii.gz -padding 0 -mrf $DRAWEMDIR/parameters/connectivities_tissues.mrf -tissues 1 3 1 0 1 1 3 2 7 8 -hui -relaxtimes 2 $emsposts  1>logs/$subj-tissue-em 2>logs/$subj-tissue-em-err
+    num_structures=$(($num+1))
+    run mirtk draw-em N4/$subj.nii.gz $num_structures $structures $sdir/tissue-initial-segmentations/$subj.nii.gz -padding 0 -mrf $TISSUE_ATLAS_CONNECTIVITIES  -tissues $tissues_parameter -hui -relaxtimes 2 $save_posteriors  1>logs/$subj-tissue-em 2>logs/$subj-tissue-em-err
 
-    mkdir -p $sdir/gm-posteriors || exit 1
-    run mirtk calculate $sdir/tissue-posteriors/gm/$subj.nii.gz -mul 100 -out $sdir/gm-posteriors/$subj.nii.gz 
+    addem=""
+    for subtissue in ${TISSUE_ATLAS_GM_TISSUES};do
+        addem=$addem"-add $sdir/tissue-posteriors/$subtissue/$subj.nii.gz ";
+    done
+    addem=`echo $addem|sed -e 's:^-add::g'`
+    run mirtk calculate $addem -mul 100 -out $sdir/gm-posteriors/$subj.nii.gz
 fi
