@@ -1,0 +1,11 @@
+export TISSUE_ATLAS_CONNECTIVITIES=$DRAWEMDIR/parameters/neonatal/connectivities.mrf
+export TISSUE_ATLAS_T2_DIR=$DRAWEMDIR/atlases/non-rigid-v2/T2
+export TISSUE_ATLAS_TISSUES_DIR=$DRAWEMDIR/atlases/non-rigid-v2/atlas-9
+export TISSUE_ATLAS_TISSUES=`ls $TISSUE_ATLAS_TISSUES_DIR -v |grep structure`
+export TISSUE_ATLAS_OUTLIER_TISSUES=structure4
+export TISSUE_ATLAS_CSF_TISSUES=structure1
+export TISSUE_ATLAS_GM_TISSUES=structure2
+export TISSUE_ATLAS_WM_TISSUES="structure3 structure8 structure9"
+export TISSUE_ATLAS_NONCORTICAL="structure5 structure6 structure7"
+export TISSUE_ATLAS_MIN_AGE=28
+export TISSUE_ATLAS_MAX_AGE=44
