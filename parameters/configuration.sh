@@ -1,9 +1,6 @@
 # Available atlases from Draw-EM
-atlases=""
-for d in `find $DRAWEMDIR/parameters/* -maxdepth 1 -type d`;do
-  atlases="$atlases "`basename $d`;
-done
-export AVAILABLE_ATLASES=$atlases
+export AVAILABLE_ATLASES="ALBERT MCRIB"
+export AVAILABLE_TISSUE_ATLASES="neonatal"
 
 export SUPER_GM_LABEL=10000
 export SUPER_WM_LABEL=20000
