@@ -38,7 +38,7 @@ fi
 # initial tissue segmentation if we do multi-channel registration
 if [ $MULTICHANNEL_REGISTRATION -eq 1 ];then
     need_tissue_seg=0
-    for atlas in {ATLASES};do
+    for atlas in ${ATLASES};do
       if [ ! -f dofs/$subj-$atlas-n.dof.gz ];then
         need_tissue_seg=1
         break
@@ -46,8 +46,8 @@ if [ $MULTICHANNEL_REGISTRATION -eq 1 ];then
     done
 
     if [ $need_tissue_seg -eq 1 ];then
-        SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-        $SCRIPT_DIR/tissue-priors.sh $subj $age $njobs
+        script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+        $script_dir/tissue-priors.sh $subj $age $njobs
     fi
 fi
 

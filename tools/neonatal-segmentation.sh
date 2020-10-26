@@ -97,7 +97,7 @@ else
 fi
 cd $datadir
 
-.
+
 version=`git -C "$DRAWEMDIR" branch | grep \* | cut -d ' ' -f2`
 gitversion=`git -C "$DRAWEMDIR" rev-parse HEAD`
 

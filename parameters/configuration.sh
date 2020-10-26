@@ -15,7 +15,7 @@ run()
   "$@"
   if [ ! $? -eq 0 ]; then
     echo "$@ : failed"
-    # exit 1
+    exit 1
   fi
 }
 

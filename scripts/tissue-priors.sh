@@ -20,14 +20,14 @@
 # ============================================================================
 
 
-[ $# -ge 3 ] || { echo "usage: $(basename "$0") <subject> <age> <atlas_name> [<#jobs>]" 1>&2; exit 1; }
+[ $# -ge 2 ] || { echo "usage: $(basename "$0") <subject> <age> [<#jobs>]" 1>&2; exit 1; }
 subj=$1
 age=$2
 njobs=1
-if [ $# -gt 3 ];then njobs=$4;fi
+if [ $# -gt 2 ];then njobs=$3;fi
 
 sdir=segmentations-data
-if [ -f $sdir/tissue-initial-segmentations/$subj.nii.gz ];then
+if [ ! -f $sdir/tissue-initial-segmentations/$subj.nii.gz ];then
     echo "creating $subj tissue priors"
 
     mkdir -p $sdir $sdir/template $sdir/tissue-posteriors $sdir/tissue-initial-segmentations || exit 1
