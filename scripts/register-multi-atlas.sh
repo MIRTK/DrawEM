@@ -29,12 +29,6 @@ if [ $# -gt 2 ];then njobs=$3;fi
 sdir=segmentations-data
 mkdir -p dofs
 
-# registration of atlas template
-template_dof=dofs/$subj-template-$age-n.dof.gz
-if [ ! -f $template_dof ];then
-  run mirtk register N4/$subj.nii.gz $DRAWEMDIR/atlases/non-rigid-v2/T2/template-$age.nii.gz -dofout $template_dof -parin $DRAWEMDIR/parameters/ireg.cfg -threads $njobs -v 0
-fi
-
 # initial tissue segmentation if we do multi-channel registration
 if [ $MULTICHANNEL_REGISTRATION -eq 1 ];then
     need_tissue_seg=0
