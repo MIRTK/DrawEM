@@ -30,7 +30,8 @@ Arguments:
   scan_age                      Number: Subject age in weeks. This is used to select the appropriate template for the initial registration. 
 			        If the age is <28w or >44w, it will be set to 28w or 44w respectively.
 Options:
-  -a / -atlas  <atlasname>      Atlas used for the segmentation, options: `echo $AVAILABLE_ATLASES|sed -e 's: :, :g'` (default: ALBERT)
+  -a / -atlas  <atlasname>      Atlas used for the segmentation, options: `echo $AVAILABLE_ATLASES|sed -e 's: :, :g'` (default: `echo $AVAILABLE_ATLASES|cut -d ' ' -f1`)
+  -ta / -tissue-atlas  <atlasname>  Atlas used to compute the GM tissue probability, options: `echo $AVAILABLE_TISSUE_ATLASES|sed -e 's: :, :g'` (default: `echo $AVAILABLE_TISSUE_ATLASES|cut -d ' ' -f1`)
   -d / -data-dir  <directory>   The directory used to run the script and output the files.
   -c / -cleanup  <0/1>          Whether cleanup of temporary files is required (default: 1)
   -p / -save-posteriors  <0/1>  Whether the structures' posteriors are required (default: 0)
@@ -58,8 +59,6 @@ age=$2
 [ -f "$T2" ] || { echo "The T2 image provided as argument does not exist!" >&2; exit 1; }
 subj=`basename $T2  |sed -e 's:.nii.gz::g' |sed -e 's:.nii::g'`
 age=`printf "%.*f\n" 0 $age` #round
-[ $age -lt 44 ] || { age=44; }
-[ $age -gt 28 ] || { age=28; }
 
 
 
@@ -69,14 +68,16 @@ posteriors=0   # whether to output posterior probability maps
 threads=1
 verbose=1
 command="$@"
-atlasname=ALBERT
+atlas=`echo $AVAILABLE_ATLASES|cut -d ' ' -f1`
+tissue_atlas=`echo $AVAILABLE_TISSUE_ATLASES|cut -d ' ' -f1`
 
 while [ $# -gt 0 ]; do
   case "$3" in
     -c|-cleanup)  shift; cleanup=$3; ;;
     -d|-data-dir)  shift; datadir=$3; ;;
     -p|-save-posteriors) shift; posteriors=$3; ;;
-    -a|-atlas)  shift; atlasname=$3; ;; 
+    -a|-atlas)  shift; atlas=$3; ;;
+    -ta|-tissue-atlas)  shift; tissue_atlas=$3; ;;
     -t|-threads)  shift; threads=$3; ;; 
     -v|-verbose)  shift; verbose=$3; ;; 
     -h|-help|--help) usage; ;;
@@ -87,7 +88,7 @@ while [ $# -gt 0 ]; do
 done
 
 # atlas configuration
-. $DRAWEMDIR/parameters/set_atlas.sh $atlasname
+. $DRAWEMDIR/parameters/set_atlas.sh $tissue_atlas $atlas
 
 mkdir -p $datadir/T2 
 if [[ "$T2" == *nii ]];then 
@@ -102,12 +103,14 @@ version=`git -C "$DRAWEMDIR" branch | grep \* | cut -d ' ' -f2`
 gitversion=`git -C "$DRAWEMDIR" rev-parse HEAD`
 
 [ $verbose -le 0 ] || { echo "DrawEM multi atlas  $version (branch version: $gitversion)
-Subject:    $subj 
-Age:        $age
-Directory:  $datadir 
-Posteriors: $posteriors 
-Cleanup:    $cleanup 
-Threads:    $threads
+Subject:      $subj
+Age:          $age
+Tissue atlas: $tissue_atlas
+Atlas:        $atlas
+Directory:    $datadir
+Posteriors:   $posteriors
+Cleanup:      $cleanup
+Threads:      $threads
 
 $BASH_SOURCE $command
 ----------------------------"; }
