@@ -1,8 +1,8 @@
 /*
  * Developing brain Region Annotation With Expectation-Maximization (Draw-EM)
  *
- * Copyright 2013-2016 Imperial College London
- * Copyright 2013-2016 Daniel Rueckert
+ * Copyright 2013-2020 Imperial College London
+ * Copyright 2013-2020 Daniel Rueckert
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

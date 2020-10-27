@@ -74,8 +74,8 @@
 #   find_package(MIRTK REQUIRED)
 
 #=============================================================================
-# Copyright 2016 Imperial College London
-# Copyright 2016 Andreas Schuh
+# Copyright 2013-2020 Imperial College London
+# Copyright 2013-2020 Andreas Schuh
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
