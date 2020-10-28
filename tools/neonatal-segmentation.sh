@@ -145,8 +145,6 @@ run_script postprocess.sh       $subj
 # cleanup
 if [ "$cleanup" == "1" -o "$cleanup" == "yes" -o "$cleanup" == "true" ] && [ -f "segmentations/${subj}_labels.nii.gz" ];then
   run_script clear-data.sh $subj
-  rm -f logs/$subj logs/$subj-err
-  rmdir logs 2> /dev/null # may fail if other log files exist
 fi
 
 exit 0

@@ -39,26 +39,6 @@ rm -f $sdir/transformations/T2-$subj-ALBERT_*.nii.gz $sdir/transformations/$subj
 rm -f segmentations/$subj-em.nii.gz segmentations/$subj-initial.nii.gz
 rm -f logs/$subj logs/$subj-err logs/$subj-em logs/$subj-em-err logs/$subj-tissue-em logs/$subj-tissue-em-err
 
-#may fail if other files present, which is ok
-# rmdir $sdir/atlas-weights                    2> /dev/null
-# rmdir $sdir/corrections                      2> /dev/null
-# rmdir $sdir/cortical-wm                      2> /dev/null
-# rmdir $sdir/cortical-gm                      2> /dev/null
-# rmdir $sdir/gm-posteriors                    2> /dev/null
-# rmdir $sdir/labels/*                         2> /dev/null
-# rmdir $sdir/labels                           2> /dev/null
-# rmdir $sdir/MADs                             2> /dev/null
-# rmdir $sdir/posteriors/*                     2> /dev/null
-# rmdir $sdir/posteriors                       2> /dev/null
-# rmdir $sdir/template/*                       2> /dev/null
-# rmdir $sdir/template                         2> /dev/null
-# rmdir $sdir/tissue-initial-segmentations     2> /dev/null
-# rmdir $sdir/tissue-posteriors/*              2> /dev/null
-# rmdir $sdir/tissue-posteriors                2> /dev/null
-# rmdir $sdir/transformations                  2> /dev/null
-# rmdir $sdir                                  2> /dev/null
-# rmdir logs                                   2> /dev/null
-
 exit 0
 
 
