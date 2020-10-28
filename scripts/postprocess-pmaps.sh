@@ -27,15 +27,11 @@ rdir=posteriors
 sdir=segmentations-data
 
 mkdir -p $sdir/posteriors/temp|| exit 1
-for label in $ALL_LABELS;do mkdir -p $rdir/seg$label || exit 1;done
+for label in $ALL_LABELS;do mkdir -p $rdir/seg$label $sdir/posteriors/seg$label || exit 1;done
 
-cp $sdir/posteriors/csf/$subj.nii.gz $rdir/seg$CSF_LABEL/$subj.nii.gz || exit 1
-cp $sdir/posteriors/outlier/$subj.nii.gz $rdir/seg$OUTLIER_LABEL/$subj.nii.gz || exit 1
+cp $sdir/posteriors/csf/$subj.nii.gz $sdir/posteriors/seg$CSF_LABEL/$subj.nii.gz || exit 1
+cp $sdir/posteriors/outlier/$subj.nii.gz $sdir/posteriors/seg$OUTLIER_LABEL/$subj.nii.gz || exit 1
 
-for tissue in outlier csf gm wm;do 
-  mkdir -p $rdir/$tissue
-  cp $sdir/posteriors/$tissue/$subj.nii.gz $rdir/$tissue/$subj.nii.gz || exit 1
-done
 
 for tissue in gm wm;do 
     # cortical wm, gm
@@ -49,13 +45,27 @@ for tissue in gm wm;do
     addem=`echo $addem|sed -e 's:^-add::g'`
     run mirtk calculate $addem -out $sdir/posteriors/temp/$subj-$tissue-sum.nii.gz
 
-    for label in $cortical_labels;do 
-        run mirtk calculate $sdir/labels/seg$label-extended/$subj.nii.gz -div-with-zero $sdir/posteriors/temp/$subj-$tissue-sum.nii.gz -mul $sdir/posteriors/$tissue/$subj.nii.gz -out $rdir/seg$label/$subj.nii.gz   
+    for label in $cortical_labels;do
+        run mirtk calculate $sdir/labels/seg$label-extended/$subj.nii.gz -div-with-zero $sdir/posteriors/temp/$subj-$tissue-sum.nii.gz -mul $sdir/posteriors/$tissue/$subj.nii.gz -out $sdir/posteriors/seg$label/$subj.nii.gz   
     done 
     rm $sdir/posteriors/temp/$subj-$tissue-sum.nii.gz
 done
 
-# subcortical
-for label in $NONCORTICAL;do 
-    cp $sdir/posteriors/seg$label/$subj.nii.gz $rdir/seg$label/$subj.nii.gz || exit 1
+# make sure all posteriors sum up to 100
+addem=""
+for label in $ALL_LABELS;do
+    addem=$addem"-add $sdir/posteriors/seg$label/$subj.nii.gz ";
+done
+addem=`echo $addem|sed -e 's:^-add::g'`
+run mirtk calculate $addem -out $sdir/posteriors/temp/$subj-sum.nii.gz
+
+for label in $ALL_LABELS;do
+    mirtk calculate $sdir/posteriors/seg$label/$subj.nii.gz -div-with-zero $sdir/posteriors/temp/$subj-sum.nii.gz -mul 100 -out $rdir/seg$label/$subj.nii.gz
 done 
+rm $sdir/posteriors/temp/$subj-sum.nii.gz
+
+# copy tissues
+for tissue in outlier csf gm wm;do
+    mkdir -p $rdir/$tissue
+    cp $sdir/posteriors/$tissue/$subj.nii.gz $rdir/$tissue/$subj.nii.gz || exit 1
+done
