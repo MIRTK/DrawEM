@@ -30,23 +30,23 @@ run(){
 }
 
 for tissue in gm wm;do
-  cortical_var=CORTICAL_${tissue^^}
-  cortical_labels=${!cortical_var}
+    cortical_var=CORTICAL_${tissue^^}
+    cortical_labels=${!cortical_var}
 
-  mkdir -p $sdir/cortical-$tissue || exit 1
-  for label in $cortical_labels;do 
-    mkdir -p $sdir/labels/seg$label-extended || exit 1
-  done
+    mkdir -p $sdir/cortical-$tissue || exit 1
+    for label in $cortical_labels;do 
+        mkdir -p $sdir/labels/seg$label-extended || exit 1
+    done
 
-  #max prob of cortical structures + mrf regularization
-  segnum=0; labels=""; structs="";
-  for label in $cortical_labels;do 
-    let segnum++
-    labels="$labels $sdir/labels/seg$label/$subj.nii.gz "
-    structs="$structs $sdir/labels/seg$label-extended/$subj.nii.gz "
-    segnumbers="$segnumbers 1 $segnum $label" 
-  done
+    #max prob of cortical structures + mrf regularization
+    segnum=0; labels=""; structs="";
+    for label in $cortical_labels;do 
+        let segnum++
+        labels="$labels $sdir/labels/seg$label/$subj.nii.gz "
+        structs="$structs $sdir/labels/seg$label-extended/$subj.nii.gz "
+        segnumbers="$segnumbers 1 $segnum $label" 
+    done
 
-  run mirtk em-hard-segmentation $segnum $labels $sdir/cortical-$tissue/$subj.nii.gz -mrftimes 1 -posteriors $structs
-  run mirtk padding $sdir/cortical-$tissue/$subj.nii.gz $sdir/cortical-$tissue/$subj.nii.gz $sdir/cortical-$tissue/$subj.nii.gz $segnumbers
+    run mirtk em-hard-segmentation $segnum $labels $sdir/cortical-$tissue/$subj.nii.gz -mrftimes 1 -posteriors $structs
+    run mirtk padding $sdir/cortical-$tissue/$subj.nii.gz $sdir/cortical-$tissue/$subj.nii.gz $sdir/cortical-$tissue/$subj.nii.gz $segnumbers
 done
