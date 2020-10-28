@@ -28,7 +28,7 @@ This script runs the neonatal segmentation pipeline of Draw-EM.
 Arguments:
   subject_T2.nii.gz             Nifti Image: The T2 image of the subject to be segmented.
   scan_age                      Number: Subject age in weeks. This is used to select the appropriate template for the initial registration. 
-			        If the age is <28w or >44w, it will be set to 28w or 44w respectively.
+              If the age is <28w or >44w, it will be set to 28w or 44w respectively.
 Options:
   -a / -atlas  <atlasname>      Atlas used for the segmentation, options: `echo $AVAILABLE_ATLASES|sed -e 's: :, :g'` (default: `echo $AVAILABLE_ATLASES|cut -d ' ' -f1`)
   -ta / -tissue-atlas  <atlasname>  Atlas used to compute the GM tissue probability, options: `echo $AVAILABLE_TISSUE_ATLASES|sed -e 's: :, :g'` (default: `echo $AVAILABLE_TISSUE_ATLASES|cut -d ' ' -f1`)
@@ -99,7 +99,7 @@ fi
 cd $datadir
 
 
-version=`git -C "$DRAWEMDIR" branch | grep \* | cut -d ' ' -f2`
+version=`cat $DRAWEMDIR/VERSION`
 gitversion=`git -C "$DRAWEMDIR" rev-parse HEAD`
 
 [ $verbose -le 0 ] || { echo "DrawEM multi atlas  $version (branch version: $gitversion)
