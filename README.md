@@ -8,6 +8,15 @@ It provides a collection of command-line tools and pipelines for the segmentatio
 Draw-EM is used as part of the [dHCP structural pipeline](https://github.com/BioMedIA/dhcp-structural-pipeline) for the structural analysis (segmentation and surface extraction) of the neonatal brain.
 
 
+## Table of contents
+- [Dependencies](#dependencies)
+- [Installation](#installation)
+- [Running the pipeline](#running-the-pipeline)
+- [Atlases](#atlases)
+- [License](#license)
+- [Releases](#releases)
+- [Citation and acknowledgements](#citation-and-acknowledgements)
+
 ## Dependencies
 ### FSL
 
@@ -18,11 +27,10 @@ See the [installation instructions](https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/FslIn
 
 ## Installation
 
-Draw-EM is part of MIRTK.
-
+Draw-EM is part of MIRTK.<br>
 You can install Draw-EM using the provided setup file ([setup.sh](setup.sh)):
 ```
-$ ./setup.sh -DWORKBENCH_install=0 -DSPHERICALMESH_install=0 [-j <num_cores>] 
+$ ./setup.sh [-j <num_cores>] 
 ```
 
 where `num_cores` the number of CPU cores used to compile the software.
@@ -64,21 +72,17 @@ Labels and lookup tables for all the *labels.nii.gz files are provided in the [l
 The following atlases can be used for segmentation.
 
 #### ALBERTs
-The ALBERTs atlases are described in Gousias et al. "Magnetic resonance imaging of the newborn brain: Manual segmentation of labelled atlases in term-born and preterm infants",  NeuroImage, 2012.
-
+The ALBERTs atlases are described in Gousias et al. "Magnetic resonance imaging of the newborn brain: Manual segmentation of labelled atlases in term-born and preterm infants",  NeuroImage, 2012.<br>
 They define 50 labels in total, with 16 cortical labels per hemisphere and 16 sub-cortical structures.
 
-The ALBERTs atlases can be used by providing the `-a ALBERT` argument when running the pipeline.
-
+The ALBERTs atlases can be used by providing the `-a ALBERT` argument when running the pipeline.<br>
 Labels of produced segmentations are provided in the [label_names/ALBERT](label_names/ALBERT) folder.
 
 #### M-CRIB 2.0
-The M-CRIB 2.0 atlases are described in Alexander et al. "Desikan-Killiany-Tourville Atlas Compatible Version of M-CRIB Neonatal Parcellated Whole Brain Atlas: The M-CRIB 2.0", Front. Neurosci., 2019.
-
+The M-CRIB 2.0 atlases are described in Alexander et al. "Desikan-Killiany-Tourville Atlas Compatible Version of M-CRIB Neonatal Parcellated Whole Brain Atlas: The M-CRIB 2.0", Front. Neurosci., 2019.<br>
 They define 94 labels in total, with 31 cortical labels per hemisphere (consistent with the Desikan-Killiany-Tourville adult cortical atlas) and 23 sub-cortical structures.
 
-The M-CRIB 2.0 atlases can be used by providing the `-a MCRIB` argument when running the pipeline.
-
+The M-CRIB 2.0 atlases can be used by providing the `-a MCRIB` argument when running the pipeline.<br>
 Labels of produced segmentations are provided in the [label_names/MCRIB](label_names/MCRIB) folder.
 
 ## License
@@ -88,8 +92,7 @@ See the accompanying [license file](LICENSE.txt) for details. The license enable
 Draw-EM in both commercial and non-commercial applications, without restrictions on the
 licensing applied to the combined work.
 
-Draw-EM uses the atlases described in the previous section.
-
+Draw-EM uses the atlases described in the previous section.<br>
 Each atlas is covered by a separate license:
 - ALBERTs: [license](label_names/ALBERT/LICENSE.txt)
 - M-CRIB 2.0: [license](label_names/MCRIB/LICENSE.txt)
