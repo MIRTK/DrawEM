@@ -31,9 +31,10 @@ if [ ! -f segmentations/${subj}_L_white.nii.gz -o ! -f segmentations/${subj}_R_w
     $scriptdir/postprocess.sh $subj $suffix
 
     # left, right, both hemispheres
-    run mirtk calculate segmentations/"$subj"_labels$suffix.nii.gz -mul 0 -out segmentations/$subj-empty.nii.gz
-    run mirtk padding segmentations/$subj-empty.nii.gz segmentations/"$subj"_labels$suffix.nii.gz segmentations/$subj-L-hemisphere.nii.gz `echo $LEFT_HEMI_LABELS|wc -w` `echo $LEFT_HEMI_LABELS` 1
-    run mirtk padding segmentations/$subj-empty.nii.gz segmentations/"$subj"_labels$suffix.nii.gz segmentations/$subj-R-hemisphere.nii.gz `echo $RIGHT_HEMI_LABELS|wc -w` `echo $RIGHT_HEMI_LABELS` 1
+    left_labels=`echo $LEFT_HEMI_LABELS|wc -w`" $LEFT_HEMI_LABELS"
+    right_labels=`echo $RIGHT_HEMI_LABELS|wc -w`" $RIGHT_HEMI_LABELS"
+    run mirtk padding segmentations/"$subj"_all_labels$suffix.nii.gz segmentations/"$subj"_all_labels$suffix.nii.gz segmentations/$subj-L-hemisphere.nii.gz $left_labels 0 -invert $left_labels 1
+    run mirtk padding segmentations/"$subj"_all_labels$suffix.nii.gz segmentations/"$subj"_all_labels$suffix.nii.gz segmentations/$subj-R-hemisphere.nii.gz $right_labels 0 -invert $right_labels 1
 
     # compute a cutting plane based on dmap 
     for h in L R;do
@@ -67,6 +68,6 @@ if [ ! -f segmentations/${subj}_L_white.nii.gz -o ! -f segmentations/${subj}_R_w
         done
         rm segmentations/$subj-$h-hemisphere.nii.gz segmentations/$subj-$h-hemisphere-dmap.nii.gz
     done
-    rm segmentations/$subj-hemisphere-cut.nii.gz segmentations/$subj-empty.nii.gz segmentations/${subj}_white_init.nii.gz segmentations/${subj}_pial_init.nii.gz
+    rm segmentations/$subj-hemisphere-cut.nii.gz segmentations/${subj}_white_init.nii.gz segmentations/${subj}_pial_init.nii.gz
     rm segmentations/"$subj"_all_labels$suffix.nii.gz segmentations/"$subj"_labels$suffix.nii.gz segmentations/"$subj"_tissue_labels$suffix.nii.gz
 fi
