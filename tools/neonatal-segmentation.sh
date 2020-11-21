@@ -32,6 +32,7 @@ Arguments:
 Options:
   -a / -atlas  <atlasname>      Atlas used for the segmentation, options: `echo $AVAILABLE_ATLASES|sed -e 's: :, :g'` (default: `echo $AVAILABLE_ATLASES|cut -d ' ' -f1`)
   -ta / -tissue-atlas  <atlasname>  Atlas used to compute the GM tissue probability, options: `echo $AVAILABLE_TISSUE_ATLASES|sed -e 's: :, :g'` (default: `echo $AVAILABLE_TISSUE_ATLASES|cut -d ' ' -f1`)
+  -m / -mask <mask>             Brain mask to use for segmentation instead of computing it with BET
   -d / -data-dir  <directory>   The directory used to run the script and output the files.
   -c / -cleanup  <0/1>          Whether cleanup of temporary files is required (default: 1)
   -p / -save-posteriors  <0/1>  Whether the structures' posteriors are required (default: 0)
@@ -70,6 +71,7 @@ verbose=1
 command="$@"
 atlas=`echo $AVAILABLE_ATLASES|cut -d ' ' -f1`
 tissue_atlas=`echo $AVAILABLE_TISSUE_ATLASES|cut -d ' ' -f1`
+mask=""
 
 while [ $# -gt 0 ]; do
   case "$3" in
@@ -78,6 +80,7 @@ while [ $# -gt 0 ]; do
     -p|-save-posteriors) shift; posteriors=$3; ;;
     -a|-atlas)  shift; atlas=$3; ;;
     -ta|-tissue-atlas)  shift; tissue_atlas=$3; ;;
+    -m|-mask)  shift; mask=$3; ;;
     -t|-threads)  shift; threads=$3; ;; 
     -v|-verbose)  shift; verbose=$3; ;; 
     -h|-help|--help) usage; ;;
@@ -90,12 +93,23 @@ done
 # atlas configuration
 . $DRAWEMDIR/parameters/set_atlas.sh $tissue_atlas $atlas
 
+# copy required files
 mkdir -p $datadir/T2 
-if [[ "$T2" == *nii ]];then 
+if [[ "$T2" != *nii.gz ]];then
   mirtk convert-image $T2 $datadir/T2/$subj.nii.gz
 else
   cp $T2 $datadir/T2/$subj.nii.gz
 fi
+
+if [ "$mask" != "" ];then
+  mkdir -p $datadir/segmentations
+  if [[ "$mask" != *nii.gz ]];then
+    mirtk convert-image $mask $datadir/segmentations/${subj}_brain_mask.nii.gz
+  else
+    cp $mask $datadir/segmentations/${subj}_brain_mask.nii.gz
+  fi
+fi
+
 cd $datadir
 
 
