@@ -56,8 +56,8 @@ add_tissue(){
 if [ ! -f $sdir/gm-posteriors/$subj.nii.gz  ];then
     echo "creating $subj tissue priors"
 
-    [ $age -lt $TEMPLATE_MAX_AGE ] || { age=$TEMPLATE_MAX_AGE; }
-    [ $age -gt $TEMPLATE_MIN_AGE ] || { age=$TEMPLATE_MIN_AGE; }
+    [ $age -lt $TISSUE_ATLAS_MAX_AGE ] || { age=$TISSUE_ATLAS_MAX_AGE; }
+    [ $age -gt $TISSUE_ATLAS_MIN_AGE ] || { age=$TISSUE_ATLAS_MIN_AGE; }
 
     # registration of atlas template
     template_dof=dofs/$subj-tissue-atlas-$age-n.dof.gz
