@@ -2,9 +2,9 @@
 # ============================================================================
 # Developing brain Region Annotation With Expectation-Maximization (Draw-EM)
 #
-# Copyright 2013-2016 Imperial College London
-# Copyright 2013-2016 Andreas Schuh
-# Copyright 2013-2016 Antonios Makropoulos
+# Copyright 2013-2020 Imperial College London
+# Copyright 2013-2020 Andreas Schuh
+# Copyright 2013-2020 Antonios Makropoulos
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -33,31 +33,24 @@ f=segmentations/$subj-initial.nii.gz
 
 
 if [ ! -f segmentations/"$subj"_all_labels$suffix.nii.gz ];then
-# creating the all labels file (initial segmentation + cortical division)
-$scriptdir/postprocess-cortical.sh $subj
-run mirtk padding $sdir/cortical/$subj.nii.gz $f segmentations/$subj-cortical-wm.nii.gz 2000 0 -invert 
-run mirtk padding $sdir/cortical/$subj.nii.gz $f segmentations/$subj-cortical-gm.nii.gz 1000 0 -invert 
+    # creating the all labels file (initial segmentation + cortical division)
+    $scriptdir/postprocess-cortical.sh $subj
+    run mirtk padding $sdir/cortical-wm/$subj.nii.gz $f $sdir/cortical-wm/$subj.nii.gz $SUPER_WM_LABEL 0 -invert 
+    run mirtk padding $sdir/cortical-gm/$subj.nii.gz $f $sdir/cortical-gm/$subj.nii.gz $SUPER_GM_LABEL 0 -invert 
 
-corts=(`cat $DRAWEMDIR/parameters/cortical.csv`)
-wmcorts=(`cat $DRAWEMDIR/parameters/cortical-wm.csv`)
-gmtowmnumbers=""
-for ((r=0;r<${#corts[*]};r++));do
-gmtowmnumbers="$gmtowmnumbers 1 ${corts[$r]} ${wmcorts[$r]}"
-done
-run mirtk padding segmentations/$subj-cortical-wm.nii.gz segmentations/$subj-cortical-wm.nii.gz segmentations/$subj-cortical-wm.nii.gz $gmtowmnumbers 
-run mirtk padding $f $f segmentations/"$subj"_all_labels_ini$suffix.nii.gz 2 1000 2000 0
-run mirtk calculate segmentations/"$subj"_all_labels_ini$suffix.nii.gz -add segmentations/$subj-cortical-gm.nii.gz -add segmentations/$subj-cortical-wm.nii.gz -out segmentations/"$subj"_all_labels$suffix.nii.gz
-# cleanup
-rm segmentations/$subj-cortical-gm.nii.gz segmentations/$subj-cortical-wm.nii.gz segmentations/"$subj"_all_labels_ini$suffix.nii.gz
+    run mirtk padding $f $f segmentations/"$subj"_all_labels_ini$suffix.nii.gz 2 $SUPER_GM_LABEL $SUPER_WM_LABEL 0
+    run mirtk calculate segmentations/"$subj"_all_labels_ini$suffix.nii.gz -add $sdir/cortical-gm/$subj.nii.gz -add $sdir/cortical-wm/$subj.nii.gz -out segmentations/"$subj"_all_labels$suffix.nii.gz
+    # cleanup
+    rm segmentations/"$subj"_all_labels_ini$suffix.nii.gz
 fi
 
 if [ ! -f segmentations/"$subj"_labels$suffix.nii.gz ];then
-# creating the labels file
-run mirtk padding segmentations/"$subj"_all_labels$suffix.nii.gz segmentations/"$subj"_all_labels$suffix.nii.gz segmentations/"$subj"_labels$suffix.nii.gz $DRAWEMDIR/parameters/all-labels-to-labels.csv  
+    # creating the labels file
+    run mirtk padding segmentations/"$subj"_all_labels$suffix.nii.gz segmentations/"$subj"_all_labels$suffix.nii.gz segmentations/"$subj"_labels$suffix.nii.gz $ALL_LABELS_TO_LABELS
 fi
 
 if [ ! -f segmentations/"$subj"_tissue_labels$suffix.nii.gz ];then
-# creating the tissue labels labels
-run mirtk padding segmentations/"$subj"_all_labels$suffix.nii.gz segmentations/"$subj"_all_labels$suffix.nii.gz segmentations/"$subj"_tissue_labels$suffix.nii.gz $DRAWEMDIR/parameters/all-labels-to-tissue-labels.csv  
+    # creating the tissue labels labels
+    run mirtk padding segmentations/"$subj"_all_labels$suffix.nii.gz segmentations/"$subj"_all_labels$suffix.nii.gz segmentations/"$subj"_tissue_labels$suffix.nii.gz $ALL_LABELS_TO_TISSUE_LABELS
 fi
 

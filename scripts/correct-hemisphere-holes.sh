@@ -2,8 +2,8 @@
 # ============================================================================
 # Developing brain Region Annotation With Expectation-Maximization (Draw-EM)
 #
-# Copyright 2013-2016 Imperial College London
-# Copyright 2013-2016 Antonios Makropoulos
+# Copyright 2013-2020 Imperial College London
+# Copyright 2013-2020 Antonios Makropoulos
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,34 +25,27 @@ subj=$1
 sdir=segmentations-data
 mkdir -p $sdir/corrections || exit 1
 
-subcorts=`cat $DRAWEMDIR/parameters/subcortical-all.csv`
-
 if [ -f segmentations/${subj}_L_white.nii.gz -a -f segmentations/${subj}_R_white.nii.gz ];then
+    # if small gm components exist inside the white surface..
+    run mirtk calculate segmentations/$subj-initial.nii.gz -mul 0 -out $sdir/corrections/$subj-gmtochange.nii.gz
+    for h in L R;do
+        run mirtk calculate segmentations/${subj}_${h}_white.nii.gz -mul segmentations/$subj-initial.nii.gz -out $sdir/corrections/$subj-gmmask.nii.gz
+        run mirtk padding $sdir/corrections/$subj-gmtochange.nii.gz $sdir/corrections/$subj-gmmask.nii.gz $sdir/corrections/$subj-gmtochange.nii.gz $SUPER_GM_LABEL 1
+    done
+    rm $sdir/corrections/$subj-gmmask.nii.gz
 
-# if small gm components exist inside the white surface..
-run mirtk calculate segmentations/$subj-initial.nii.gz -mul 0 -out $sdir/corrections/$subj-gmtochange.nii.gz
-for h in L R;do
-run mirtk calculate segmentations/${subj}_${h}_white.nii.gz -mul segmentations/$subj-initial.nii.gz  -out $sdir/corrections/$subj-gmmask.nii.gz
-run mirtk padding $sdir/corrections/$subj-gmtochange.nii.gz $sdir/corrections/$subj-gmmask.nii.gz $sdir/corrections/$subj-gmtochange.nii.gz 1000 1
-done
-rm $sdir/corrections/$subj-gmmask.nii.gz
-
-volcorr=`mirtk measure-volume $sdir/corrections/$subj-gmtochange.nii.gz`
-if [ "$volcorr" != "" ];then 
-
-# ..redistribute small components' probability into wm/dgm
-num=1;
-inprobs="$sdir/posteriors/wm/$subj.nii.gz 2000"
-outprobs="$sdir/posteriors/wm/$subj.nii.gz"
-for r in ${subcorts}; do
-inprobs="$inprobs $sdir/posteriors/seg$r/$subj.nii.gz $r"
-outprobs="$outprobs $sdir/posteriors/seg$r/$subj.nii.gz"
-let num=num+1
-done
-
-run mirtk change-label segmentations/$subj-initial.nii.gz $sdir/corrections/$subj-gmtochange.nii.gz $num $inprobs segmentations/$subj-initial.nii.gz $sdir/posteriors/gm/$subj.nii.gz $outprobs
-run mirtk padding $sdir/posteriors/gm/$subj.nii.gz $sdir/corrections/$subj-gmtochange.nii.gz $sdir/posteriors/gm/$subj.nii.gz 1 0
-
-fi
-
+    volcorr=`mirtk measure-volume $sdir/corrections/$subj-gmtochange.nii.gz`
+    if [ "$volcorr" != "" ];then
+        # ..redistribute small components' probability into wm/dgm
+        num=1;
+        inprobs="$sdir/posteriors/wm/$subj.nii.gz $SUPER_WM_LABEL"
+        outprobs="$sdir/posteriors/wm/$subj.nii.gz"
+        for r in ${NONCORTICAL}; do
+            inprobs="$inprobs $sdir/posteriors/seg$r/$subj.nii.gz $r"
+            outprobs="$outprobs $sdir/posteriors/seg$r/$subj.nii.gz"
+            let num=num+1
+        done
+        run mirtk change-label segmentations/$subj-initial.nii.gz $sdir/corrections/$subj-gmtochange.nii.gz $num $inprobs segmentations/$subj-initial.nii.gz $sdir/posteriors/gm/$subj.nii.gz $outprobs
+        run mirtk padding $sdir/posteriors/gm/$subj.nii.gz $sdir/corrections/$subj-gmtochange.nii.gz $sdir/posteriors/gm/$subj.nii.gz 1 0
+    fi
 fi

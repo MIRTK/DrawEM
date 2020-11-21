@@ -2,8 +2,8 @@
 # ============================================================================
 # Developing brain Region Annotation With Expectation-Maximization (Draw-EM)
 #
-# Copyright 2013-2016 Imperial College London
-# Copyright 2013-2016 Antonios Makropoulos
+# Copyright 2013-2020 Imperial College London
+# Copyright 2013-2020 Antonios Makropoulos
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,10 +24,11 @@ subj=$1
 
 scriptdir=$(dirname "$BASH_SOURCE")
 
-# correct for small ventricle components
-$scriptdir/clear-small-ventricle-components-labels.sh $subj
-# correct holes in the segmentation of the hemispheres
-$scriptdir/correct-hemisphere-holes.sh $subj
-
-
-
+if [ $HIGH_WM_VENTRICLE_CORRECTION -eq 1 ];then
+    # correct for small ventricle components
+    $scriptdir/clear-small-ventricle-components-labels.sh $subj
+fi
+if [ $HEMISPHERE_HOLE_CORRECTION -eq 1 ];then
+    # correct holes in the segmentation of the hemispheres
+    $scriptdir/correct-hemisphere-holes.sh $subj
+fi

@@ -1,9 +1,9 @@
 # ============================================================================
 # Developing brain Region Annotation With Expectation-Maximization (Draw-EM)
 #
-# Copyright 2013-2016 Imperial College London
-# Copyright 2013-2016 Christian Ledig
-# Copyright 2013-2016 Antonios Makropoulos
+# Copyright 2013-2020 Imperial College London
+# Copyright 2013-2020 Christian Ledig
+# Copyright 2013-2020 Antonios Makropoulos
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -47,5 +47,6 @@ add_drawem_command(em-hard-segmentation)
 add_drawem_command(kmeans)
 add_drawem_command(normalize)
 add_drawem_command(split-labels)
+add_drawem_command(label-connectivity)
 
 mirtk_add_executable(neonatal-segmentation)

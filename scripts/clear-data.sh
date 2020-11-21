@@ -2,9 +2,9 @@
 # ============================================================================
 # Developing brain Region Annotation With Expectation-Maximization (Draw-EM)
 #
-# Copyright 2013-2016 Imperial College London
-# Copyright 2013-2016 Andreas Schuh
-# Copyright 2013-2016 Antonios Makropoulos
+# Copyright 2013-2020 Imperial College London
+# Copyright 2013-2020 Andreas Schuh
+# Copyright 2013-2020 Antonios Makropoulos
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ sdir=segmentations-data
 rm -f $sdir/MADs/$subj.nii.gz $sdir/MADs/$subj-grad.nii.gz $sdir/MADs/$subj-subspace.nii.gz
 rm -f $sdir/atlas-weights/$subj-ALBERT_*.nii.gz
 rm -f $sdir/corrections/$subj-gmtochange.nii.gz $sdir/corrections/$subj-ventohwm.nii.gz
-rm -f $sdir/cortical/$subj.nii.gz
+rm -f $sdir/cortical-wm/$subj.nii.gz $sdir/cortical-gm/$subj.nii.gz
 rm -f $sdir/gm-posteriors/$subj.nii.gz
 rm -f $sdir/labels/*/$subj.nii.gz
 rm -f $sdir/posteriors/*/$subj.nii.gz
@@ -38,25 +38,6 @@ rm -f $sdir/tissue-posteriors/*/$subj.nii.gz
 rm -f $sdir/transformations/T2-$subj-ALBERT_*.nii.gz $sdir/transformations/$subj-ALBERT_*.nii.gz $sdir/transformations/tissues-$subj-ALBERT_*.nii.gz
 rm -f segmentations/$subj-em.nii.gz segmentations/$subj-initial.nii.gz
 rm -f logs/$subj logs/$subj-err logs/$subj-em logs/$subj-em-err logs/$subj-tissue-em logs/$subj-tissue-em-err
-
-#may fail if other files present, which is ok
-# rmdir $sdir/atlas-weights                    2> /dev/null
-# rmdir $sdir/corrections                      2> /dev/null
-# rmdir $sdir/cortical                         2> /dev/null
-# rmdir $sdir/gm-posteriors                    2> /dev/null
-# rmdir $sdir/labels/*                         2> /dev/null
-# rmdir $sdir/labels                           2> /dev/null
-# rmdir $sdir/MADs                             2> /dev/null
-# rmdir $sdir/posteriors/*                     2> /dev/null
-# rmdir $sdir/posteriors                       2> /dev/null
-# rmdir $sdir/template/*                       2> /dev/null
-# rmdir $sdir/template                         2> /dev/null
-# rmdir $sdir/tissue-initial-segmentations     2> /dev/null
-# rmdir $sdir/tissue-posteriors/*              2> /dev/null
-# rmdir $sdir/tissue-posteriors                2> /dev/null
-# rmdir $sdir/transformations                  2> /dev/null
-# rmdir $sdir                                  2> /dev/null
-# rmdir logs                                   2> /dev/null
 
 exit 0
 

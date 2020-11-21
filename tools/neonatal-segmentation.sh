@@ -2,9 +2,9 @@
 # ============================================================================
 # Developing brain Region Annotation With Expectation-Maximization (Draw-EM)
 #
-# Copyright 2013-2016 Imperial College London
-# Copyright 2013-2016 Andreas Schuh
-# Copyright 2013-2016 Antonios Makropoulos
+# Copyright 2013-2020 Imperial College London
+# Copyright 2013-2020 Andreas Schuh
+# Copyright 2013-2020 Antonios Makropoulos
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -28,12 +28,14 @@ This script runs the neonatal segmentation pipeline of Draw-EM.
 Arguments:
   subject_T2.nii.gz             Nifti Image: The T2 image of the subject to be segmented.
   scan_age                      Number: Subject age in weeks. This is used to select the appropriate template for the initial registration. 
-			        If the age is <28w or >44w, it will be set to 28w or 44w respectively.
+              If the age is <28w or >44w, it will be set to 28w or 44w respectively.
 Options:
-  -d / -data-dir  <directory>   The directory used to run the script and output the files. 
+  -a / -atlas  <atlasname>      Atlas used for the segmentation, options: `echo $AVAILABLE_ATLASES|sed -e 's: :, :g'` (default: `echo $AVAILABLE_ATLASES|cut -d ' ' -f1`)
+  -ta / -tissue-atlas  <atlasname>  Atlas used to compute the GM tissue probability, options: `echo $AVAILABLE_TISSUE_ATLASES|sed -e 's: :, :g'` (default: `echo $AVAILABLE_TISSUE_ATLASES|cut -d ' ' -f1`)
+  -m / -mask <mask>             Brain mask to use for segmentation instead of computing it with BET
+  -d / -data-dir  <directory>   The directory used to run the script and output the files.
   -c / -cleanup  <0/1>          Whether cleanup of temporary files is required (default: 1)
   -p / -save-posteriors  <0/1>  Whether the structures' posteriors are required (default: 0)
-  -atlas  <atlasname>           Atlas used for the tissue priors (default: non-rigid-v2)
   -t / -threads  <number>       Number of threads (CPU cores) allowed for the registration to run in parallel (default: 1)
   -v / -verbose  <0/1>          Whether the script progress is reported (default: 1)
   -h / -help / --help           Print usage.
@@ -48,6 +50,8 @@ if [ -n "$DRAWEMDIR" ]; then
 else
   export DRAWEMDIR="$(cd "$(dirname "$BASH_SOURCE")"/.. && pwd)"
 fi
+# initial configuration
+. $DRAWEMDIR/parameters/configuration.sh
 
 [ $# -ge 2 ] || { usage; }
 T2=$1
@@ -56,8 +60,6 @@ age=$2
 [ -f "$T2" ] || { echo "The T2 image provided as argument does not exist!" >&2; exit 1; }
 subj=`basename $T2  |sed -e 's:.nii.gz::g' |sed -e 's:.nii::g'`
 age=`printf "%.*f\n" 0 $age` #round
-[ $age -lt 44 ] || { age=44; }
-[ $age -gt 28 ] || { age=28; }
 
 
 
@@ -67,15 +69,18 @@ posteriors=0   # whether to output posterior probability maps
 threads=1
 verbose=1
 command="$@"
-
-atlasname=non-rigid-v2
+atlas=`echo $AVAILABLE_ATLASES|cut -d ' ' -f1`
+tissue_atlas=`echo $AVAILABLE_TISSUE_ATLASES|cut -d ' ' -f1`
+mask=""
 
 while [ $# -gt 0 ]; do
   case "$3" in
     -c|-cleanup)  shift; cleanup=$3; ;;
     -d|-data-dir)  shift; datadir=$3; ;;
     -p|-save-posteriors) shift; posteriors=$3; ;;
-    -atlas)  shift; atlasname=$3; ;; 
+    -a|-atlas)  shift; atlas=$3; ;;
+    -ta|-tissue-atlas)  shift; tissue_atlas=$3; ;;
+    -m|-mask)  shift; mask=$3; ;;
     -t|-threads)  shift; threads=$3; ;; 
     -v|-verbose)  shift; verbose=$3; ;; 
     -h|-help|--help) usage; ;;
@@ -85,43 +90,46 @@ while [ $# -gt 0 ]; do
   shift
 done
 
+# atlas configuration
+. $DRAWEMDIR/parameters/set_atlas.sh $tissue_atlas $atlas
+
+# copy required files
 mkdir -p $datadir/T2 
-if [[ "$T2" == *nii ]];then 
+if [[ "$T2" != *nii.gz ]];then
   mirtk convert-image $T2 $datadir/T2/$subj.nii.gz
 else
   cp $T2 $datadir/T2/$subj.nii.gz
 fi
+
+if [ "$mask" != "" ];then
+  mkdir -p $datadir/segmentations
+  if [[ "$mask" != *nii.gz ]];then
+    mirtk convert-image $mask $datadir/segmentations/${subj}_brain_mask.nii.gz
+  else
+    cp $mask $datadir/segmentations/${subj}_brain_mask.nii.gz
+  fi
+fi
+
 cd $datadir
 
-version=`git -C "$DRAWEMDIR" branch | grep \* | cut -d ' ' -f2`
+
+version=`cat $DRAWEMDIR/VERSION`
 gitversion=`git -C "$DRAWEMDIR" rev-parse HEAD`
 
 [ $verbose -le 0 ] || { echo "DrawEM multi atlas  $version (branch version: $gitversion)
-Subject:    $subj 
-Age:        $age
-Directory:  $datadir 
-Posteriors: $posteriors 
-Cleanup:    $cleanup 
-Threads:    $threads
+Subject:      $subj
+Age:          $age
+Tissue atlas: $tissue_atlas
+Atlas:        $atlas
+Directory:    $datadir
+Posteriors:   $posteriors
+Cleanup:      $cleanup
+Threads:      $threads
 
 $BASH_SOURCE $command
 ----------------------------"; }
 
 mkdir -p logs || exit 1
-
-# log function
-run()
-{
-  echo "$@"
-  "$@"
-  if [ ! $? -eq 0 ]; then
-    echo "$@ : failed"
-    exit 1
-  fi
-}
-
-# make run function global
-typeset -fx run
 
 run_script()
 {
@@ -135,10 +143,8 @@ run_script()
 
 rm -f logs/$subj logs/$subj-err
 run_script preprocess.sh        $subj
-# phase 1 tissue segmentation
-run_script tissue-priors.sh     $subj $age $atlasname $threads
-# registration using gm posterior + image
-run_script register-multi-atlas-using-gm-posteriors.sh $subj $age $threads
+# registration of atlases
+run_script register-multi-atlas.sh $subj $age $threads
 # structural segmentation
 run_script labels-multi-atlas.sh   $subj
 run_script segmentation.sh      $subj
@@ -153,8 +159,6 @@ run_script postprocess.sh       $subj
 # cleanup
 if [ "$cleanup" == "1" -o "$cleanup" == "yes" -o "$cleanup" == "true" ] && [ -f "segmentations/${subj}_labels.nii.gz" ];then
   run_script clear-data.sh $subj
-  rm -f logs/$subj logs/$subj-err
-  rmdir logs 2> /dev/null # may fail if other log files exist
 fi
 
 exit 0

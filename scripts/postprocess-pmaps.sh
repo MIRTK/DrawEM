@@ -2,9 +2,9 @@
 # ============================================================================
 # Developing brain Region Annotation With Expectation-Maximization (Draw-EM)
 #
-# Copyright 2013-2016 Imperial College London
-# Copyright 2013-2016 Andreas Schuh
-# Copyright 2013-2016 Antonios Makropoulos
+# Copyright 2013-2020 Imperial College London
+# Copyright 2013-2020 Andreas Schuh
+# Copyright 2013-2020 Antonios Makropoulos
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,44 +26,46 @@ subj=$1
 rdir=posteriors
 sdir=segmentations-data
 
+mkdir -p $sdir/posteriors/temp|| exit 1
+for label in $ALL_LABELS;do mkdir -p $rdir/seg$label $sdir/posteriors/seg$label || exit 1;done
 
-subcorts=(`cat $DRAWEMDIR/parameters/subcortical-all.csv`)
-corts=(`cat $DRAWEMDIR/parameters/cortical.csv`)
-wmcorts=(`cat $DRAWEMDIR/parameters/cortical-wm.csv`)
-all=(`cat $DRAWEMDIR/parameters/all-labels.csv `)
-numcorts=${#corts[*]}
-numsubcorts=${#subcorts[*]}
+cp $sdir/posteriors/csf/$subj.nii.gz $sdir/posteriors/seg$CSF_LABEL/$subj.nii.gz || exit 1
+cp $sdir/posteriors/outlier/$subj.nii.gz $sdir/posteriors/seg$OUTLIER_LABEL/$subj.nii.gz || exit 1
 
 
-mkdir -p $sdir/posteriors/temp || exit 1
-for ((n=0;n<${#all[*]};n++));do r=${all[$n]}; mkdir -p $rdir/seg$r || exit 1;done
+for tissue in gm wm;do 
+    # cortical wm, gm
+    cortical_var=CORTICAL_${tissue^^}
+    cortical_labels=${!cortical_var}
 
+    addem=""
+    for label in $cortical_labels;do 
+        addem=$addem"-add $sdir/labels/seg$label-extended/$subj.nii.gz ";
+    done
+    addem=`echo $addem|sed -e 's:^-add::g'`
+    run mirtk calculate $addem -out $sdir/posteriors/temp/$subj-$tissue-sum.nii.gz
 
-# out, csf
-cp $sdir/posteriors/csf/$subj.nii.gz $rdir/seg83/$subj.nii.gz || exit 1
-cp $sdir/posteriors/outlier/$subj.nii.gz $rdir/seg84/$subj.nii.gz || exit 1
-
-for tiss in csf gm wm;do 
-  mkdir -p $rdir/$tiss
-  cp $sdir/posteriors/$tiss/$subj.nii.gz $rdir/$tiss/$subj.nii.gz || exit 1
+    for label in $cortical_labels;do
+        run mirtk calculate $sdir/labels/seg$label-extended/$subj.nii.gz -div-with-zero $sdir/posteriors/temp/$subj-$tissue-sum.nii.gz -mul $sdir/posteriors/$tissue/$subj.nii.gz -out $sdir/posteriors/seg$label/$subj.nii.gz   
+    done 
+    rm $sdir/posteriors/temp/$subj-$tissue-sum.nii.gz
 done
 
-# cortical wm, gm
+# make sure all posteriors sum up to 100
 addem=""
-for ((n=0;n<$numcorts;n++));do r=${corts[$n]}; addem=$addem"-add $sdir/labels/seg$r-extended/$subj.nii.gz "; done
+for label in $ALL_LABELS;do
+    addem=$addem"-add $sdir/posteriors/seg$label/$subj.nii.gz ";
+done
 addem=`echo $addem|sed -e 's:^-add::g'`
-run mirtk calculate $addem -out $sdir/posteriors/temp/$subj-gmwm.nii.gz
+run mirtk calculate $addem -out $sdir/posteriors/temp/$subj-sum.nii.gz
 
-for ((n=0;n<$numcorts;n++));do 
-r=${corts[$n]};
-val=${wmcorts[$n]};
-run mirtk calculate $sdir/labels/seg$r-extended/$subj.nii.gz -div-with-zero $sdir/posteriors/temp/$subj-gmwm.nii.gz -mul $sdir/posteriors/gm/$subj.nii.gz -out $rdir/seg$r/$subj.nii.gz   
-run mirtk calculate $sdir/labels/seg$r-extended/$subj.nii.gz -div-with-zero $sdir/posteriors/temp/$subj-gmwm.nii.gz -mul $sdir/posteriors/wm/$subj.nii.gz -out $rdir/seg$val/$subj.nii.gz 
+for label in $ALL_LABELS;do
+    mirtk calculate $sdir/posteriors/seg$label/$subj.nii.gz -div-with-zero $sdir/posteriors/temp/$subj-sum.nii.gz -mul 100 -out $rdir/seg$label/$subj.nii.gz
 done 
-rm $sdir/posteriors/temp/$subj-gmwm.nii.gz
+rm $sdir/posteriors/temp/$subj-sum.nii.gz
 
-# subcortical
-for ((n=0;n<$numsubcorts;n++));do 
-r=${subcorts[$n]};
-cp $sdir/posteriors/seg$r/$subj.nii.gz $rdir/seg$r/$subj.nii.gz || exit 1
-done 
+# copy tissues
+for tissue in outlier csf gm wm;do
+    mkdir -p $rdir/$tissue
+    cp $sdir/posteriors/$tissue/$subj.nii.gz $rdir/$tissue/$subj.nii.gz || exit 1
+done
