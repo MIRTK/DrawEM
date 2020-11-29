@@ -84,10 +84,14 @@ if [ ! -f $sdir/gm-posteriors/$subj.nii.gz  ];then
     num_structures=$(($num+1))
     run mirtk draw-em N4/$subj.nii.gz $num_structures $structures $sdir/tissue-initial-segmentations/$subj.nii.gz -padding 0 -mrf $TISSUE_ATLAS_CONNECTIVITIES  -tissues $tissues_parameter -hui -relaxtimes 2 $save_posteriors  1>logs/$subj-tissue-em 2>logs/$subj-tissue-em-err
 
+    for post in ${posteriors};do
+        run mirtk calculate $post -mul 100 -out $post
+    done
+
     addem=""
     for subtissue in ${TISSUE_ATLAS_GM_TISSUES};do
         addem=$addem"-add $sdir/tissue-posteriors/$subtissue/$subj.nii.gz ";
     done
     addem=`echo $addem|sed -e 's:^-add::g'`
-    run mirtk calculate $addem -mul 100 -out $sdir/gm-posteriors/$subj.nii.gz
+    run mirtk calculate $addem -out $sdir/gm-posteriors/$subj.nii.gz
 fi
