@@ -18,23 +18,17 @@
 # limitations under the License.
 # ============================================================================
 
-# Available atlases from Draw-EM
-export AVAILABLE_ATLASES="ALBERT MCRIB"
-export AVAILABLE_TISSUE_ATLASES="neonatal fetal"
-
-export SUPER_GM_LABEL=10000
-export SUPER_WM_LABEL=20000
-
-# log function
-run()
-{
-  echo "$@"
-  "$@"
-  if [ ! $? -eq 0 ]; then
-    echo "$@ : failed"
-    exit 1
-  fi
-}
-
-# make run function global
-typeset -fx run
+export TISSUE_ATLAS_CONNECTIVITIES=$DRAWEMDIR/parameters/fetal/connectivities.mrf
+export TISSUE_ATLAS_T2_DIR=$DRAWEMDIR/atlases/fetal/T2
+export TISSUE_ATLAS_TISSUES_DIR=$DRAWEMDIR/atlases/fetal/atlas-9
+export TISSUE_ATLAS_TISSUES=`ls $TISSUE_ATLAS_TISSUES_DIR -v |grep structure`
+export TISSUE_ATLAS_OUTLIER_TISSUES=structure4
+export TISSUE_ATLAS_CSF_TISSUES="structure1"
+export TISSUE_ATLAS_GM_TISSUES=structure2
+export TISSUE_ATLAS_WM_TISSUES="structure3"
+export TISSUE_ATLAS_CAVUM=structure9
+export TISSUE_ATLAS_VENTRICLES=structure5
+export TISSUE_ATLAS_NONCORTICAL="$TISSUE_ATLAS_VENTRICLES structure6 structure7 structure8 $TISSUE_ATLAS_CAVUM"
+export TISSUE_ATLAS_MIN_AGE=23
+export TISSUE_ATLAS_MAX_AGE=37
+export BET_THRESHOLD=0.1
