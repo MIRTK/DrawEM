@@ -32,3 +32,8 @@ if [ $HEMISPHERE_HOLE_CORRECTION -eq 1 ];then
     # correct holes in the segmentation of the hemispheres
     $scriptdir/correct-hemisphere-holes.sh $subj
 fi
+
+if [ $SEPARATE_CAVUM_FROM_CSF_CORRECTION -eq 1 ];then
+    # separate cavum from CSF
+    $scriptdir/separate-cavum-from-CSF.sh $subj
+fi
