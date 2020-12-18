@@ -27,6 +27,7 @@ export TISSUE_ATLAS_CSF_TISSUES=structure1
 export TISSUE_ATLAS_GM_TISSUES=structure2
 export TISSUE_ATLAS_WM_TISSUES="structure3 structure8 structure9"
 export TISSUE_ATLAS_NONCORTICAL="structure5 structure6 structure7"
+export TISSUE_ATLAS_DGM_TISSUES=structure7
 export TISSUE_ATLAS_MIN_AGE=28
 export TISSUE_ATLAS_MAX_AGE=44
 export BET_THRESHOLD=0.1
