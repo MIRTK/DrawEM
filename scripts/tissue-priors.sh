@@ -53,7 +53,20 @@ add_tissue(){
     done
 }
 
-if [ ! -f $sdir/gm-posteriors/$subj.nii.gz  ];then
+add_tissue_posteriors(){
+    # add posterior probability of sub-tissues to tissues
+    tissue_var=$1
+    output_tissue=$2
+    tissue_labels=${!tissue_var}
+    addem=""
+    for subtissue in $tissue_labels;do
+        addem=$addem"-add $sdir/tissue-posteriors/$subtissue/$subj.nii.gz ";
+    done
+    addem=`echo $addem|sed -e 's:^-add::g'`
+    run mirtk calculate $addem -out $sdir/tissue-posteriors/$output_tissue/$subj.nii.gz
+}
+
+if [ ! -f $sdir/tissue-posteriors/gm/$subj.nii.gz  ];then
     echo "creating $subj tissue priors"
 
     [ $age -lt $TISSUE_ATLAS_MAX_AGE ] || { age=$TISSUE_ATLAS_MAX_AGE; }
@@ -65,7 +78,7 @@ if [ ! -f $sdir/gm-posteriors/$subj.nii.gz  ];then
         run mirtk register N4/$subj.nii.gz $TISSUE_ATLAS_T2_DIR/template-$age.nii.gz -dofout $template_dof -parin $DRAWEMDIR/parameters/ireg.cfg -threads $njobs -v 0
     fi
 
-    mkdir -p $sdir/tissue-initial-segmentations $sdir/gm-posteriors || exit 1
+    mkdir -p $sdir/tissue-initial-segmentations || exit 1
     for tissue in ${TISSUE_ATLAS_TISSUES};do
         mkdir -p $sdir/template/$tissue || exit 1
         run mirtk transform-image $TISSUE_ATLAS_TISSUES_DIR/$tissue/$age.nii.gz $sdir/template/$tissue/$subj.nii.gz -dofin $template_dof -target N4/$subj.nii.gz -interp Linear
@@ -88,10 +101,5 @@ if [ ! -f $sdir/gm-posteriors/$subj.nii.gz  ];then
         run mirtk calculate $post -mul 100 -out $post
     done
 
-    addem=""
-    for subtissue in ${TISSUE_ATLAS_GM_TISSUES};do
-        addem=$addem"-add $sdir/tissue-posteriors/$subtissue/$subj.nii.gz ";
-    done
-    addem=`echo $addem|sed -e 's:^-add::g'`
-    run mirtk calculate $addem -out $sdir/gm-posteriors/$subj.nii.gz
+    add_tissue_posteriors TISSUE_ATLAS_GM_TISSUES gm
 fi

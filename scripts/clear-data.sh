@@ -29,7 +29,6 @@ rm -f $sdir/MADs/$subj.nii.gz $sdir/MADs/$subj-grad.nii.gz $sdir/MADs/$subj-subs
 rm -f $sdir/atlas-weights/$subj-ALBERT_*.nii.gz
 rm -f $sdir/corrections/$subj-gmtochange.nii.gz $sdir/corrections/$subj-ventohwm.nii.gz
 rm -f $sdir/cortical-wm/$subj.nii.gz $sdir/cortical-gm/$subj.nii.gz
-rm -f $sdir/gm-posteriors/$subj.nii.gz
 rm -f $sdir/labels/*/$subj.nii.gz
 rm -f $sdir/posteriors/*/$subj.nii.gz
 rm -f $sdir/template/*/$subj.nii.gz
