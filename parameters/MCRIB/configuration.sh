@@ -18,7 +18,6 @@
 # limitations under the License.
 # ============================================================================
 
-export MULTICHANNEL_REGISTRATION=0
 export HIGH_WM_VENTRICLE_CORRECTION=0
 export HEMISPHERE_HOLE_CORRECTION=1
 

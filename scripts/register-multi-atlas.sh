@@ -30,30 +30,35 @@ sdir=segmentations-data
 mkdir -p dofs
 
 # initial tissue segmentation if we do multi-channel registration
-if [ $MULTICHANNEL_REGISTRATION -eq 1 ];then
-    need_tissue_seg=0
-    for atlas in ${ATLASES};do
-        if [ ! -f dofs/$subj-$atlas-n.dof.gz ];then
-            need_tissue_seg=1
-            break
-        fi
-    done
+if [ "$ATLAS_REGISTRATION_CHANNELS" != "" ];then
+    script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+    $script_dir/tissue-priors.sh $subj $age $njobs
 
-    if [ $need_tissue_seg -eq 1 ];then
-        script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-        $script_dir/tissue-priors.sh $subj $age $njobs
-    fi
+    energy=`cat $DRAWEMDIR/parameters/ireg-structural.cfg | sed 's/\[/@/g' | grep "Energy function ="`
+    energy_channels=""
+    img1=1
+    img2=2
+    for channel in $ATLAS_REGISTRATION_CHANNELS;do
+        img1=$(($img1+2))
+        img2=$(($img2+2))
+        energy_channels="$energy_channels + 3.0 SSD[GM Sim](I($img1), I($img2) o T)"
+    done
+    new_energy="$energy $energy_channels"
+    cat $DRAWEMDIR/parameters/ireg-structural.cfg | sed 's/\[/@/g'|sed -e "s:$energy:$new_energy:g" | sed 's/@/\[/g'> $sdir/ireg.cfg
+else
+    cp $DRAWEMDIR/parameters/ireg-structural.cfg $sdir/ireg.cfg
 fi
 
 # registration of multiple atlases
 for atlas in ${ATLASES};do
     dof=dofs/$subj-$atlas-n.dof.gz
     if [ ! -f $dof ];then
-        if [ $MULTICHANNEL_REGISTRATION -eq 1 ];then
-            run mirtk register N4/$subj.nii.gz $ATLAS_T2_DIR/$atlas.nii.gz $sdir/tissue-posteriors/gm/$subj.nii.gz $ATLAS_GM_POSTERIORS_DIR/$atlas.nii.gz -parin $DRAWEMDIR/parameters/ireg-multichannel-structural.cfg  -dofout $dof -threads $njobs -v 0
-        else
-            run mirtk register N4/$subj.nii.gz $ATLAS_T2_DIR/$atlas.nii.gz -parin $DRAWEMDIR/parameters/ireg.cfg  -dofout $dof -threads $njobs -v 0
+        pairs="N4/$subj.nii.gz $ATLAS_T2_DIR/$atlas.nii.gz"
+        if [ "$ATLAS_REGISTRATION_CHANNELS" != "" ];then
+            for channel in $ATLAS_REGISTRATION_CHANNELS;do
+                pairs="$pairs $sdir/tissue-posteriors/$channel/$subj.nii.gz $ATLAS_PROBABILITIES_DIR/$channel/$atlas.nii.gz"
+            done
         fi
+        run mirtk register $pairs -parin $sdir/ireg.cfg -dofout $dof -threads $njobs -v 0
     fi
 done
-

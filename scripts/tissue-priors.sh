@@ -53,20 +53,7 @@ add_tissue(){
     done
 }
 
-add_tissue_posteriors(){
-    # add posterior probability of sub-tissues to tissues
-    tissue_var=$1
-    output_tissue=$2
-    tissue_labels=${!tissue_var}
-    addem=""
-    for subtissue in $tissue_labels;do
-        addem=$addem"-add $sdir/tissue-posteriors/$subtissue/$subj.nii.gz ";
-    done
-    addem=`echo $addem|sed -e 's:^-add::g'`
-    run mirtk calculate $addem -out $sdir/tissue-posteriors/$output_tissue/$subj.nii.gz
-}
-
-if [ ! -f $sdir/tissue-posteriors/gm/$subj.nii.gz  ];then
+if [ ! -f $sdir/tissue-initial-segmentations/$subj.nii.gz ];then
     echo "creating $subj tissue priors"
 
     [ $age -lt $TISSUE_ATLAS_MAX_AGE ] || { age=$TISSUE_ATLAS_MAX_AGE; }
@@ -95,11 +82,11 @@ if [ ! -f $sdir/tissue-posteriors/gm/$subj.nii.gz  ];then
     add_tissue TISSUE_ATLAS_WM_TISSUES
 
     num_structures=$(($num+1))
-    run mirtk draw-em N4/$subj.nii.gz $num_structures $structures $sdir/tissue-initial-segmentations/$subj.nii.gz -padding 0 -mrf $TISSUE_ATLAS_CONNECTIVITIES  -tissues $tissues_parameter -hui -relaxtimes 2 $save_posteriors  1>logs/$subj-tissue-em 2>logs/$subj-tissue-em-err
+    run mirtk draw-em N4/$subj.nii.gz $num_structures $structures $sdir/tissue-initial-segmentations/$subj-tmp.nii.gz -padding 0 -mrf $TISSUE_ATLAS_CONNECTIVITIES  -tissues $tissues_parameter -hui -relaxtimes 2 $save_posteriors  1>logs/$subj-tissue-em 2>logs/$subj-tissue-em-err
 
     for post in ${posteriors};do
         run mirtk calculate $post -mul 100 -out $post
     done
 
-    add_tissue_posteriors TISSUE_ATLAS_GM_TISSUES gm
+    mv $sdir/tissue-initial-segmentations/$subj-tmp.nii.gz $sdir/tissue-initial-segmentations/$subj.nii.gz
 fi
