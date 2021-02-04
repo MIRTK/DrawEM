@@ -100,3 +100,6 @@
    85   255    0    0        1  0  0    "Intra-cranial background"
    86   220  220  220        1  1  1    "Thalamus right, low intensity part in T2"
    87   255   42   42        1  1  1    "Thalamus left, low intensity part in T2"
+   88   255  135    7        1  1  1    "Third Ventricle"
+   89   255   76    0        1  1  1    "Fourth Ventricle"
+   90     4   67    0        1  1  1    "Cerebellar Vermis"
