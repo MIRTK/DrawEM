@@ -38,6 +38,7 @@ structures="csf"
 for ven in $VENTRICLES;do
     structures="$structures seg$ven"
 done
+structures_label="$CSF_LABEL $VENTRICLES"
 
 addem=""
 for structure in $structures;do
@@ -51,8 +52,14 @@ for structure in $structures;do
     run mirtk calculate $sdir/corrections/$subj-cavum-part.nii.gz -sub 1 -mul -1 -mul $sdir/posteriors/$structure/$subj.nii.gz -out $sdir/posteriors/$structure/$subj.nii.gz
 done
 
+segCC=seg$CORPUS_CALLOSUM
+structures="$structures $segCC"
+structures_label="$structures_label $CORPUS_CALLOSUM"
+run mirtk calculate $sdir/tissue-posteriors/$TISSUE_ATLAS_CAVUM/$subj.nii.gz -mul $sdir/posteriors/$segCC/$subj.nii.gz -out $sdir/corrections/$subj-CC-cavum-prob.nii.gz
+run mirtk calculate $sdir/posteriors/seg$CAVUM/$subj.nii.gz -add $sdir/corrections/$subj-CC-cavum-prob.nii.gz -out $sdir/posteriors/seg$CAVUM/$subj.nii.gz
+run mirtk calculate $sdir/posteriors/$segCC/$subj.nii.gz -sub $sdir/corrections/$subj-CC-cavum-prob.nii.gz -out $sdir/posteriors/$segCC/$subj.nii.gz
 
-num_no_cavum=`echo $structures|wc -w`
+
 structures="$structures seg$CAVUM"
 posteriors=""
 for structure in $structures;do
@@ -61,7 +68,8 @@ done
 num=`echo $structures|wc -w`
 run mirtk em-hard-segmentation $num $posteriors $sdir/corrections/$subj-ventricles-cavum-hard.nii.gz
 
-run mirtk padding $sdir/corrections/$subj-ventricles-cavum-hard.nii.gz segmentations/$subj-initial.nii.gz $sdir/corrections/$subj-ventricles-cavum-hard.nii.gz $num_no_cavum $CSF_LABEL $VENTRICLES 0 -invert
+run mirtk padding $sdir/corrections/$subj-ventricles-cavum-hard.nii.gz segmentations/$subj-initial.nii.gz $sdir/corrections/$subj-ventricles-cavum-hard.nii.gz `echo $structures_label|wc -w` $structures_label 0 -invert
 run mirtk padding segmentations/$subj-initial.nii.gz $sdir/corrections/$subj-ventricles-cavum-hard.nii.gz segmentations/$subj-initial.nii.gz 1 $num $CAVUM
 
-rm $sdir/corrections/$subj-ventricles-csf-tissue-posterior.nii.gz $sdir/corrections/$subj-cavum-part.nii.gz $sdir/corrections/$subj-csf-posterior.nii.gz $sdir/corrections/$subj-ventricles-cavum-hard.nii.gz
+# rm $sdir/corrections/$subj-ventricles-csf-tissue-posterior.nii.gz $sdir/corrections/$subj-cavum-part.nii.gz $sdir/corrections/$subj-csf-posterior.nii.gz $sdir/corrections/$subj-ventricles-cavum-hard.nii.gz $sdir/corrections/$subj-CC-cavum-prob.nii.gz
+
