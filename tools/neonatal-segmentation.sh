@@ -94,11 +94,13 @@ done
 . $DRAWEMDIR/parameters/set_atlas.sh $tissue_atlas $atlas
 
 # copy required files
-mkdir -p $datadir/T2 
+mkdir -p $datadir/T2
+if [ $T2 != $datadir/T2/$subj.nii.gz ];then
 if [[ "$T2" != *nii.gz ]];then
   mirtk convert-image $T2 $datadir/T2/$subj.nii.gz
 else
   cp $T2 $datadir/T2/$subj.nii.gz
+fi
 fi
 
 if [ "$mask" != "" ];then
