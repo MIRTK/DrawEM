@@ -37,3 +37,8 @@ if [ $SEPARATE_CAVUM_FROM_CSF_CORRECTION -eq 1 ];then
     # separate cavum from CSF
     $scriptdir/separate-cavum-from-CSF.sh $subj
 fi
+
+if [ $CGM_GMAT_CORRECTION -eq 1 ];then
+    # separate cavum from CSF
+    $scriptdir/correct-CGM-in-gmat.sh $subj
+fi
