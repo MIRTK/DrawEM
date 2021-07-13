@@ -88,5 +88,10 @@ if [ ! -f $sdir/tissue-initial-segmentations/$subj.nii.gz ];then
         run mirtk calculate $post -mul 100 -out $post
     done
 
+    for tissue in ${TISSUE_ATLAS_MASKS_AS_POSTERIORS};do
+        mkdir -p $sdir/tissue-posteriors/$tissue || exit 1
+        cp $sdir/template/$tissue/$subj.nii.gz $sdir/tissue-posteriors/$tissue/$subj.nii.gz 
+    done
+
     mv $sdir/tissue-initial-segmentations/$subj-tmp.nii.gz $sdir/tissue-initial-segmentations/$subj.nii.gz
 fi
